@@ -4,25 +4,21 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 
-# Загрузка данных
-# Учитываем, что разделитель в файле может быть необычным (например, ;)
+
 df = pd.read_csv('data.csv')
 
-# Преобразуем числовые столбцы (если нужно)
 for col in df.columns[1:]:
     df[col] = pd.to_numeric(df[col], errors='coerce')
 
-# Удаляем колонку 'Unnamed: 1', если она есть
 if 'Unnamed: 1' in df.columns:
     df = df.drop(columns=['Unnamed: 1'])
 
-# Стандартизируем наименование колонки модели
 if 'Model \\ Age' in df.columns:
     df = df.rename(columns={'Model \\ Age': 'model'})
+
 if 'Model' in df.columns:
     df = df.rename(columns={'Model': 'model'})
 
-# Гарантируем агрегированные возрастные группы, если их нет
 if 'age_0_3' not in df.columns:
     cols_0_3 = [f'age_{y}' for y in range(0, 4) if f'age_{y}' in df.columns]
     if cols_0_3:
@@ -275,7 +271,7 @@ table = dash_table.DataTable(
 app = dash.Dash(__name__)
 GRAPH_HEIGHT = 350
 app.layout = html.Div([
-    html.H1('DNM DATA by models'),
+    html.H1('DNM RO DATA by models'),
     html.Div([
         html.Div([
             html.H2('Top 10 Models by Total Profit'),
