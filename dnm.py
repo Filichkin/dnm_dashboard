@@ -267,11 +267,114 @@ table = dash_table.DataTable(
     # page_size=10,  # убираем пагинацию
 )
 
+# Вычисляем суммарные показатели для карт
+total_uio_10y = df['uio_10y'].sum() if 'uio_10y' in df.columns else 0
+total_ro_qty = df['total_0_10'].sum() if 'total_0_10' in df.columns else 0
+total_cost = df['total_ro_cost'].sum() if 'total_ro_cost' in df.columns else 0
+total_labor_hours = (
+    df['labor_hours_0_10'].sum() if 'labor_hours_0_10' in df.columns else 0
+)
+avg_ro_cost = total_cost / total_ro_qty if total_ro_qty > 0 else 0
+
 # Layout Dash
 app = dash.Dash(__name__)
 GRAPH_HEIGHT = 350
 app.layout = html.Div([
     html.H1('DNM RO DATA by models'),
+
+    # Карты с суммарными показателями
+    html.Div([
+        html.Div([
+            html.H3('UIO (10Y)', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
+            html.H2(
+                f'{total_uio_10y:,.0f}',
+                style={'margin': '0', 'color': '#3498db', 'fontSize': '2.2em'}
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px'
+        }),
+
+        html.Div([
+            html.H3('RO qty (10Y)', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
+            html.H2(
+                f'{total_ro_qty:,.0f}',
+                style={'margin': '0', 'color': '#e74c3c', 'fontSize': '2.2em'}
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px'
+        }),
+
+        html.Div([
+            html.H3(
+                'Total cost (10Y)',
+                style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}
+            ),
+            html.H2(
+                f'{total_cost:,.0f}',
+                style={'margin': '0', 'color': '#27ae60', 'fontSize': '2.2em'}
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px'
+        }),
+
+        html.Div([
+            html.H3('Total L/H', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
+            html.H2(
+                f'{total_labor_hours:,.0f}',
+                style={'margin': '0', 'color': '#f39c12', 'fontSize': '2.2em'}
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px'
+        }),
+
+        html.Div([
+            html.H3(
+                'Average RO cost',
+                style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}
+            ),
+            html.H2(
+                f'{avg_ro_cost:,.0f}',
+                style={'margin': '0', 'color': '#9b59b6', 'fontSize': '2.2em'}
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px'
+        }),
+    ], style={'display': 'flex', 'marginBottom': '30px'}),
     html.Div([
         html.Div([
             html.H2('Top 10 Models by Total Profit'),
