@@ -285,27 +285,20 @@ app.layout = html.Div([
     # Карты с суммарными показателями
     html.Div([
         html.Div([
-            html.H3('UIO (10Y)', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
-            html.H2(
-                f'{total_uio_10y:,.0f}',
-                style={'margin': '0', 'color': '#3498db', 'fontSize': '2.2em'}
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px'
-        }),
-
-        html.Div([
-            html.H3('RO qty (10Y)', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
+            html.H3('UIO (10Y)', style={
+                'margin': '0',
+                'color': '#2c3e50',
+                'fontSize': '1.3em',
+                'marginBottom': '15px'
+                }),
             html.H2(
                 f'{total_ro_qty:,.0f}',
-                style={'margin': '0', 'color': '#e74c3c', 'fontSize': '2.2em'}
+                style={
+                    'margin': '0',
+                    'color': '#3498db',
+                    'fontSize': '2.2em',
+                    'fontWeight': 'normal'
+                    }
             )
         ], style={
             'backgroundColor': '#ecf0f1',
@@ -315,17 +308,29 @@ app.layout = html.Div([
             'margin': '10px',
             'flex': '1',
             'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px'
+            'minHeight': '120px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
         }),
 
         html.Div([
-            html.H3(
-                'Total cost (10Y)',
-                style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}
-            ),
+            html.H3('RO qty (10Y)', style={
+                'margin': '0',
+                'color': '#2c3e50',
+                'fontSize': '1.3em',
+                'marginBottom': '15px'
+                }
+                ),
             html.H2(
-                f'{total_cost:,.0f}',
-                style={'margin': '0', 'color': '#27ae60', 'fontSize': '2.2em'}
+                f'{total_ro_qty:,.0f}',
+                style={
+                    'margin': '0',
+                    'color': '#3498db',
+                    'fontSize': '2.2em',
+                    'fontWeight': 'normal'
+                    }
             )
         ], style={
             'backgroundColor': '#ecf0f1',
@@ -335,14 +340,29 @@ app.layout = html.Div([
             'margin': '10px',
             'flex': '1',
             'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px'
+            'minHeight': '120px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
         }),
 
         html.Div([
-            html.H3('Total L/H', style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}),
+            html.H3('RO qty (10Y)', style={
+                'margin': '0',
+                'color': '#2c3e50',
+                'fontSize': '1.3em',
+                'marginBottom': '15px'
+                }
+                ),
             html.H2(
-                f'{total_labor_hours:,.0f}',
-                style={'margin': '0', 'color': '#f39c12', 'fontSize': '2.2em'}
+                f'{total_ro_qty:,.0f}',
+                style={
+                    'margin': '0',
+                    'color': '#3498db',
+                    'fontSize': '2.2em',
+                    'fontWeight': 'normal'
+                    }
             )
         ], style={
             'backgroundColor': '#ecf0f1',
@@ -352,17 +372,29 @@ app.layout = html.Div([
             'margin': '10px',
             'flex': '1',
             'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px'
+            'minHeight': '120px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
         }),
 
         html.Div([
-            html.H3(
-                'Average RO cost',
-                style={'margin': '0', 'color': '#2c3e50', 'fontSize': '1.1em'}
-            ),
+            html.H3('RO qty (10Y)', style={
+                'margin': '0',
+                'color': '#2c3e50',
+                'fontSize': '1.3em',
+                'marginBottom': '15px'
+                }
+                ),
             html.H2(
-                f'{avg_ro_cost:,.0f}',
-                style={'margin': '0', 'color': '#9b59b6', 'fontSize': '2.2em'}
+                f'{total_ro_qty:,.0f}',
+                style={
+                    'margin': '0',
+                    'color': '#3498db',
+                    'fontSize': '2.2em',
+                    'fontWeight': 'normal'
+                    }
             )
         ], style={
             'backgroundColor': '#ecf0f1',
@@ -372,7 +404,43 @@ app.layout = html.Div([
             'margin': '10px',
             'flex': '1',
             'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px'
+            'minHeight': '120px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
+        }),
+
+        html.Div([
+            html.H3('RO qty (10Y)', style={
+                'margin': '0',
+                'color': '#2c3e50',
+                'fontSize': '1.3em',
+                'marginBottom': '15px'
+                }
+                ),
+            html.H2(
+                f'{total_ro_qty:,.0f}',
+                style={
+                    'margin': '0',
+                    'color': '#3498db',
+                    'fontSize': '2.2em',
+                    'fontWeight': 'normal'
+                    }
+            )
+        ], style={
+            'backgroundColor': '#ecf0f1',
+            'padding': '25px',
+            'borderRadius': '10px',
+            'textAlign': 'center',
+            'margin': '10px',
+            'flex': '1',
+            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+            'minHeight': '120px',
+            'display': 'flex',
+            'flexDirection': 'column',
+            'justifyContent': 'center',
+            'alignItems': 'center'
         }),
     ], style={'display': 'flex', 'marginBottom': '30px'}),
     html.Div([
