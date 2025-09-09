@@ -7,7 +7,7 @@ from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
 
-from dnm import (
+from app.dnm import (
     fig_profit, fig_mh, fig_avg_mh, fig_avg_check, fig_ratio, fig_ro_years, df
 )
 
@@ -97,7 +97,7 @@ def capture_dashboard_screenshot(
     if not SELENIUM_AVAILABLE:
         print("Selenium недоступен. Используйте обычный метод сохранения.")
         return False
-    
+
     try:
         # Настройки Chrome
         chrome_options = Options()
@@ -105,20 +105,20 @@ def capture_dashboard_screenshot(
         chrome_options.add_argument('--no-sandbox')
         chrome_options.add_argument('--disable-dev-shm-usage')
         chrome_options.add_argument('--window-size=1920,1080')
-        
+
         driver = webdriver.Chrome(options=chrome_options)
         driver.get(url)
-        
+
         # Ждём загрузки (можно увеличить время если нужно)
         time.sleep(3)
-        
+
         # Делаем скриншот
         driver.save_screenshot(output_file)
         driver.quit()
-        
+
         print(f"Скриншот сохранён как {output_file}")
         return True
-        
+
     except Exception as e:
         print(f"Ошибка при создании скриншота: {e}")
         return False
@@ -164,40 +164,40 @@ def save_dashboard_to_pdf(pdf_path='dashboard.pdf'):
 def save_dashboard_as_single_page(pdf_path='dashboard_single_page.pdf'):
     """Сохраняет дашборд как одну страницу PDF из скриншота браузера"""
     screenshot_file = 'dashboard_screenshot.png'
-    
+
     # Запускаем дашборд автоматически
     print("Запускаем дашборд...")
     dashboard_process = start_dashboard_server()
-    
+
     if dashboard_process is None:
         print("Не удалось запустить дашборд. Используйте обычный метод.")
         return
-    
+
     try:
         if capture_dashboard_screenshot(output_file=screenshot_file):
             # Создаём PDF с одной страницей
             c = canvas.Canvas(pdf_path, pagesize=A4)
             width, height = A4
-            
+
             # Добавляем заголовок
             c.setFont('Helvetica-Bold', 16)
             c.drawString(40, height - 40, 'DNM RO DATA by models')
-            
+
             # Добавляем скриншот
             c.drawImage(
                 ImageReader(screenshot_file), 40, 60, width=width-80,
                 preserveAspectRatio=True, mask='auto'
             )
             c.save()
-            
+
             # Удаляем временный файл
             if os.path.exists(screenshot_file):
                 os.remove(screenshot_file)
-            
+
             print(f"Дашборд сохранён как одна страница: {pdf_path}")
         else:
             print("Не удалось создать скриншот. Используйте обычный метод.")
-    
+
     finally:
         # Останавливаем дашборд
         if dashboard_process:
@@ -207,11 +207,11 @@ def save_dashboard_as_single_page(pdf_path='dashboard_single_page.pdf'):
 
 if __name__ == '__main__':
     # Выберите один из методов:
-    
+
     # 1. Обычный метод (отдельные страницы для каждого графика)
     # save_dashboard_to_pdf('dnm_dashboard.pdf')
     # print('PDF сохранён как dnm_dashboard.pdf')
-    
+
     # 2. Метод одной страницы (автоматически запускает дашборд)
     save_dashboard_as_single_page('dnm_dashboard_single.pdf')
     print('Одностраничный PDF сохранён как dnm_dashboard_single.pdf')

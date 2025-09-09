@@ -1,9 +1,17 @@
 import dash
-from dash import dcc, html, dash_table
+from dash import html
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 
+from .components import (
+    create_metric_card,
+    create_graph_container,
+    create_cards_row,
+    create_graphs_row,
+    create_data_table,
+    get_chart_color
+)
 from config import settings
 from database.queries import get_dnm_data
 
@@ -43,13 +51,7 @@ if 'age_6_10' not in df.columns:
     if cols_6_10:
         df['age_6_10'] = df[cols_6_10].sum(axis=1)
 
-gray_blue_colors = [
-    '#90a4ae',  # blue gray (calm)
-    '#a5d6a7',  # soft green
-    '#d7ccc8',  # soft brown/gray
-    '#b0bec5',  # light blue gray
-    '#cfd8dc',  # very light blue gray
-]
+# Цвета теперь импортируются из модуля стилей
 
 # Исключаем TOTAL из топ-10 графиков (если есть)
 filtered_df = df[df['model'] != 'TOTAL'] if 'model' in df.columns else df
@@ -66,12 +68,12 @@ fig_profit.update_traces(
     textposition='inside',
     textfont_size=11
 )
-fig_profit.update_yaxes(tickformat=",d")
+fig_profit.update_yaxes(tickformat=',d')
 fig_profit.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
 )
-fig_profit.update_traces(marker_color=gray_blue_colors[0])
+fig_profit.update_traces(marker_color=get_chart_color(0))
 
 # 2. Какая модель наиболее выгодна по работам (нормо-часы)
 fig_mh = px.bar(
@@ -90,7 +92,7 @@ fig_mh.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
 )
-fig_mh.update_traces(marker_color=gray_blue_colors[1])
+fig_mh.update_traces(marker_color=get_chart_color(1))
 
 # 2.1 Среднее количество часов по моделям
 fig_avg_mh = px.bar(
@@ -108,7 +110,7 @@ fig_avg_mh.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
 )
-fig_avg_mh.update_traces(marker_color=gray_blue_colors[2])
+fig_avg_mh.update_traces(marker_color=get_chart_color(2))
 
 # 3. Средний чек по моделям (Average RO cost)
 fig_avg_check = px.bar(
@@ -127,7 +129,7 @@ fig_avg_check.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
 )
-fig_avg_check.update_traces(marker_color=gray_blue_colors[3])
+fig_avg_check.update_traces(marker_color=get_chart_color(3))
 
 # 4. Ratio – кол-во заказ нарядов / UIO 10
 fig_ratio = px.bar(
@@ -145,7 +147,7 @@ fig_ratio.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
 )
-fig_ratio.update_traces(marker_color=gray_blue_colors[4])
+fig_ratio.update_traces(marker_color=get_chart_color(4))
 
 # 5. Количество заказ-нарядов по годам: 0-3 (свежие), 4-5
 # (гарантийные), 6-10 (пост гарантийные). Оставляем top-10.
@@ -161,7 +163,7 @@ fig_ro_years.add_trace(go.Bar(
     x=df_ro['model'],
     y=df_ro['age_0_3'],
     name='0-3 years',
-    marker_color=gray_blue_colors[0],
+    marker_color=get_chart_color(0),
     text=df_ro['age_0_3'],
     textposition='inside',
     textfont=dict(size=11),
@@ -170,7 +172,7 @@ fig_ro_years.add_trace(go.Bar(
     x=df_ro['model'],
     y=df_ro['age_4_5'],
     name='4-5 years',
-    marker_color=gray_blue_colors[1],
+    marker_color=get_chart_color(1),
     text=df_ro['age_4_5'],
     textposition='inside',
     textfont=dict(size=11),
@@ -179,7 +181,7 @@ fig_ro_years.add_trace(go.Bar(
     x=df_ro['model'],
     y=df_ro['age_6_10'],
     name='6-10 years',
-    marker_color=gray_blue_colors[2],
+    marker_color=get_chart_color(2),
     text=df_ro['age_6_10'],
     textposition='inside',
     textfont=dict(size=11),
@@ -200,7 +202,7 @@ fig_ro_years.update_layout(
         x=1
     )
 )
-fig_ro_years.update_yaxes(tickformat=",d")
+fig_ro_years.update_yaxes(tickformat=',d')
 
 # Таблица с уменьшенной шириной колонок
 # filtered_df используется только для графиков,
@@ -245,38 +247,7 @@ df_table = (
     if 'total_ro_cost' in df_table.columns else df_table
 )
 
-table = dash_table.DataTable(
-    columns=columns,
-    data=df_table.to_dict('records'),  # df_table, а не filtered_df
-    style_table={'overflowX': 'auto'},
-    style_cell={
-        'textAlign': 'center',
-        'minWidth': '40px',
-        'maxWidth': '90px',
-        'whiteSpace': 'normal',
-        'padding': '2px',
-        'fontSize': '11px',
-    },
-    style_header={
-        'whiteSpace': 'normal',
-        'height': 'auto',
-        'lineHeight': '14px',
-        'padding': '2px',
-        'overflow': 'visible',
-        'textOverflow': 'clip',
-        'maxWidth': 'none',
-        'wordBreak': 'break-word',
-        'overflowWrap': 'anywhere',
-        'textAlign': 'center',
-    },
-    style_data_conditional=[
-        {
-            'if': {'column_type': 'numeric'},
-            'textAlign': 'center',
-        },
-    ],
-    # page_size=10,  # убираем пагинацию
-)
+table = create_data_table(columns, df_table.to_dict('records'))
 
 # Вычисляем суммарные показатели для карт
 total_uio_10y = df['uio_10y'].sum() if 'uio_10y' in df.columns else 0
@@ -294,208 +265,38 @@ app.layout = html.Div([
     html.H1('DNM RO DATA by models'),
 
     # Карты с суммарными показателями
-    html.Div([
-        html.Div([
-            html.H3('UIO (10Y)', style={
-                'margin': '0',
-                'color': '#2c3e50',
-                'fontSize': '1.3em',
-                'marginBottom': '15px'
-                }),
-            html.H2(
-                f'{total_uio_10y:,.0f}',
-                style={
-                    'margin': '0',
-                    'color': '#3498db',
-                    'fontSize': '2.2em',
-                    'fontWeight': 'normal'
-                    }
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px',
-            'display': 'flex',
-            'flexDirection': 'column',
-            'justifyContent': 'center',
-            'alignItems': 'center'
-        }),
-
-        html.Div([
-            html.H3('RO qty (10Y)', style={
-                'margin': '0',
-                'color': '#2c3e50',
-                'fontSize': '1.3em',
-                'marginBottom': '15px'
-                }
-                ),
-            html.H2(
-                f'{total_ro_qty:,.0f}',
-                style={
-                    'margin': '0',
-                    'color': '#3498db',
-                    'fontSize': '2.2em',
-                    'fontWeight': 'normal'
-                    }
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px',
-            'display': 'flex',
-            'flexDirection': 'column',
-            'justifyContent': 'center',
-            'alignItems': 'center'
-        }),
-
-        html.Div([
-            html.H3('Total cost (10Y)', style={
-                'margin': '0',
-                'color': '#2c3e50',
-                'fontSize': '1.3em',
-                'marginBottom': '15px'
-                }
-                ),
-            html.H2(
-                f'{total_cost:,.0f}',
-                style={
-                    'margin': '0',
-                    'color': '#3498db',
-                    'fontSize': '2.2em',
-                    'fontWeight': 'normal'
-                    }
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px',
-            'display': 'flex',
-            'flexDirection': 'column',
-            'justifyContent': 'center',
-            'alignItems': 'center'
-        }),
-
-        html.Div([
-            html.H3('Total L/H', style={
-                'margin': '0',
-                'color': '#2c3e50',
-                'fontSize': '1.3em',
-                'marginBottom': '15px'
-                }
-                ),
-            html.H2(
-                f'{total_labor_hours:,.0f}',
-                style={
-                    'margin': '0',
-                    'color': '#3498db',
-                    'fontSize': '2.2em',
-                    'fontWeight': 'normal'
-                    }
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px',
-            'display': 'flex',
-            'flexDirection': 'column',
-            'justifyContent': 'center',
-            'alignItems': 'center'
-        }),
-
-        html.Div([
-            html.H3('Average RO cost', style={
-                'margin': '0',
-                'color': '#2c3e50',
-                'fontSize': '1.3em',
-                'marginBottom': '15px'
-                }
-                ),
-            html.H2(
-                f'{avg_ro_cost:,.0f}',
-                style={
-                    'margin': '0',
-                    'color': '#3498db',
-                    'fontSize': '2.2em',
-                    'fontWeight': 'normal'
-                    }
-            )
-        ], style={
-            'backgroundColor': '#ecf0f1',
-            'padding': '25px',
-            'borderRadius': '10px',
-            'textAlign': 'center',
-            'margin': '10px',
-            'flex': '1',
-            'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-            'minHeight': '120px',
-            'display': 'flex',
-            'flexDirection': 'column',
-            'justifyContent': 'center',
-            'alignItems': 'center'
-        }),
-    ], style={'display': 'flex', 'marginBottom': '30px'}),
-    html.Div([
-        html.Div([
-            html.H2('Top 10 Models by Total Profit'),
-            dcc.Graph(
-                figure=fig_profit,
-                style={'height': f'{GRAPH_HEIGHT}px'}
-                ),
-        ], style={'flex': '1', 'margin': '10px'}),
-        html.Div([
-            html.H2('Top 10 Models by Total Labor Hours'),
-            dcc.Graph(figure=fig_mh, style={'height': f'{GRAPH_HEIGHT}px'}),
-        ], style={'flex': '1', 'margin': '10px'}),
-    ], style={'display': 'flex'}),
-    html.Div([
-        html.Div([
-            html.H2('Top 10 Models by Average Labor Hours per Car'),
-            dcc.Graph(
-                figure=fig_avg_mh,
-                style={'height': f'{GRAPH_HEIGHT}px'}
-            ),
-        ], style={'flex': '1', 'margin': '10px'}),
-        html.Div([
-            html.H2('Top 10 Models by Average RO Cost'),
-            dcc.Graph(
-                figure=fig_avg_check,
-                style={'height': f'{GRAPH_HEIGHT}px'}
-                ),
-        ], style={'flex': '1', 'margin': '10px'}),
-    ], style={'display': 'flex'}),
-    html.Div([
-        html.Div([
-            html.H2('Top 10 Models by Ratio (RO/UIO)'),
-            dcc.Graph(figure=fig_ratio, style={'height': f'{GRAPH_HEIGHT}px'}),
-        ], style={'flex': '1', 'margin': '10px'}),
-        html.Div([
-            html.H2('RO Count by Age Groups'),
-            dcc.Graph(
-                figure=fig_ro_years,
-                style={'height': f'{GRAPH_HEIGHT}px'}
-                ),
-        ], style={'flex': '1', 'margin': '10px'}),
-    ], style={'display': 'flex'}),
+    create_cards_row([
+        create_metric_card('UIO (10Y)', f'{total_uio_10y:,.0f}'),
+        create_metric_card('RO qty (10Y)', f'{total_ro_qty:,.0f}'),
+        create_metric_card('Total cost (10Y)', f'{total_cost:,.0f}'),
+        create_metric_card('Total L/H', f'{total_labor_hours:,.0f}'),
+        create_metric_card('Average RO cost', f'{avg_ro_cost:,.0f}'),
+    ]),
+    create_graphs_row([
+        create_graph_container(
+            'Top 10 Models by Total Profit', fig_profit, GRAPH_HEIGHT
+        ),
+        create_graph_container(
+            'Top 10 Models by Total Labor Hours', fig_mh, GRAPH_HEIGHT
+        ),
+    ]),
+    create_graphs_row([
+        create_graph_container(
+            'Top 10 Models by Average Labor Hours per Car',
+            fig_avg_mh, GRAPH_HEIGHT
+        ),
+        create_graph_container(
+            'Top 10 Models by Average RO Cost', fig_avg_check, GRAPH_HEIGHT
+        ),
+    ]),
+    create_graphs_row([
+        create_graph_container(
+            'Top 10 Models by Ratio (RO/UIO)', fig_ratio, GRAPH_HEIGHT
+        ),
+        create_graph_container(
+            'RO Count by Age Groups', fig_ro_years, GRAPH_HEIGHT
+        ),
+    ]),
     html.H2('Items data by models'),
     # Таблица без ограничения по высоте и прокрутки
     table,
