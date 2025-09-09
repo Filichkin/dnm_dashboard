@@ -4,8 +4,19 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
 
+from config import settings
+from database.queries import get_dnm_data
 
-df = pd.read_csv('data/aug_25.csv')
+
+# Получаем данные из базы данных
+try:
+    df = get_dnm_data()
+    print('Данные успешно загружены из базы данных')
+except Exception as e:
+    print(f'Ошибка при загрузке данных из БД: {e}')
+    # Fallback на CSV файл в случае ошибки
+    df = pd.read_csv('data/aug_25.csv')
+    print('Используются данные из CSV файла')
 
 for col in df.columns[1:]:
     df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -111,7 +122,7 @@ fig_avg_check.update_traces(
     textposition='inside',
     textfont_size=11
 )
-fig_avg_check.update_yaxes(tickformat=",d")
+fig_avg_check.update_yaxes(tickformat=',d')
 fig_avg_check.update_layout(
     margin=dict(t=60, b=60, l=60, r=60),
     showlegend=False
@@ -492,4 +503,8 @@ app.layout = html.Div([
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(
+        debug=settings.app.debug,
+        host=settings.app.host,
+        port=settings.app.port
+    )
