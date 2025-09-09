@@ -31,7 +31,7 @@ def start_dashboard_server():
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE
         )
-        
+
         # Ждём запуска сервера
         time.sleep(5)
         return process

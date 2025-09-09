@@ -5,7 +5,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 
 
-df = pd.read_csv('data.csv')
+df = pd.read_csv('data/aug_25.csv')
 
 for col in df.columns[1:]:
     df[col] = pd.to_numeric(df[col], errors='coerce')
@@ -292,7 +292,7 @@ app.layout = html.Div([
                 'marginBottom': '15px'
                 }),
             html.H2(
-                f'{total_ro_qty:,.0f}',
+                f'{total_uio_10y:,.0f}',
                 style={
                     'margin': '0',
                     'color': '#3498db',
@@ -348,7 +348,7 @@ app.layout = html.Div([
         }),
 
         html.Div([
-            html.H3('RO qty (10Y)', style={
+            html.H3('Total cost (10Y)', style={
                 'margin': '0',
                 'color': '#2c3e50',
                 'fontSize': '1.3em',
@@ -356,7 +356,7 @@ app.layout = html.Div([
                 }
                 ),
             html.H2(
-                f'{total_ro_qty:,.0f}',
+                f'{total_cost:,.0f}',
                 style={
                     'margin': '0',
                     'color': '#3498db',
@@ -380,7 +380,7 @@ app.layout = html.Div([
         }),
 
         html.Div([
-            html.H3('RO qty (10Y)', style={
+            html.H3('Total L/H', style={
                 'margin': '0',
                 'color': '#2c3e50',
                 'fontSize': '1.3em',
@@ -388,7 +388,7 @@ app.layout = html.Div([
                 }
                 ),
             html.H2(
-                f'{total_ro_qty:,.0f}',
+                f'{total_labor_hours:,.0f}',
                 style={
                     'margin': '0',
                     'color': '#3498db',
@@ -412,7 +412,7 @@ app.layout = html.Div([
         }),
 
         html.Div([
-            html.H3('RO qty (10Y)', style={
+            html.H3('Average RO cost', style={
                 'margin': '0',
                 'color': '#2c3e50',
                 'fontSize': '1.3em',
@@ -420,7 +420,7 @@ app.layout = html.Div([
                 }
                 ),
             html.H2(
-                f'{total_ro_qty:,.0f}',
+                f'{avg_ro_cost:,.0f}',
                 style={
                     'margin': '0',
                     'color': '#3498db',
