@@ -27,19 +27,20 @@ class DatabaseConnection:
             if conn:
                 conn.close()
 
-    def execute_query(self, query: str) -> pd.DataFrame:
+    def execute_query(self, query: str, params: dict = None) -> pd.DataFrame:
         """
         Выполняет SQL запрос и возвращает результат в виде DataFrame
 
         Args:
             query (str): SQL запрос
+            params (dict): Параметры для запроса
 
         Returns:
             pd.DataFrame: Результат запроса
         """
         with self.get_connection() as conn:
             try:
-                df = pd.read_sql_query(query, conn)
+                df = pd.read_sql_query(query, conn, params=params)
                 return df
             except Exception as e:
                 print(f'Ошибка при выполнении запроса: {e}')

@@ -11,16 +11,36 @@ WITH dnm_data AS (
         parts_amount AS parts_amount
     FROM public.dnm_ro_data
     WHERE vehicle_report_date != '0'
-      AND EXTRACT(YEAR FROM ro_close_date::DATE) IN (2025)
+      AND EXTRACT(YEAR FROM ro_close_date::DATE) IN (%(selected_year)s)
 ),
 /* агрегат UIO по коду модели */
 sales_uio AS (
     SELECT
       s.model_code,
       COUNT(
-        DATE_PART('year', AGE(CURRENT_DATE, s.warranty_start_date::DATE))::int
+        DATE_PART(
+          'year',
+          AGE(
+            CASE
+              WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
+                THEN CURRENT_DATE
+              ELSE MAKE_DATE(%(selected_year)s::int, 12, 31)
+            END,
+            s.warranty_start_date::date
+          )
+        )::int
       ) FILTER (
-        WHERE DATE_PART('year', AGE(CURRENT_DATE, s.warranty_start_date::DATE))::int BETWEEN 0 AND 10
+        WHERE DATE_PART(
+          'year',
+          AGE(
+            CASE
+              WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
+                THEN CURRENT_DATE
+              ELSE MAKE_DATE(%(selected_year)s::int, 12, 31)
+            END,
+            s.warranty_start_date::date
+          )
+        )::int BETWEEN 0 AND 10
       ) AS uio_10y
     FROM public.sales s
     GROUP BY s.model_code

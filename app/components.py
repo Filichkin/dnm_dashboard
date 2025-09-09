@@ -98,6 +98,32 @@ def create_data_table(columns: list, data: list) -> dash_table.DataTable:
     )
 
 
+def create_year_selector(available_years: list, current_year: int) -> html.Div:
+    """
+    Создает выпадающий список для выбора года
+
+    Args:
+        available_years: Список доступных годов
+        current_year: Текущий выбранный год
+
+    Returns:
+        html.Div: Компонент селектора года
+    """
+    options = [{'label': str(year), 'value': year} for year in available_years]
+
+    return html.Div([
+        html.Label('Выберите год:',
+                   style={'font-weight': 'bold', 'margin-right': '10px'}),
+        dcc.Dropdown(
+            id='year-selector',
+            options=options,
+            value=current_year,
+            clearable=False,
+            style={'width': '150px', 'display': 'inline-block'}
+        )
+    ], style={'margin': '20px 0', 'display': 'flex', 'align-items': 'center'})
+
+
 def get_chart_color(index: int) -> str:
     """
     Возвращает цвет для графика по индексу

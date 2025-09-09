@@ -3,9 +3,13 @@ import os
 from database.connection import db_connection
 
 
-def get_dnm_data():
+def get_dnm_data(selected_year: int = None):
     """
     Получает данные DNM из базы данных используя SQL скрипт
+
+    Args:
+        selected_year: Выбранный год для фильтрации данных.
+                      Если None, используется текущий год.
 
     Returns:
         pd.DataFrame: Данные DNM
@@ -20,8 +24,15 @@ def get_dnm_data():
         with open(sql_file_path, 'r', encoding='utf-8') as file:
             query = file.read()
 
-        # Выполняем запрос
-        df = db_connection.execute_query(query)
+        # Если год не указан, используем текущий год
+        if selected_year is None:
+            from datetime import datetime
+            selected_year = datetime.now().year
+
+        # Выполняем запрос с параметром года
+        df = db_connection.execute_query(
+            query, {'selected_year': selected_year}
+        )
 
         return df
 
