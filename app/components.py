@@ -26,7 +26,8 @@ def create_metric_card(title: str, value: str) -> html.Div:
     return html.Div([
         html.H3(title, style=styles['title_style']),
         html.H2(value, style=styles['value_style'])
-    ], style=styles['container_style'])
+    ], style=styles['container_style'],
+       className=styles['container_style'].get('className', ''))
 
 
 def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
@@ -46,7 +47,8 @@ def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
     return html.Div([
         html.H2(title),
         dcc.Graph(figure=figure, style=styles['graph'])
-    ], style=styles['container'])
+    ], style=styles['container'],
+       className=styles['container'].get('className', ''))
 
 
 def create_cards_row(cards: list) -> html.Div:
@@ -112,16 +114,34 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
     options = [{'label': str(year), 'value': year} for year in available_years]
 
     return html.Div([
-        html.Label('Выберите год:',
-                   style={'font-weight': 'bold', 'margin-right': '10px'}),
+        html.Label('Select Year:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50'
+                   }),
         dcc.Dropdown(
             id='year-selector',
             options=options,
             value=current_year,
             clearable=False,
-            style={'width': '150px', 'display': 'inline-block'}
+            style={
+                'width': '200px',
+                'display': 'inline-block',
+                'font-size': '1.1em'
+            }
         )
-    ], style={'margin': '20px 0', 'display': 'flex', 'align-items': 'center'})
+    ], style={
+        'margin': '30px 0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
 
 
 def get_chart_color(index: int) -> str:

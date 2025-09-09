@@ -19,14 +19,16 @@ CARD_STYLES = {
         'padding': '25px',
         'borderRadius': '10px',
         'textAlign': 'center',
-        'margin': '10px',
+        'margin': '15px',
         'flex': '1',
         'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
         'minHeight': '120px',
         'display': 'flex',
         'flexDirection': 'column',
         'justifyContent': 'center',
-        'alignItems': 'center'
+        'alignItems': 'center',
+        'minWidth': '200px',
+        'className': 'metric-card'
     },
     'title': {
         'margin': '0',
@@ -46,10 +48,17 @@ CARD_STYLES = {
 GRAPH_STYLES = {
     'container': {
         'flex': '1',
-        'margin': '10px'
+        'margin': '20px',
+        'minWidth': '400px',
+        'backgroundColor': COLORS['background'],
+        'borderRadius': '10px',
+        'padding': '20px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+        'className': 'graph-container'
     },
     'graph': {
-        'height': '350px'
+        'height': '350px',
+        'width': '100%'
     }
 }
 
@@ -57,10 +66,17 @@ GRAPH_STYLES = {
 SECTION_STYLES = {
     'cards_row': {
         'display': 'flex',
-        'marginBottom': '30px'
+        'marginBottom': '40px',
+        'flexWrap': 'wrap',
+        'justifyContent': 'center',
+        'gap': '10px'
     },
     'graphs_row': {
-        'display': 'flex'
+        'display': 'flex',
+        'marginBottom': '40px',
+        'flexWrap': 'wrap',
+        'justifyContent': 'center',
+        'gap': '20px'
     }
 }
 
@@ -105,6 +121,33 @@ CHART_COLORS = [
     '#b0bec5',  # light blue gray
     '#cfd8dc',  # very light blue gray
 ]
+
+# Адаптивные стили для основного контейнера
+RESPONSIVE_STYLES = {
+    'main_container': {
+        'padding': '20px',
+        'maxWidth': '100%',
+        'margin': '0 auto',
+        'backgroundColor': '#f8f9fa',
+        'minHeight': '100vh',
+        'fontFamily': 'Arial, sans-serif',
+        'className': 'main-container'
+    },
+    'title': {
+        'textAlign': 'left',
+        'color': COLORS['text_primary'],
+        'marginBottom': '30px',
+        'fontSize': '2.5em',
+        'fontWeight': 'bold'
+    },
+    'section_title': {
+        'textAlign': 'center',
+        'color': COLORS['text_primary'],
+        'marginBottom': '20px',
+        'fontSize': '1.8em',
+        'fontWeight': 'bold'
+    }
+}
 
 
 def get_card_style(title: str, value: str) -> dict:
@@ -164,3 +207,13 @@ def get_table_styles() -> dict:
         dict: Стили для таблицы
     """
     return TABLE_STYLES
+
+
+def get_responsive_styles() -> dict:
+    """
+    Возвращает адаптивные стили для основного контейнера
+
+    Returns:
+        dict: Адаптивные стили
+    """
+    return RESPONSIVE_STYLES

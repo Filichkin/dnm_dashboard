@@ -14,6 +14,8 @@ from .components import (
     create_year_selector,
     get_chart_color
 )
+from .styles import get_responsive_styles
+from .templates import get_dashboard_template
 from config import settings
 from database.queries import get_dnm_data
 
@@ -323,8 +325,14 @@ available_years = list(range(current_year - 5, current_year + 1))
 app = dash.Dash(__name__)
 GRAPH_HEIGHT = 350
 
+# Получаем адаптивные стили
+responsive_styles = get_responsive_styles()
+
+# Добавляем CSS для адаптивности
+app.index_string = get_dashboard_template()
+
 app.layout = html.Div([
-    html.H1('DNM RO DATA by models'),
+    html.H1('DNM RO DATA by models', style=responsive_styles['title']),
 
     # Селектор года
     create_year_selector(available_years, current_year),
@@ -339,9 +347,10 @@ app.layout = html.Div([
     html.Div(id='charts-container'),
 
     # Таблица
-    html.H2('Items data by models'),
+    html.H2('Items data by models', style=responsive_styles['section_title']),
     html.Div(id='data-table'),
-])
+], style=responsive_styles['main_container'],
+    className=responsive_styles['main_container'].get('className', ''))
 
 
 @callback(
