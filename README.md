@@ -191,7 +191,7 @@ available_years = list(range(current_year - 5, current_year + 1))
 
 ```
 dnm_dashboard/
-├── app/                    # Основное приложение
+├── app/                   # Основное приложение
 │   ├── dnm.py             # Основной файл дашборда
 │   ├── components.py      # UI компоненты
 │   ├── styles.py          # Стили и темы
@@ -208,8 +208,8 @@ dnm_dashboard/
 │   └── save_dash.py       # Скрипт для создания PDF
 ├── config.py              # Конфигурация
 ├── requirements.txt       # Зависимости
-├── README.md             # Документация
-└── venv/                 # Виртуальное окружение
+├── README.md              # Документация
+└── venv/                  # Виртуальное окружение
 ```
 
 ## Возможные проблемы
