@@ -2,6 +2,8 @@ from contextlib import contextmanager
 
 import pandas as pd
 import psycopg2
+from sqlalchemy import create_engine
+from sqlalchemy.engine import Engine
 
 from config import settings
 
@@ -11,6 +13,15 @@ class DatabaseConnection:
 
     def __init__(self):
         self.config = settings.database.connection_params
+        self.sqlalchemy_url = settings.database.sqlalchemy_url
+        self._engine: Engine = None
+
+    @property
+    def engine(self) -> Engine:
+        """Возвращает SQLAlchemy engine (создается при первом обращении)"""
+        if self._engine is None:
+            self._engine = create_engine(self.sqlalchemy_url)
+        return self._engine
 
     @contextmanager
     def get_connection(self):
@@ -38,13 +49,13 @@ class DatabaseConnection:
         Returns:
             pd.DataFrame: Результат запроса
         """
-        with self.get_connection() as conn:
-            try:
-                df = pd.read_sql_query(query, conn, params=params)
-                return df
-            except Exception as e:
-                print(f'Ошибка при выполнении запроса: {e}')
-                raise e
+        try:
+            # Используем SQLAlchemy engine для pandas
+            df = pd.read_sql_query(query, self.engine, params=params)
+            return df
+        except Exception as e:
+            print(f'Ошибка при выполнении запроса: {e}')
+            raise e
 
     def test_connection(self) -> bool:
         """
@@ -62,6 +73,12 @@ class DatabaseConnection:
         except Exception as e:
             print(f'Ошибка подключения к базе данных: {e}')
             return False
+
+    def close_engine(self):
+        """Закрывает SQLAlchemy engine"""
+        if self._engine is not None:
+            self._engine.dispose()
+            self._engine = None
 
 
 # Создаем глобальный экземпляр для использования в приложении

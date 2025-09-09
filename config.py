@@ -44,6 +44,12 @@ class DatabaseSettings(BaseSettings):
             'password': self.password,
         }
 
+    @property
+    def sqlalchemy_url(self) -> str:
+        """Возвращает URL для подключения через SQLAlchemy"""
+        return (f'postgresql://{self.user}:{self.password}@'
+                f'{self.host}:{self.port}/{self.name}')
+
 
 class AppSettings(BaseSettings):
     """Настройки приложения"""
