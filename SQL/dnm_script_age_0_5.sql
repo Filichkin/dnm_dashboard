@@ -20,9 +20,8 @@ sales_uio AS (
     SELECT
       s.model_code,
       COUNT(
-        DATE_PART(
-          'year',
-          AGE(
+        EXTRACT(
+          'year' FROM AGE(
             CASE
               WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
                 THEN CURRENT_DATE
@@ -30,11 +29,20 @@ sales_uio AS (
             END,
             s.warranty_start_date::date
           )
-        )::int
+        ) + 
+        EXTRACT(
+          'month' FROM AGE(
+            CASE
+              WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
+                THEN CURRENT_DATE
+              ELSE MAKE_DATE(%(selected_year)s::int, 12, 31)
+            END,
+            s.warranty_start_date::date
+          )
+        ) / 12.0
       ) FILTER (
-        WHERE DATE_PART(
-          'year',
-          AGE(
+        WHERE EXTRACT(
+          'year' FROM AGE(
             CASE
               WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
                 THEN CURRENT_DATE
@@ -42,7 +50,17 @@ sales_uio AS (
             END,
             s.warranty_start_date::date
           )
-        )::int BETWEEN 0 AND 5
+        ) + 
+        EXTRACT(
+          'month' FROM AGE(
+            CASE
+              WHEN %(selected_year)s::int = EXTRACT(YEAR FROM CURRENT_DATE)::int
+                THEN CURRENT_DATE
+              ELSE MAKE_DATE(%(selected_year)s::int, 12, 31)
+            END,
+            s.warranty_start_date::date
+          )
+        ) / 12.0 <= 5.0
       ) AS uio_5y
     FROM public.sales s
     GROUP BY s.model_code
