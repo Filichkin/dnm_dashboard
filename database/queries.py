@@ -3,20 +3,27 @@ import os
 from database.connection import db_connection
 
 
-def get_dnm_data(selected_year: int = None):
+def get_dnm_data(selected_year: int = None, age_group: str = '0-10Y'):
     """
     Получает данные DNM из базы данных используя SQL скрипт
 
     Args:
         selected_year: Выбранный год для фильтрации данных.
                       Если None, используется текущий год.
+        age_group: Выбранная возрастная группа ('0-10Y' или '0-5Y').
 
     Returns:
         pd.DataFrame: Данные DNM
     """
+    # Определяем имя SQL файла в зависимости от возрастной группы
+    if age_group == '0-5Y':
+        sql_filename = 'dnm_script_age_0_5.sql'
+    else:
+        sql_filename = 'dnm_script_age_0_10.sql'
+
     # Путь к SQL файлу
     sql_file_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'SQL', 'dnm_script.sql'
+        os.path.dirname(os.path.dirname(__file__)), 'SQL', sql_filename
     )
 
     try:

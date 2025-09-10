@@ -133,11 +133,11 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
             }
         )
     ], style={
-        'margin': '30px 0',
+        'margin': '0',
         'display': 'flex',
         'align-items': 'center',
         'justify-content': 'flex-start',
-        'padding': '20px',
+        'padding': '10px 20px',
         'backgroundColor': '#ecf0f1',
         'borderRadius': '10px',
         'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
@@ -155,6 +155,49 @@ def get_chart_color(index: int) -> str:
         str: HEX код цвета
     """
     return CHART_COLORS[index % len(CHART_COLORS)]
+
+
+def create_age_group_selector() -> html.Div:
+    """
+    Создает выпадающий список для выбора возрастных групп
+
+    Returns:
+        html.Div: Компонент селектора возрастных групп
+    """
+    options = [
+        {'label': '0-10Y', 'value': '0-10Y'},
+        {'label': '0-5Y', 'value': '0-5Y'}
+    ]
+
+    return html.Div([
+        html.Label('Age Group:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50'
+                   }),
+        dcc.Dropdown(
+            id='age-group-selector',
+            options=options,
+            value='0-10Y',
+            clearable=False,
+            style={
+                'width': '150px',
+                'display': 'inline-block',
+                'font-size': '1.1em'
+            }
+        )
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
 
 
 def create_export_button() -> html.Div:
