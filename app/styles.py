@@ -16,18 +16,17 @@ COLORS = {
 CARD_STYLES = {
     'container': {
         'backgroundColor': COLORS['background'],
-        'padding': '25px',
+        'padding': '20px',
         'borderRadius': '10px',
         'textAlign': 'center',
-        'margin': '15px',
+        'margin': '10px',
         'flex': '1',
         'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-        'minHeight': '120px',
+        'minHeight': '100px',
         'display': 'flex',
         'flexDirection': 'column',
         'justifyContent': 'center',
         'alignItems': 'center',
-        'minWidth': '200px',
         'className': 'metric-card'
     },
     'title': {
@@ -48,8 +47,7 @@ CARD_STYLES = {
 GRAPH_STYLES = {
     'container': {
         'flex': '1',
-        'margin': '20px',
-        'minWidth': '400px',
+        'margin': '10px',
         'backgroundColor': COLORS['background'],
         'borderRadius': '10px',
         'padding': '20px',
@@ -67,16 +65,18 @@ SECTION_STYLES = {
     'cards_row': {
         'display': 'flex',
         'marginBottom': '40px',
-        'flexWrap': 'wrap',
-        'justifyContent': 'center',
-        'gap': '10px'
+        'flexWrap': 'nowrap',
+        'justifyContent': 'space-between',
+        'gap': '10px',
+        'alignItems': 'stretch'
     },
     'graphs_row': {
         'display': 'flex',
         'marginBottom': '40px',
-        'flexWrap': 'wrap',
-        'justifyContent': 'center',
-        'gap': '20px'
+        'flexWrap': 'nowrap',
+        'justifyContent': 'space-between',
+        'gap': '10px',
+        'alignItems': 'stretch'
     }
 }
 
@@ -141,7 +141,7 @@ RESPONSIVE_STYLES = {
         'fontWeight': 'bold'
     },
     'section_title': {
-        'textAlign': 'center',
+        'textAlign': 'left',
         'color': COLORS['text_primary'],
         'marginBottom': '20px',
         'fontSize': '1.8em',

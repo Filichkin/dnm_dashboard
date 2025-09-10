@@ -155,3 +155,35 @@ def get_chart_color(index: int) -> str:
         str: HEX код цвета
     """
     return CHART_COLORS[index % len(CHART_COLORS)]
+
+
+def create_export_button() -> html.Div:
+    """
+    Создает кнопку для экспорта данных в CSV
+
+    Returns:
+        html.Div: Компонент кнопки экспорта
+    """
+    return html.Div([
+        html.Button(
+            'Export to CSV',
+            id='export-csv-button',
+            n_clicks=0,
+            style={
+                'backgroundColor': '#3498db',
+                'color': 'white',
+                'border': 'none',
+                'padding': '10px 20px',
+                'borderRadius': '5px',
+                'cursor': 'pointer',
+                'fontSize': '14px',
+                'fontWeight': 'bold',
+                'margin': '10px 0',
+                'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+            }
+        ),
+        dcc.Download(id='download-csv')
+    ], style={
+        'textAlign': 'left',
+        'marginBottom': '20px'
+    })

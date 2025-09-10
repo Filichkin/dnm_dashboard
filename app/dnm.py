@@ -1,5 +1,5 @@
 import dash
-from dash import html, dcc, callback, Input, Output
+from dash import html, dcc, callback, Input, Output, State
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objs as go
@@ -12,7 +12,8 @@ from .components import (
     create_graphs_row,
     create_data_table,
     create_year_selector,
-    get_chart_color
+    get_chart_color,
+    create_export_button
 )
 from .styles import get_responsive_styles
 from .templates import get_dashboard_template
@@ -243,6 +244,39 @@ def create_table(df):
     Returns:
         dash_table.DataTable: Таблица данных
     """
+    # Словарь переименований колонок
+    column_rename = {
+        'model': 'Model',
+        'uio_10y': 'UIO 10Y',
+        'total_0_10': 'RO qty',
+        'total_ro_cost': 'Amount',
+        'avg_ro_cost': 'CPR',
+        'labor_hours_0_10': 'L/H',
+        'aver_labor_hours_per_vhc': 'L/H per RO',
+        'labor_amount_0_10': 'Labor',
+        'avg_ro_labor_cost': 'LPR',
+        'parts_amount_0_10': 'Parts',
+        'avg_ro_part_cost': 'PPR',
+        'age_0': '0Y',
+        'age_1': '1Y',
+        'age_2': '2Y',
+        'age_3': '3Y',
+        'age_4': '4Y',
+        'age_5': '5Y',
+        'age_6': '6Y',
+        'age_7': '7Y',
+        'age_8': '8Y',
+        'age_9': '9Y',
+        'age_10': '10Y',
+        'age_0_3': '0-3Y',
+        'age_4_5': '4-5Y',
+        'age_6_10': '6-10Y',
+        'pct_age_0_3': 'Ratio 0-3Y',
+        'pct_age_4_5': 'Ratio 4-5Y',
+        'pct_age_6_10': 'Ratio 6-10Y',
+        'ro_ratio_of_uio_10y': 'RO ratio from UIO 10Y'
+    }
+
     priority_cols = [
         'model',
         'uio_10y',
@@ -262,17 +296,20 @@ def create_table(df):
     )
     columns = []
     for col in ordered_cols:
+        # Получаем отображаемое имя колонки
+        display_name = column_rename.get(col, col)
+
         if df[col].dtype.kind in 'fi':
             fmt = {"specifier": ",.1f"} \
                 if col == 'aver_labor_hours_per_vhc' else {"specifier": ",.0f"}
             columns.append({
-                "name": col,
+                "name": display_name,
                 "id": col,
                 "type": "numeric",
                 "format": fmt
             })
         else:
-            columns.append({"name": col, "id": col})
+            columns.append({"name": display_name, "id": col})
 
     # Фильтруем строки, где total_0_10 == 0, и сортируем по total_ro_cost
     df_table = df
@@ -348,6 +385,7 @@ app.layout = html.Div([
 
     # Таблица
     html.H2('Items data by models', style=responsive_styles['section_title']),
+    create_export_button(),
     html.Div(id='data-table'),
 ], style=responsive_styles['main_container'],
     className=responsive_styles['main_container'].get('className', ''))
@@ -442,6 +480,37 @@ def update_dashboard(selected_year):
     ])
 
     return df.to_dict('records'), metrics_cards, charts_container, table
+
+
+@callback(
+    Output('download-csv', 'data'),
+    Input('export-csv-button', 'n_clicks'),
+    State('data-store', 'data'),
+    prevent_initial_call=True
+)
+def export_to_csv(n_clicks, data):
+    """
+    Экспортирует данные таблицы в CSV файл
+
+    Args:
+        n_clicks: Количество кликов по кнопке
+        data: Данные из data-store
+
+    Returns:
+        dict: Данные для скачивания CSV файла
+    """
+    if n_clicks and data:
+        # Преобразуем данные обратно в DataFrame
+        df = pd.DataFrame(data)
+
+        # Создаем имя файла с текущей датой
+        current_date = datetime.now().strftime('%Y%m%d_%H%M%S')
+        filename = f'dnm_data_export_{current_date}.csv'
+
+        # Возвращаем данные для скачивания
+        return dcc.send_data_frame(df.to_csv, filename, index=False)
+
+    return None
 
 
 if __name__ == '__main__':
