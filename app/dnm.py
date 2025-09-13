@@ -23,7 +23,11 @@ from config import settings
 from database.queries import get_dnm_data
 from .styles import get_responsive_styles
 from .templates import get_dashboard_template
-from .constants import get_dealer_name
+from .constants import (
+    get_dealer_name,
+    get_mobis_code_options_by_holding,
+    get_mobis_codes_by_holding
+)
 
 
 def process_dataframe(df):
@@ -551,6 +555,17 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     Returns:
         tuple: Данные, карты метрик, графики, таблица, отображение дилера
     """
+    # Проверяем совместимость выбранного Mobis Code с Holding
+    if (selected_holding != 'All' and
+            selected_mobis_code != 'All' and
+            selected_mobis_code not in get_mobis_codes_by_holding(
+                selected_holding)):
+        # Если выбранный Mobis Code не соответствует Holding,
+        # используем 'All' для Mobis Code
+        selected_mobis_code = 'All'
+        print('Выбранный Mobis Code не соответствует Holding. '
+              'Используется "All" для Mobis Code.')
+
     try:
         # Получаем данные для выбранного года, возрастной группы,
         # кода дилера и holding
@@ -638,6 +653,32 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
 
     return (df.to_dict('records'), metrics_cards, charts_container,
             table, dealer_display)
+
+
+@callback(
+    [Output('mobis-code-selector', 'options'),
+     Output('mobis-code-selector', 'value')],
+    Input('holding-selector', 'value'),
+    prevent_initial_call=False
+)
+def update_mobis_code_options(selected_holding):
+    """
+    Обновляет опции Mobis Code при изменении выбранного Holding.
+
+    Args:
+        selected_holding: Выбранный holding
+
+    Returns:
+        tuple: (новые опции, новое значение)
+    """
+    # Получаем отфильтрованные опции
+    new_options = get_mobis_code_options_by_holding(selected_holding)
+
+    # Если текущее значение Mobis Code не входит в новые опции,
+    # сбрасываем на 'All'
+    current_value = 'All'  # По умолчанию всегда 'All'
+
+    return new_options, current_value
 
 
 @callback(
