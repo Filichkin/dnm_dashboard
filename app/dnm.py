@@ -13,6 +13,7 @@ from .components import (
     create_data_table,
     create_year_selector,
     create_age_group_selector,
+    create_mobis_code_selector,
     get_chart_color,
     create_export_button
 )
@@ -486,10 +487,11 @@ app.layout = html.Div([
 
     # Селекторы и карты в одном блоке
     html.Div([
-        # Селекторы года и возрастных групп
+        # Селекторы года, возрастных групп и кода дилера
         html.Div([
             create_year_selector(available_years, current_year),
-            create_age_group_selector()
+            create_age_group_selector(),
+            create_mobis_code_selector()
         ], style={
             'display': 'flex',
             'align-items': 'flex-start',
@@ -523,27 +525,30 @@ app.layout = html.Div([
      Output('charts-container', 'children'),
      Output('data-table', 'children')],
     [Input('year-selector', 'value'),
-     Input('age-group-selector', 'value')]
+     Input('age-group-selector', 'value'),
+     Input('mobis-code-selector', 'value')]
 )
-def update_dashboard(selected_year, age_group):
+def update_dashboard(selected_year, age_group, selected_mobis_code):
     """
-    Обновляет дашборд при изменении года или возрастной группы
+    Обновляет дашборд при изменении года, возрастной группы или кода дилера
 
     Args:
         selected_year: Выбранный год
         age_group: Выбранная возрастная группа
+        selected_mobis_code: Выбранный код дилера
 
     Returns:
         tuple: Данные, карты метрик, графики, таблица
     """
     try:
-        # Получаем данные для выбранного года и возрастной группы
-        df = get_dnm_data(selected_year, age_group)
-        print(f'Данные загружены для года {selected_year} '
-              f'и группы {age_group}')
+        # Получаем данные для выбранного года, возрастной группы и кода дилера
+        df = get_dnm_data(selected_year, age_group, selected_mobis_code)
+        print(f'Данные загружены для года {selected_year}, '
+              f'группы {age_group} и кода дилера {selected_mobis_code}')
     except Exception as e:
         print(f'Ошибка при загрузке данных из БД для года '
-              f'{selected_year} и группы {age_group}: {e}')
+              f'{selected_year}, группы {age_group} и кода дилера '
+              f'{selected_mobis_code}: {e}')
         # Fallback на CSV файл в случае ошибки
         df = pd.read_csv('data/aug_25.csv')
         print('Используются данные из CSV файла')

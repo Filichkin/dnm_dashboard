@@ -14,6 +14,7 @@ WITH dnm_data AS (
       AND EXTRACT(YEAR FROM ro_close_date::DATE) IN (%(selected_year)s)
       AND (EXTRACT(YEAR FROM ro_close_date::DATE) 
            - EXTRACT(YEAR FROM vehicle_report_date::DATE)) BETWEEN 0 AND 5
+      AND (%(selected_mobis_code)s = 'All' OR mobis_code = %(selected_mobis_code)s)
 ),
 /* агрегат UIO по коду модели для возрастных групп 0-5 лет */
 sales_uio AS (

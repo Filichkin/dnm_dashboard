@@ -8,6 +8,7 @@ from .styles import (
     get_card_style, get_graph_style, get_section_style,
     get_table_styles, CHART_COLORS
 )
+from .constants import MOBIS_CODE_OPTIONS
 
 
 def create_metric_card(title: str, value: str) -> html.Div:
@@ -184,6 +185,44 @@ def create_age_group_selector() -> html.Div:
             clearable=False,
             style={
                 'width': '150px',
+                'display': 'inline-block',
+                'font-size': '1.1em'
+            }
+        )
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
+def create_mobis_code_selector() -> html.Div:
+    """
+    Создает выпадающий список для выбора кода дилера (Mobis Code)
+
+    Returns:
+        html.Div: Компонент селектора кода дилера
+    """
+    return html.Div([
+        html.Label('Mobis Code:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50'
+                   }),
+        dcc.Dropdown(
+            id='mobis-code-selector',
+            options=MOBIS_CODE_OPTIONS,
+            value='All',
+            clearable=False,
+            style={
+                'width': '200px',
                 'display': 'inline-block',
                 'font-size': '1.1em'
             }

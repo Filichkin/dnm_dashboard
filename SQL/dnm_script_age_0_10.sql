@@ -12,6 +12,7 @@ WITH dnm_data AS (
     FROM public.dnm_ro_data
     WHERE vehicle_report_date != '0'
       AND EXTRACT(YEAR FROM ro_close_date::DATE) IN (%(selected_year)s)
+      AND (%(selected_mobis_code)s = 'All' OR mobis_code = %(selected_mobis_code)s)
 ),
 /* агрегат UIO по коду модели */
 sales_uio AS (
