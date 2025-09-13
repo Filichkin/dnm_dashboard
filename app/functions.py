@@ -107,7 +107,15 @@ def create_charts(df, age_group='0-10Y'):
         textposition='inside',
         textfont_size=11
     )
-    fig_profit.update_yaxes(tickformat=',d')
+    fig_profit.update_yaxes(
+        tickformat=',d',
+        title='Amount',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
+    fig_profit.update_xaxes(
+        title='Model',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
     fig_profit.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
         showlegend=False
@@ -142,7 +150,15 @@ def create_charts(df, age_group='0-10Y'):
         textposition='inside',
         textfont_size=11
     )
-    fig_mh.update_yaxes(tickformat=',d')
+    fig_mh.update_yaxes(
+        tickformat=',d',
+        title='L/H',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
+    fig_mh.update_xaxes(
+        title='Model',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
     fig_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
         showlegend=False
@@ -160,6 +176,14 @@ def create_charts(df, age_group='0-10Y'):
         texttemplate='%{text:,.1f}',
         textposition='inside',
         textfont_size=11
+    )
+    fig_avg_mh.update_yaxes(
+        title='L/H per RO',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
+    fig_avg_mh.update_xaxes(
+        title='Model',
+        titlefont=dict(size=14, family='Arial', color='black')
     )
     fig_avg_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -179,7 +203,15 @@ def create_charts(df, age_group='0-10Y'):
         textposition='inside',
         textfont_size=11
     )
-    fig_avg_check.update_yaxes(tickformat=',d')
+    fig_avg_check.update_yaxes(
+        tickformat=',d',
+        title='CPR',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
+    fig_avg_check.update_xaxes(
+        title='Model',
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
     fig_avg_check.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
         showlegend=False
@@ -197,6 +229,19 @@ def create_charts(df, age_group='0-10Y'):
         texttemplate='%{text:.2f}',
         textposition='inside',
         textfont_size=11
+    )
+
+    # Определяем название для оси Y в зависимости от возрастной группы
+    ratio_title = ('RO ratio from UIO 5Y' if age_group == '0-5Y'
+                   else 'RO ratio from UIO 10Y')
+
+    fig_ratio.update_yaxes(
+        title=ratio_title,
+        titlefont=dict(size=14, family='Arial', color='black')
+    )
+    fig_ratio.update_xaxes(
+        title='Model',
+        titlefont=dict(size=14, family='Arial', color='black')
     )
     fig_ratio.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -271,7 +316,7 @@ def create_charts(df, age_group='0-10Y'):
     fig_ro_years.update_layout(
         barmode='stack',
         xaxis_title='Model',
-        yaxis_title='RO Count',
+        yaxis_title='RO qty',
         margin=dict(t=60, b=60, l=60, r=60),
         legend=dict(
             orientation='h',
@@ -279,6 +324,12 @@ def create_charts(df, age_group='0-10Y'):
             y=1.02,
             xanchor='right',
             x=1
+        ),
+        xaxis=dict(
+            titlefont=dict(size=14, family='Arial', color='black')
+        ),
+        yaxis=dict(
+            titlefont=dict(size=14, family='Arial', color='black')
         )
     )
     fig_ro_years.update_yaxes(tickformat=',d')
