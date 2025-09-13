@@ -45,7 +45,7 @@ available_years = get_available_years()
 current_year = get_current_year()
 
 app.layout = html.Div([
-    html.H1('DNM RO DATA by models', style=responsive_styles['title']),
+    html.H1('DNM RO DATA', style=responsive_styles['title']),
 
     # Скрытые div для хранения данных
     dcc.Store(id='data-store'),
