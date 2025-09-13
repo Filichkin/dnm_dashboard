@@ -1,14 +1,10 @@
-"""
-Модуль компонентов для DNM Dashboard
-Содержит переиспользуемые компоненты интерфейса
-"""
-
 from dash import html, dcc, dash_table
+
 from .styles import (
     get_card_style, get_graph_style, get_section_style,
     get_table_styles, CHART_COLORS
 )
-from .constants import MOBIS_CODE_OPTIONS
+from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS
 
 
 def create_metric_card(title: str, value: str) -> html.Div:
@@ -236,6 +232,76 @@ def create_mobis_code_selector() -> html.Div:
         'backgroundColor': '#ecf0f1',
         'borderRadius': '10px',
         'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
+def create_holding_selector() -> html.Div:
+    """
+    Создает выпадающий список для выбора Holding
+
+    Returns:
+        html.Div: Компонент селектора Holding
+    """
+    return html.Div([
+        html.Label('Holding:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50'
+                   }),
+        dcc.Dropdown(
+            id='holding-selector',
+            options=HOLDING_OPTIONS,
+            value='All',
+            clearable=False,
+            style={
+                'width': '200px',
+                'display': 'inline-block',
+                'font-size': '1.1em'
+            }
+        )
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
+def create_dealer_name_display() -> html.Div:
+    """
+    Создает компонент для отображения названия дилера
+
+    Returns:
+        html.Div: Компонент отображения названия дилера
+    """
+    return html.Div([
+        html.Label('Dealer Name: ',
+                   style={
+                       'font-weight': 'bold',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50',
+                       'margin-right': '10px'
+                   }),
+        html.Span(id='dealer-name-display',
+                  style={
+                      'font-size': '1.2em',
+                      'color': '#e74c3c',
+                      'font-weight': 'bold'
+                  })
+    ], style={
+        'margin': '10px 0',
+        'padding': '10px 20px',
+        'backgroundColor': '#f8f9fa',
+        'borderRadius': '8px',
+        'border': '2px solid #e74c3c',
+        'display': 'flex',
+        'align-items': 'center'
     })
 
 

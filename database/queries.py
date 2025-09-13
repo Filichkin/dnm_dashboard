@@ -4,7 +4,7 @@ from database.connection import db_connection
 
 
 def get_dnm_data(selected_year: int = None, age_group: str = '0-10Y',
-                 selected_mobis_code: str = 'All'):
+                 selected_mobis_code: str = 'All', selected_holding: str = 'All'):
     """
     Получает данные DNM из базы данных используя SQL скрипт
 
@@ -13,6 +13,7 @@ def get_dnm_data(selected_year: int = None, age_group: str = '0-10Y',
                       Если None, используется текущий год.
         age_group: Выбранная возрастная группа ('0-10Y' или '0-5Y').
         selected_mobis_code: Выбранный код дилера ('All' или конкретный код).
+        selected_holding: Выбранный holding ('All' или конкретный holding).
 
     Returns:
         pd.DataFrame: Данные DNM
@@ -38,11 +39,12 @@ def get_dnm_data(selected_year: int = None, age_group: str = '0-10Y',
             from datetime import datetime
             selected_year = datetime.now().year
 
-        # Выполняем запрос с параметрами года и mobis_code
+        # Выполняем запрос с параметрами года, mobis_code и holding
         df = db_connection.execute_query(
             query, {
                 'selected_year': selected_year,
-                'selected_mobis_code': selected_mobis_code
+                'selected_mobis_code': selected_mobis_code,
+                'selected_holding': selected_holding
             }
         )
 

@@ -14,13 +14,16 @@ from .components import (
     create_year_selector,
     create_age_group_selector,
     create_mobis_code_selector,
+    create_holding_selector,
+    create_dealer_name_display,
     get_chart_color,
     create_export_button
 )
-from .styles import get_responsive_styles
-from .templates import get_dashboard_template
 from config import settings
 from database.queries import get_dnm_data
+from .styles import get_responsive_styles
+from .templates import get_dashboard_template
+from .constants import get_dealer_name
 
 
 def process_dataframe(df):
@@ -139,7 +142,7 @@ def create_charts(df, age_group='0-10Y'):
         textposition='inside',
         textfont_size=11
     )
-    fig_mh.update_yaxes(tickformat=",d")
+    fig_mh.update_yaxes(tickformat=',d')
     fig_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
         showlegend=False
@@ -399,16 +402,16 @@ def create_table(df, age_group='0-10Y'):
         display_name = column_rename.get(col, col)
 
         if df[col].dtype.kind in 'fi':
-            fmt = {"specifier": ",.1f"} \
-                if col == 'aver_labor_hours_per_vhc' else {"specifier": ",.0f"}
+            fmt = {'specifier': ',.1f'} \
+                if col == 'aver_labor_hours_per_vhc' else {'specifier': ',.0f'}
             columns.append({
-                "name": display_name,
-                "id": col,
-                "type": "numeric",
-                "format": fmt
+                'name': display_name,
+                'id': col,
+                'type': 'numeric',
+                'format': fmt
             })
         else:
-            columns.append({"name": display_name, "id": col})
+            columns.append({'name': display_name, 'id': col})
 
     # Фильтруем строки и сортируем по total_ro_cost
     df_table = df
@@ -487,11 +490,12 @@ app.layout = html.Div([
 
     # Селекторы и карты в одном блоке
     html.Div([
-        # Селекторы года, возрастных групп и кода дилера
+        # Селекторы года, возрастных групп, кода дилера и holding
         html.Div([
             create_year_selector(available_years, current_year),
             create_age_group_selector(),
-            create_mobis_code_selector()
+            create_mobis_code_selector(),
+            create_holding_selector()
         ], style={
             'display': 'flex',
             'align-items': 'flex-start',
@@ -501,6 +505,9 @@ app.layout = html.Div([
             'marginBottom': '20px',
             'padding': '0 10px'
         }),
+
+        # Отображение названия дилера
+        html.Div(id='dealer-name-container'),
 
         # Карты с суммарными показателями
         html.Div(id='metrics-cards')
@@ -523,32 +530,40 @@ app.layout = html.Div([
     [Output('data-store', 'data'),
      Output('metrics-cards', 'children'),
      Output('charts-container', 'children'),
-     Output('data-table', 'children')],
+     Output('data-table', 'children'),
+     Output('dealer-name-container', 'children')],
     [Input('year-selector', 'value'),
      Input('age-group-selector', 'value'),
-     Input('mobis-code-selector', 'value')]
+     Input('mobis-code-selector', 'value'),
+     Input('holding-selector', 'value')]
 )
-def update_dashboard(selected_year, age_group, selected_mobis_code):
+def update_dashboard(selected_year, age_group, selected_mobis_code,
+                     selected_holding):
     """
-    Обновляет дашборд при изменении года, возрастной группы или кода дилера
+    Обновляет дашборд при изменении года, возрастной группы,
+    кода дилера или holding.
 
     Args:
         selected_year: Выбранный год
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
+        selected_holding: Выбранный holding
 
     Returns:
-        tuple: Данные, карты метрик, графики, таблица
+        tuple: Данные, карты метрик, графики, таблица, отображение дилера
     """
     try:
-        # Получаем данные для выбранного года, возрастной группы и кода дилера
-        df = get_dnm_data(selected_year, age_group, selected_mobis_code)
+        # Получаем данные для выбранного года, возрастной группы,
+        # кода дилера и holding
+        df = get_dnm_data(selected_year, age_group, selected_mobis_code,
+                          selected_holding)
         print(f'Данные загружены для года {selected_year}, '
-              f'группы {age_group} и кода дилера {selected_mobis_code}')
+              f'группы {age_group}, кода дилера {selected_mobis_code} '
+              f'и holding {selected_holding}')
     except Exception as e:
         print(f'Ошибка при загрузке данных из БД для года '
-              f'{selected_year}, группы {age_group} и кода дилера '
-              f'{selected_mobis_code}: {e}')
+              f'{selected_year}, группы {age_group}, кода дилера '
+              f'{selected_mobis_code} и holding {selected_holding}: {e}')
         # Fallback на CSV файл в случае ошибки
         df = pd.read_csv('data/aug_25.csv')
         print('Используются данные из CSV файла')
@@ -613,7 +628,17 @@ def update_dashboard(selected_year, age_group, selected_mobis_code):
         ]),
     ])
 
-    return df.to_dict('records'), metrics_cards, charts_container, table
+    # Создаем отображение названия дилера
+    dealer_name = get_dealer_name(selected_mobis_code)
+    dealer_display = (create_dealer_name_display()
+                      if dealer_name else html.Div())
+
+    # Обновляем текст названия дилера
+    if dealer_name:
+        dealer_display.children[1].children = dealer_name
+
+    return (df.to_dict('records'), metrics_cards, charts_container,
+            table, dealer_display)
 
 
 @callback(

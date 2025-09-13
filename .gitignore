@@ -146,3 +146,7 @@ draft/
 commands.txt
 *.csv
 *.pdf
+
+# Project specific files
+app/constants.py
+SQL/
