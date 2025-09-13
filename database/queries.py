@@ -3,8 +3,12 @@ import os
 from database.connection import db_connection
 
 
-def get_dnm_data(selected_year: int = None, age_group: str = '0-10Y',
-                 selected_mobis_code: str = 'All', selected_holding: str = 'All'):
+def get_dnm_data(
+    selected_year: int = None,
+    age_group: str = '0-10Y',
+    selected_mobis_code: str = 'All',
+    selected_holding: str = 'All'
+):
     """
     Получает данные DNM из базы данных используя SQL скрипт
 

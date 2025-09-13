@@ -490,12 +490,14 @@ app.layout = html.Div([
 
     # Селекторы и карты в одном блоке
     html.Div([
-        # Селекторы года, возрастных групп, кода дилера и holding
+        # Селекторы года, возрастных групп, кода дилера, holding
+        # и отображение дилера
         html.Div([
             create_year_selector(available_years, current_year),
             create_age_group_selector(),
             create_mobis_code_selector(),
-            create_holding_selector()
+            create_holding_selector(),
+            html.Div(id='dealer-name-container')
         ], style={
             'display': 'flex',
             'align-items': 'flex-start',
@@ -505,9 +507,6 @@ app.layout = html.Div([
             'marginBottom': '20px',
             'padding': '0 10px'
         }),
-
-        # Отображение названия дилера
-        html.Div(id='dealer-name-container'),
 
         # Карты с суммарными показателями
         html.Div(id='metrics-cards')
@@ -583,15 +582,15 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     # Создаем карты метрик
     metrics_cards = create_cards_row([
         create_metric_card(f'UIO ({age_group})',
-                           f'{metrics["total_uio"]:,.0f}'),
+                           f'{metrics['total_uio']:,.0f}'),
         create_metric_card(f'RO qty ({age_group})',
-                           f'{metrics["total_ro_qty"]:,.0f}'),
+                           f'{metrics['total_ro_qty']:,.0f}'),
         create_metric_card(f'Total cost ({age_group})',
-                           f'{metrics["total_cost"]:,.0f}'),
+                           f'{metrics['total_cost']:,.0f}'),
         create_metric_card('Total L/H',
-                           f'{metrics["total_labor_hours"]:,.0f}'),
+                           f'{metrics['total_labor_hours']:,.0f}'),
         create_metric_card('Average RO cost',
-                           f'{metrics["avg_ro_cost"]:,.0f}'),
+                           f'{metrics['avg_ro_cost']:,.0f}'),
     ])
 
     # Создаем контейнеры графиков

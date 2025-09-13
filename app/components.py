@@ -284,24 +284,25 @@ def create_dealer_name_display() -> html.Div:
         html.Label('Dealer Name: ',
                    style={
                        'font-weight': 'bold',
-                       'font-size': '1.2em',
-                       'color': '#2c3e50',
-                       'margin-right': '10px'
+                       'margin-right': '15px',
+                       'font-size': '1.4em',
+                       'color': '#2c3e50'
                    }),
         html.Span(id='dealer-name-display',
                   style={
-                      'font-size': '1.2em',
-                      'color': '#e74c3c',
-                      'font-weight': 'bold'
+                      'font-size': '1.3em',
+                      'color': '#2c3e50',
+                      'font-weight': 'normal'
                   })
     ], style={
-        'margin': '10px 0',
-        'padding': '10px 20px',
-        'backgroundColor': '#f8f9fa',
-        'borderRadius': '8px',
-        'border': '2px solid #e74c3c',
+        'margin': '0',
         'display': 'flex',
-        'align-items': 'center'
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
     })
 
 
