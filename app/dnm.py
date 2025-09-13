@@ -16,6 +16,7 @@ from .components import (
     create_mobis_code_selector,
     create_holding_selector,
     create_dealer_name_display,
+    create_holding_name_display,
     get_chart_color,
     create_export_button
 )
@@ -25,6 +26,7 @@ from .styles import get_responsive_styles
 from .templates import get_dashboard_template
 from .constants import (
     get_dealer_name,
+    get_holding_name,
     get_mobis_code_options_by_holding,
     get_mobis_codes_by_holding
 )
@@ -495,13 +497,14 @@ app.layout = html.Div([
     # Селекторы и карты в одном блоке
     html.Div([
         # Селекторы года, возрастных групп, кода дилера, holding
-        # и отображение дилера
+        # и отображение дилера и holding
         html.Div([
             create_year_selector(available_years, current_year),
             create_age_group_selector(),
             create_mobis_code_selector(),
             create_holding_selector(),
-            html.Div(id='dealer-name-container')
+            html.Div(id='dealer-name-container'),
+            html.Div(id='holding-name-container')
         ], style={
             'display': 'flex',
             'align-items': 'flex-start',
@@ -534,7 +537,8 @@ app.layout = html.Div([
      Output('metrics-cards', 'children'),
      Output('charts-container', 'children'),
      Output('data-table', 'children'),
-     Output('dealer-name-container', 'children')],
+     Output('dealer-name-container', 'children'),
+     Output('holding-name-container', 'children')],
     [Input('year-selector', 'value'),
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
@@ -651,8 +655,17 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     if dealer_name:
         dealer_display.children[1].children = dealer_name
 
+    # Создаем отображение названия Holding
+    holding_name = get_holding_name(selected_holding)
+    holding_display = (create_holding_name_display()
+                       if holding_name else html.Div())
+
+    # Обновляем текст названия Holding
+    if holding_name:
+        holding_display.children[1].children = holding_name
+
     return (df.to_dict('records'), metrics_cards, charts_container,
-            table, dealer_display)
+            table, dealer_display, holding_display)
 
 
 @callback(

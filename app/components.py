@@ -306,6 +306,39 @@ def create_dealer_name_display() -> html.Div:
     })
 
 
+def create_holding_name_display() -> html.Div:
+    """
+    Создает компонент для отображения названия Holding
+
+    Returns:
+        html.Div: Компонент отображения названия Holding
+    """
+    return html.Div([
+        html.Label('Holding Name: ',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.4em',
+                       'color': '#2c3e50'
+                   }),
+        html.Span(id='holding-name-display',
+                  style={
+                      'font-size': '1.3em',
+                      'color': '#2c3e50',
+                      'font-weight': 'normal'
+                  })
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
 def create_export_button() -> html.Div:
     """
     Создает кнопку для экспорта данных в CSV
