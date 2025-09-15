@@ -7,7 +7,8 @@ def get_dnm_data(
     selected_year: int = None,
     age_group: str = '0-10Y',
     selected_mobis_code: str = 'All',
-    selected_holding: str = 'All'
+    selected_holding: str = 'All',
+    selected_region: str = 'All'
 ):
     """
     Получает данные DNM из базы данных используя SQL скрипт
@@ -18,6 +19,7 @@ def get_dnm_data(
         age_group: Выбранная возрастная группа ('0-10Y' или '0-5Y').
         selected_mobis_code: Выбранный код дилера ('All' или конкретный код).
         selected_holding: Выбранный holding ('All' или конкретный holding).
+        selected_region: Выбранный регион ('All' или конкретный регион).
 
     Returns:
         pd.DataFrame: Данные DNM
@@ -43,12 +45,13 @@ def get_dnm_data(
             from datetime import datetime
             selected_year = datetime.now().year
 
-        # Выполняем запрос с параметрами года, mobis_code и holding
+        # Выполняем запрос с параметрами года, mobis_code, holding и region
         df = db_connection.execute_query(
             query, {
                 'selected_year': selected_year,
                 'selected_mobis_code': selected_mobis_code,
-                'selected_holding': selected_holding
+                'selected_holding': selected_holding,
+                'selected_region': selected_region
             }
         )
 
@@ -58,6 +61,96 @@ def get_dnm_data(
         raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
     except Exception as e:
         raise Exception(f'Ошибка при получении данных из базы: {e}')
+
+
+def get_dealers_data():
+    """
+    Получает данные дилеров из таблицы dealers_data
+
+    Returns:
+        pd.DataFrame: Данные дилеров с колонками mobis_code, dealer_name,
+                      holding, region
+    """
+    query = """
+    SELECT mobis_code, dealer_name, holding, region
+    FROM public.dealers_data
+    WHERE mobis_code IS NOT NULL
+    ORDER BY mobis_code
+    """
+    return db_connection.execute_query(query)
+
+
+def get_regions():
+    """
+    Получает список уникальных регионов из таблицы dealers_data
+
+    Returns:
+        list: Список уникальных регионов
+    """
+    query = """
+    SELECT DISTINCT region
+    FROM public.dealers_data
+    WHERE region IS NOT NULL AND region != ''
+    ORDER BY region
+    """
+    df = db_connection.execute_query(query)
+    return df['region'].tolist()
+
+
+def get_region_by_mobis_code(mobis_code):
+    """
+    Получает region по mobis_code из таблицы dealers_data
+
+    Args:
+        mobis_code: Код дилера
+
+    Returns:
+        str: Название региона или пустая строка
+    """
+    if mobis_code == 'All' or not mobis_code:
+        return ''
+
+    query = """
+    SELECT region
+    FROM public.dealers_data
+    WHERE mobis_code = %(mobis_code)s
+    """
+
+    df = db_connection.execute_query(
+        query, {'mobis_code': mobis_code}
+    )
+    if not df.empty:
+        return df['region'].iloc[0] if df['region'].iloc[0] else ''
+    return ''
+
+
+def get_mobis_codes_by_region(region):
+    """
+    Получает список mobis_code для указанного региона
+
+    Args:
+        region: Название региона
+
+    Returns:
+        list: Список mobis_code
+    """
+    if region == 'All':
+        query = """
+        SELECT mobis_code
+        FROM public.dealers_data
+        WHERE mobis_code IS NOT NULL
+        ORDER BY mobis_code
+        """
+    else:
+        query = """
+        SELECT mobis_code
+        FROM public.dealers_data
+        WHERE region = %(region)s AND mobis_code IS NOT NULL
+        ORDER BY mobis_code
+        """
+
+    df = db_connection.execute_query(query, {'region': region})
+    return df['mobis_code'].tolist()
 
 
 def test_database_connection():

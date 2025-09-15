@@ -21,6 +21,7 @@ from .constants import (
     get_dealer_name,
     get_holding_name,
     get_mobis_codes_by_holding,
+    get_mobis_codes_by_region,
     GRAPH_HEIGHT
 )
 from database.queries import get_dnm_data
@@ -110,11 +111,11 @@ def create_charts(df, age_group='0-10Y'):
     fig_profit.update_yaxes(
         tickformat=',d',
         title='Amount',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_profit.update_xaxes(
         title='Model',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_profit.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -153,11 +154,11 @@ def create_charts(df, age_group='0-10Y'):
     fig_mh.update_yaxes(
         tickformat=',d',
         title='L/H',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_mh.update_xaxes(
         title='Model',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -179,11 +180,11 @@ def create_charts(df, age_group='0-10Y'):
     )
     fig_avg_mh.update_yaxes(
         title='L/H per RO',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_avg_mh.update_xaxes(
         title='Model',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_avg_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -206,11 +207,11 @@ def create_charts(df, age_group='0-10Y'):
     fig_avg_check.update_yaxes(
         tickformat=',d',
         title='CPR',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_avg_check.update_xaxes(
         title='Model',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_avg_check.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -237,11 +238,11 @@ def create_charts(df, age_group='0-10Y'):
 
     fig_ratio.update_yaxes(
         title=ratio_title,
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_ratio.update_xaxes(
         title='Model',
-        titlefont=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='black')
     )
     fig_ratio.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
@@ -326,10 +327,10 @@ def create_charts(df, age_group='0-10Y'):
             x=1
         ),
         xaxis=dict(
-            titlefont=dict(size=14, family='Arial', color='black')
+            title_font=dict(size=14, family='Arial', color='black')
         ),
         yaxis=dict(
-            titlefont=dict(size=14, family='Arial', color='black')
+            title_font=dict(size=14, family='Arial', color='black')
         )
     )
     fig_ro_years.update_yaxes(tickformat=',d')
@@ -541,7 +542,7 @@ def get_current_year():
 
 
 def load_dashboard_data(selected_year, age_group, selected_mobis_code,
-                        selected_holding):
+                        selected_holding, selected_region='All'):
     """
     Загружает данные для дашборда
 
@@ -550,6 +551,7 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
         selected_holding: Выбранный holding
+        selected_region: Выбранный region
 
     Returns:
         pd.DataFrame: DataFrame с данными
@@ -565,14 +567,25 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         print('Выбранный Mobis Code не соответствует Holding. '
               'Используется "All" для Mobis Code.')
 
+    # Проверяем совместимость выбранного Mobis Code с Region
+    if (selected_region != 'All' and
+        selected_mobis_code != 'All' and
+        selected_mobis_code not in get_mobis_codes_by_region(
+            selected_region)):
+        # Если выбранный Mobis Code не соответствует Region,
+        # используем 'All' для Mobis Code
+        selected_mobis_code = 'All'
+        print('Выбранный Mobis Code не соответствует Region. '
+              'Используется "All" для Mobis Code.')
+
     try:
         # Получаем данные для выбранного года, возрастной группы,
-        # кода дилера и holding
+        # кода дилера, holding и region
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
-                          selected_holding)
+                          selected_holding, selected_region)
         print(f'Данные загружены для года {selected_year}, '
-              f'группы {age_group}, кода дилера {selected_mobis_code} '
-              f'и holding {selected_holding}')
+              f'группы {age_group}, кода дилера {selected_mobis_code}, '
+              f'holding {selected_holding} и region {selected_region}')
     except Exception as e:
         print(f'Ошибка при загрузке данных из БД для года '
               f'{selected_year}, группы {age_group}, кода дилера '

@@ -4,7 +4,7 @@ from .styles import (
     get_card_style, get_graph_style, get_section_style,
     get_table_styles, CHART_COLORS
 )
-from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS
+from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS, REGION_OPTIONS
 
 
 def create_metric_card(title: str, value: str) -> html.Div:
@@ -253,6 +253,44 @@ def create_holding_selector() -> html.Div:
         dcc.Dropdown(
             id='holding-selector',
             options=HOLDING_OPTIONS,
+            value='All',
+            clearable=False,
+            style={
+                'width': '200px',
+                'display': 'inline-block',
+                'font-size': '1.1em'
+            }
+        )
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
+def create_region_selector() -> html.Div:
+    """
+    Создает выпадающий список для выбора Region
+
+    Returns:
+        html.Div: Компонент селектора Region
+    """
+    return html.Div([
+        html.Label('Region:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#2c3e50'
+                   }),
+        dcc.Dropdown(
+            id='region-selector',
+            options=REGION_OPTIONS,
             value='All',
             clearable=False,
             style={

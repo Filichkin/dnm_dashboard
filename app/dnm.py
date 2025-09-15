@@ -11,6 +11,7 @@ from .components import (
     create_age_group_selector,
     create_mobis_code_selector,
     create_holding_selector,
+    create_region_selector,
     create_export_button
 )
 from .functions import (
@@ -26,7 +27,10 @@ from .functions import (
     create_dealer_display,
     create_holding_display
 )
-from .constants import get_mobis_code_options_by_holding
+from .constants import (
+    get_mobis_code_options_by_holding,
+    get_mobis_code_options_by_region
+)
 from config import settings
 from .styles import get_responsive_styles
 from .templates import get_dashboard_template
@@ -52,13 +56,14 @@ app.layout = html.Div([
 
     # Селекторы и карты в одном блоке
     html.Div([
-        # Селекторы года, возрастных групп, кода дилера, holding
+        # Селекторы года, возрастных групп, кода дилера, holding, region
         # и отображение дилера и holding
         html.Div([
             create_year_selector(available_years, current_year),
             create_age_group_selector(),
             create_mobis_code_selector(),
             create_holding_selector(),
+            create_region_selector(),
             html.Div(id='dealer-name-container'),
             html.Div(id='holding-name-container')
         ], style={
@@ -98,19 +103,21 @@ app.layout = html.Div([
     [Input('year-selector', 'value'),
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
-     Input('holding-selector', 'value')]
+     Input('holding-selector', 'value'),
+     Input('region-selector', 'value')]
 )
 def update_dashboard(selected_year, age_group, selected_mobis_code,
-                     selected_holding):
+                     selected_holding, selected_region):
     """
     Обновляет дашборд при изменении года, возрастной группы,
-    кода дилера или holding.
+    кода дилера, holding или region.
 
     Args:
         selected_year: Выбранный год
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
         selected_holding: Выбранный holding
+        selected_region: Выбранный region
 
     Returns:
         tuple: Данные, карты метрик, графики, таблица, отображение дилера,
@@ -118,7 +125,7 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     """
     # Загружаем данные
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
-                             selected_holding)
+                             selected_holding, selected_region)
 
     # Обрабатываем данные
     df = process_dataframe(df)
@@ -151,21 +158,37 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
 @callback(
     [Output('mobis-code-selector', 'options'),
      Output('mobis-code-selector', 'value')],
-    Input('holding-selector', 'value'),
+    [Input('holding-selector', 'value'),
+     Input('region-selector', 'value')],
     prevent_initial_call=False
 )
-def update_mobis_code_options(selected_holding):
+def update_mobis_code_options(selected_holding, selected_region):
     """
-    Обновляет опции Mobis Code при изменении выбранного Holding.
+    Обновляет опции Mobis Code при изменении выбранного Holding или Region.
 
     Args:
         selected_holding: Выбранный holding
+        selected_region: Выбранный region
 
     Returns:
         tuple: (новые опции, новое значение)
     """
-    # Получаем отфильтрованные опции
-    new_options = get_mobis_code_options_by_holding(selected_holding)
+    # Получаем отфильтрованные опции по holding
+    holding_options = get_mobis_code_options_by_holding(selected_holding)
+
+    # Получаем отфильтрованные опции по region
+    region_options = get_mobis_code_options_by_region(selected_region)
+
+    # Находим пересечение опций
+    holding_values = {opt['value'] for opt in holding_options}
+    region_values = {opt['value'] for opt in region_options}
+    intersection_values = holding_values.intersection(region_values)
+
+    # Создаем финальные опции из пересечения
+    new_options = [
+        opt for opt in holding_options
+        if opt['value'] in intersection_values
+    ]
 
     # Если текущее значение Mobis Code не входит в новые опции,
     # сбрасываем на 'All'
