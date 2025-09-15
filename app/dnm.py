@@ -25,7 +25,8 @@ from .functions import (
     create_metrics_cards,
     create_charts_container,
     create_dealer_display,
-    create_holding_display
+    create_holding_display,
+    create_region_display
 )
 from .constants import (
     get_mobis_code_options_by_holding,
@@ -65,7 +66,8 @@ app.layout = html.Div([
             create_holding_selector(),
             create_region_selector(),
             html.Div(id='dealer-name-container'),
-            html.Div(id='holding-name-container')
+            html.Div(id='holding-name-container'),
+            html.Div(id='region-name-container')
         ], style={
             'display': 'flex',
             'align-items': 'flex-start',
@@ -99,7 +101,8 @@ app.layout = html.Div([
      Output('charts-container', 'children'),
      Output('data-table', 'children'),
      Output('dealer-name-container', 'children'),
-     Output('holding-name-container', 'children')],
+     Output('holding-name-container', 'children'),
+     Output('region-name-container', 'children')],
     [Input('year-selector', 'value'),
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
@@ -121,7 +124,7 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
 
     Returns:
         tuple: Данные, карты метрик, графики, таблица, отображение дилера,
-               отображение holding
+               отображение holding, отображение region
     """
     # Загружаем данные
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
@@ -151,8 +154,11 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     # Создаем отображение названия Holding
     holding_display = create_holding_display(selected_holding)
 
+    # Создаем отображение названия Region
+    region_display = create_region_display(selected_region)
+
     return (df.to_dict('records'), metrics_cards, charts_container,
-            table, dealer_display, holding_display)
+            table, dealer_display, holding_display, region_display)
 
 
 @callback(

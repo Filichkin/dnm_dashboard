@@ -15,11 +15,13 @@ from .components import (
     create_data_table,
     create_dealer_name_display,
     create_holding_name_display,
+    create_region_name_display,
     get_chart_color
 )
 from .constants import (
     get_dealer_name,
     get_holding_name,
+    get_region_name,
     get_mobis_codes_by_holding,
     get_mobis_codes_by_region,
     GRAPH_HEIGHT
@@ -706,3 +708,24 @@ def create_holding_display(selected_holding):
         holding_display.children[1].children = holding_name
 
     return holding_display
+
+
+def create_region_display(selected_region):
+    """
+    Создает компонент отображения названия Region
+
+    Args:
+        selected_region: Выбранный region
+
+    Returns:
+        html.Div: Компонент отображения Region
+    """
+    region_name = get_region_name(selected_region)
+    region_display = (create_region_name_display()
+                      if region_name else html.Div())
+
+    # Обновляем текст названия Region
+    if region_name:
+        region_display.children[1].children = region_name
+
+    return region_display

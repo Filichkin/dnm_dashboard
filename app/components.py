@@ -377,6 +377,39 @@ def create_holding_name_display() -> html.Div:
     })
 
 
+def create_region_name_display() -> html.Div:
+    """
+    Создает компонент для отображения названия Region
+
+    Returns:
+        html.Div: Компонент отображения названия Region
+    """
+    return html.Div([
+        html.Label('Region Name: ',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.4em',
+                       'color': '#2c3e50'
+                   }),
+        html.Span(id='region-name-display',
+                  style={
+                      'font-size': '1.3em',
+                      'color': '#2c3e50',
+                      'font-weight': 'normal'
+                  })
+    ], style={
+        'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#ecf0f1',
+        'borderRadius': '10px',
+        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+    })
+
+
 def create_export_button() -> html.Div:
     """
     Создает кнопку для экспорта данных в CSV
