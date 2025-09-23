@@ -26,7 +26,9 @@ from .constants import (
     get_mobis_codes_by_region,
     GRAPH_HEIGHT
 )
-from database.queries import get_dnm_data
+from database.queries import (
+    get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code
+)
 
 
 def process_dataframe(df):
@@ -83,13 +85,14 @@ def process_dataframe(df):
     return df
 
 
-def create_charts(df, age_group='0-10Y'):
+def create_charts(df, age_group='0-10Y', region_df=None):
     """
     Создает все графики на основе данных
 
     Args:
         df: DataFrame с данными
         age_group: Выбранная возрастная группа
+        region_df: DataFrame с данными по региону (опционально)
 
     Returns:
         dict: Словарь с графиками
@@ -105,11 +108,37 @@ def create_charts(df, age_group='0-10Y'):
         y='total_ro_cost',
         text='total_ro_cost',
     )
+    
+    # Добавляем трассу с региональными данными, если они есть
+    if region_df is not None and not region_df.empty:
+        # Находим пересекающиеся модели
+        common_models = set(filtered_df['model']) & set(region_df['model'])
+        if common_models:
+            region_filtered = region_df[region_df['model'].isin(common_models)]
+            region_sorted = region_filtered.sort_values(
+                'total_ro_cost', ascending=False).head(10)
+            
+            fig_profit.add_trace(go.Scatter(
+                x=region_sorted['model'],
+                y=region_sorted['total_ro_cost'],
+                mode='markers',
+                name='Region Average',
+                marker=dict(
+                    color='red',
+                    size=12,
+                    symbol='circle',
+                    line=dict(width=2, color='white')
+                ),
+                yaxis='y2'
+            ))
+    
+    # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
         textfont_size=11,
-        textfont_color='white'
+        textfont_color='white',
+        selector=dict(type='bar')
     )
     fig_profit.update_yaxes(
         tickformat=',d',
@@ -118,6 +147,19 @@ def create_charts(df, age_group='0-10Y'):
         tickfont=dict(color='white'),
         showgrid=False
     )
+    
+    # Добавляем вспомогательную ось Y для региональных данных
+    if region_df is not None and not region_df.empty:
+        fig_profit.update_layout(
+            yaxis2=dict(
+                title='Region Average',
+                title_font=dict(size=12, family='Arial', color='white'),
+                tickfont=dict(color='white'),
+                overlaying='y',
+                side='right',
+                showgrid=False
+            )
+        )
     fig_profit.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -126,11 +168,19 @@ def create_charts(df, age_group='0-10Y'):
         tickangle=-45
     )
     fig_profit.update_layout(
-        margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False,
+        margin=dict(t=80, b=60, l=60, r=60),
+        showlegend=True,
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
-        font=dict(color='white')
+        font=dict(color='white'),
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='white')
+        )
     )
     fig_profit.update_traces(marker_color=get_chart_color(0))
 
@@ -157,11 +207,37 @@ def create_charts(df, age_group='0-10Y'):
         y=labor_hours_col,
         text=labor_hours_col,
     )
+    
+    # Добавляем трассу с региональными данными, если они есть
+    if region_df is not None and not region_df.empty:
+        # Находим пересекающиеся модели
+        common_models = set(filtered_df['model']) & set(region_df['model'])
+        if common_models:
+            region_filtered = region_df[region_df['model'].isin(common_models)]
+            region_sorted = region_filtered.sort_values(
+                labor_hours_col, ascending=False).head(10)
+            
+            fig_mh.add_trace(go.Scatter(
+                x=region_sorted['model'],
+                y=region_sorted[labor_hours_col],
+                mode='markers',
+                name='Region Average',
+                marker=dict(
+                    color='red',
+                    size=12,
+                    symbol='circle',
+                    line=dict(width=2, color='white')
+                ),
+                yaxis='y2'
+            ))
+    
+    # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
         textfont_size=11,
-        textfont_color='white'
+        textfont_color='white',
+        selector=dict(type='bar')
     )
     fig_mh.update_yaxes(
         tickformat=',d',
@@ -170,6 +246,19 @@ def create_charts(df, age_group='0-10Y'):
         tickfont=dict(color='white'),
         showgrid=False
     )
+    
+    # Добавляем вспомогательную ось Y для региональных данных
+    if region_df is not None and not region_df.empty:
+        fig_mh.update_layout(
+            yaxis2=dict(
+                title='Region Average',
+                title_font=dict(size=12, family='Arial', color='white'),
+                tickfont=dict(color='white'),
+                overlaying='y',
+                side='right',
+                showgrid=False
+            )
+        )
     fig_mh.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -178,11 +267,19 @@ def create_charts(df, age_group='0-10Y'):
         tickangle=-45
     )
     fig_mh.update_layout(
-        margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False,
+        margin=dict(t=80, b=60, l=60, r=60),
+        showlegend=True,
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
-        font=dict(color='white')
+        font=dict(color='white'),
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='white')
+        )
     )
     fig_mh.update_traces(marker_color=get_chart_color(1))
 
@@ -193,11 +290,37 @@ def create_charts(df, age_group='0-10Y'):
         y='aver_labor_hours_per_vhc',
         text='aver_labor_hours_per_vhc',
     )
+    
+    # Добавляем трассу с региональными данными, если они есть
+    if region_df is not None and not region_df.empty:
+        # Находим пересекающиеся модели
+        common_models = set(df['model']) & set(region_df['model'])
+        if common_models:
+            region_filtered = region_df[region_df['model'].isin(common_models)]
+            region_sorted = region_filtered.sort_values(
+                'aver_labor_hours_per_vhc', ascending=False).head(10)
+            
+            fig_avg_mh.add_trace(go.Scatter(
+                x=region_sorted['model'],
+                y=region_sorted['aver_labor_hours_per_vhc'],
+                mode='markers',
+                name='Region Average',
+                marker=dict(
+                    color='red',
+                    size=12,
+                    symbol='circle',
+                    line=dict(width=2, color='white')
+                ),
+                yaxis='y2'
+            ))
+    
+    # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
         textposition='inside',
         textfont_size=11,
-        textfont_color='white'
+        textfont_color='white',
+        selector=dict(type='bar')
     )
     fig_avg_mh.update_yaxes(
         title='L/H per RO',
@@ -205,6 +328,19 @@ def create_charts(df, age_group='0-10Y'):
         tickfont=dict(color='white'),
         showgrid=False
     )
+    
+    # Добавляем вспомогательную ось Y для региональных данных
+    if region_df is not None and not region_df.empty:
+        fig_avg_mh.update_layout(
+            yaxis2=dict(
+                title='Region Average',
+                title_font=dict(size=12, family='Arial', color='white'),
+                tickfont=dict(color='white'),
+                overlaying='y',
+                side='right',
+                showgrid=False
+            )
+        )
     fig_avg_mh.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -213,11 +349,19 @@ def create_charts(df, age_group='0-10Y'):
         tickangle=-45
     )
     fig_avg_mh.update_layout(
-        margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False,
+        margin=dict(t=80, b=60, l=60, r=60),
+        showlegend=True,
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
-        font=dict(color='white')
+        font=dict(color='white'),
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='white')
+        )
     )
     fig_avg_mh.update_traces(marker_color=get_chart_color(2))
 
@@ -228,11 +372,37 @@ def create_charts(df, age_group='0-10Y'):
         y='avg_ro_cost',
         text='avg_ro_cost',
     )
+    
+    # Добавляем трассу с региональными данными, если они есть
+    if region_df is not None and not region_df.empty:
+        # Находим пересекающиеся модели
+        common_models = set(df['model']) & set(region_df['model'])
+        if common_models:
+            region_filtered = region_df[region_df['model'].isin(common_models)]
+            region_sorted = region_filtered.sort_values(
+                'avg_ro_cost', ascending=False).head(10)
+            
+            fig_avg_check.add_trace(go.Scatter(
+                x=region_sorted['model'],
+                y=region_sorted['avg_ro_cost'],
+                mode='markers',
+                name='Region Average',
+                marker=dict(
+                    color='red',
+                    size=12,
+                    symbol='circle',
+                    line=dict(width=2, color='white')
+                ),
+                yaxis='y2'
+            ))
+    
+    # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
         textfont_size=11,
-        textfont_color='white'
+        textfont_color='white',
+        selector=dict(type='bar')
     )
     fig_avg_check.update_yaxes(
         tickformat=',d',
@@ -241,6 +411,19 @@ def create_charts(df, age_group='0-10Y'):
         tickfont=dict(color='white'),
         showgrid=False
     )
+    
+    # Добавляем вспомогательную ось Y для региональных данных
+    if region_df is not None and not region_df.empty:
+        fig_avg_check.update_layout(
+            yaxis2=dict(
+                title='Region Average',
+                title_font=dict(size=12, family='Arial', color='white'),
+                tickfont=dict(color='white'),
+                overlaying='y',
+                side='right',
+                showgrid=False
+            )
+        )
     fig_avg_check.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -249,11 +432,19 @@ def create_charts(df, age_group='0-10Y'):
         tickangle=-45
     )
     fig_avg_check.update_layout(
-        margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False,
+        margin=dict(t=80, b=60, l=60, r=60),
+        showlegend=True,
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
-        font=dict(color='white')
+        font=dict(color='white'),
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='white')
+        )
     )
     fig_avg_check.update_traces(marker_color=get_chart_color(3))
 
@@ -264,11 +455,37 @@ def create_charts(df, age_group='0-10Y'):
         y=ratio_col,
         text=ratio_col,
     )
+    
+    # Добавляем трассу с региональными данными, если они есть
+    if region_df is not None and not region_df.empty:
+        # Находим пересекающиеся модели
+        common_models = set(df['model']) & set(region_df['model'])
+        if common_models:
+            region_filtered = region_df[region_df['model'].isin(common_models)]
+            region_sorted = region_filtered.sort_values(
+                ratio_col, ascending=False).head(10)
+            
+            fig_ratio.add_trace(go.Scatter(
+                x=region_sorted['model'],
+                y=region_sorted[ratio_col],
+                mode='markers',
+                name='Region Average',
+                marker=dict(
+                    color='red',
+                    size=12,
+                    symbol='circle',
+                    line=dict(width=2, color='white')
+                ),
+                yaxis='y2'
+            ))
+    
+    # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
         textposition='inside',
         textfont_size=11,
-        textfont_color='white'
+        textfont_color='white',
+        selector=dict(type='bar')
     )
 
     # Определяем название для оси Y в зависимости от возрастной группы
@@ -281,6 +498,19 @@ def create_charts(df, age_group='0-10Y'):
         tickfont=dict(color='white'),
         showgrid=False
     )
+    
+    # Добавляем вспомогательную ось Y для региональных данных
+    if region_df is not None and not region_df.empty:
+        fig_ratio.update_layout(
+            yaxis2=dict(
+                title='Region Average',
+                title_font=dict(size=12, family='Arial', color='white'),
+                tickfont=dict(color='white'),
+                overlaying='y',
+                side='right',
+                showgrid=False
+            )
+        )
     fig_ratio.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -289,11 +519,19 @@ def create_charts(df, age_group='0-10Y'):
         tickangle=-45
     )
     fig_ratio.update_layout(
-        margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False,
+        margin=dict(t=80, b=60, l=60, r=60),
+        showlegend=True,
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
-        font=dict(color='white')
+        font=dict(color='white'),
+        legend=dict(
+            orientation='h',
+            yanchor='bottom',
+            y=1.02,
+            xanchor='right',
+            x=1,
+            font=dict(color='white')
+        )
     )
     fig_ratio.update_traces(marker_color=get_chart_color(4))
 
@@ -693,6 +931,40 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
             print('Используются данные из CSV файла aug_25.csv (как 2025 год)')
 
     return df
+
+
+def load_region_data(selected_year, age_group, selected_mobis_code):
+    """
+    Загружает данные по региону выбранного дилера
+
+    Args:
+        selected_year: Выбранный год
+        age_group: Выбранная возрастная группа
+        selected_mobis_code: Выбранный код дилера
+
+    Returns:
+        pd.DataFrame: Данные по региону
+    """
+    try:
+        # Определяем регион по mobis_code
+        region = get_region_by_mobis_code(selected_mobis_code)
+        print(f"Регион для mobis_code {selected_mobis_code}: {region}")
+        
+        if not region:
+            print("Регион не найден, возвращаем пустой DataFrame")
+            return pd.DataFrame()
+        
+        # Получаем данные по региону
+        df = get_dnm_data_by_region(
+            selected_year=selected_year,
+            age_group=age_group,
+            selected_region=region
+        )
+        print(f"Загружено {len(df)} строк данных по региону {region}")
+        return df
+    except Exception as e:
+        print(f"Ошибка при загрузке данных по региону: {e}")
+        return pd.DataFrame()
 
 
 def create_metrics_cards(metrics, age_group):

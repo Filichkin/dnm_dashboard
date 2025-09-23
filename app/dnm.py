@@ -21,6 +21,7 @@ from .functions import (
     get_available_years,
     get_current_year,
     load_dashboard_data,
+    load_region_data,
     create_metrics_cards,
     create_charts_container,
     create_dealer_display,
@@ -155,8 +156,20 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     df = process_dataframe(df)
     print(f"После обработки: {len(df)} строк данных")
 
-    # Создаем графики
-    charts = create_charts(df, age_group)
+    # Загружаем данные по региону, если выбран конкретный дилер
+    region_df = None
+    if selected_mobis_code != 'All':
+        print(f"Загружаем данные по региону для mobis_code: "
+              f"{selected_mobis_code}")
+        region_df = load_region_data(selected_year, age_group,
+                                     selected_mobis_code)
+        if not region_df.empty:
+            print(f"Данные по региону загружены: {len(region_df)} моделей")
+        else:
+            print("Нет данных по региону")
+    
+    # Создаем графики с региональными данными
+    charts = create_charts(df, age_group, region_df)
 
     # Создаем таблицу
     from .functions import create_table

@@ -8,7 +8,8 @@ def get_dnm_data(
     age_group: str = '0-10Y',
     selected_mobis_code: str = 'All',
     selected_holding: str = 'All',
-    selected_region: str = 'All'
+    selected_region: str = 'All',
+    group_by_region: bool = False
 ):
     """
     Получает данные DNM из базы данных используя SQL скрипт
@@ -20,15 +21,22 @@ def get_dnm_data(
         selected_mobis_code: Выбранный код дилера ('All' или конкретный код).
         selected_holding: Выбранный holding ('All' или конкретный holding).
         selected_region: Выбранный регион ('All' или конкретный регион).
+        group_by_region: Если True, группирует данные по регионам.
 
     Returns:
         pd.DataFrame: Данные DNM
     """
-    # Определяем имя SQL файла в зависимости от возрастной группы
-    if age_group == '0-5Y':
-        sql_filename = 'dnm_script_age_0_5.sql'
+    # Определяем имя SQL файла в зависимости от возрастной группы и группировки
+    if group_by_region:
+        if age_group == '0-5Y':
+            sql_filename = 'dnm_script_age_0_5_by_region.sql'
+        else:
+            sql_filename = 'dnm_script_age_0_10_by_region.sql'
     else:
-        sql_filename = 'dnm_script_age_0_10.sql'
+        if age_group == '0-5Y':
+            sql_filename = 'dnm_script_age_0_5.sql'
+        else:
+            sql_filename = 'dnm_script_age_0_10.sql'
 
     # Путь к SQL файлу
     sql_file_path = os.path.join(
@@ -45,15 +53,25 @@ def get_dnm_data(
             from datetime import datetime
             selected_year = datetime.now().year
 
-        # Выполняем запрос с параметрами года, mobis_code, holding и region
-        df = db_connection.execute_query(
-            query, {
-                'selected_year': selected_year,
-                'selected_mobis_code': selected_mobis_code,
-                'selected_holding': selected_holding,
-                'selected_region': selected_region
-            }
-        )
+        # Выполняем запрос с параметрами
+        if group_by_region:
+            # Для запросов с группировкой по регионам нужны только год и регион
+            df = db_connection.execute_query(
+                query, {
+                    'selected_year': selected_year,
+                    'selected_region': selected_region
+                }
+            )
+        else:
+            # Для обычных запросов нужны все параметры
+            df = db_connection.execute_query(
+                query, {
+                    'selected_year': selected_year,
+                    'selected_mobis_code': selected_mobis_code,
+                    'selected_holding': selected_holding,
+                    'selected_region': selected_region
+                }
+            )
 
         return df
 
@@ -151,6 +169,37 @@ def get_mobis_codes_by_region(region):
 
     df = db_connection.execute_query(query, {'region': region})
     return df['mobis_code'].tolist()
+
+
+def get_dnm_data_by_region(
+    selected_year: int = None,
+    age_group: str = '0-10Y',
+    selected_mobis_code: str = 'All',
+    selected_holding: str = 'All',
+    selected_region: str = 'All'
+):
+    """
+    Получает данные DNM с группировкой по регионам из базы данных
+
+    Args:
+        selected_year: Выбранный год для фильтрации данных.
+                      Если None, используется текущий год.
+        age_group: Выбранная возрастная группа ('0-10Y' или '0-5Y').
+        selected_mobis_code: Выбранный код дилера ('All' или конкретный код).
+        selected_holding: Выбранный holding ('All' или конкретный holding).
+        selected_region: Выбранный регион ('All' или конкретный регион).
+
+    Returns:
+        pd.DataFrame: Данные DNM сгруппированные по регионам
+    """
+    return get_dnm_data(
+        selected_year=selected_year,
+        age_group=age_group,
+        selected_mobis_code=selected_mobis_code,
+        selected_holding=selected_holding,
+        selected_region=selected_region,
+        group_by_region=True
+    )
 
 
 def test_database_connection():
