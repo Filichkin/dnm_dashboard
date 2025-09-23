@@ -403,9 +403,9 @@ def create_charts(df, age_group='0-10Y'):
     }
 
 
-def create_table(df, age_group='0-10Y'):
+def create_table(df, age_group='0-10Y', show_all_columns=False):
     """
-    Создает таблицу данных
+    Создает таблицу данных с фильтрацией, зеброй и скрытием колонок
 
     Args:
         df: DataFrame с данными
@@ -414,6 +414,14 @@ def create_table(df, age_group='0-10Y'):
     Returns:
         dash_table.DataTable: Таблица данных
     """
+    print("=== СОЗДАНИЕ ТАБЛИЦЫ ===")
+    print(f"create_table: получено {len(df)} строк для возрастной группы "
+          f"{age_group}")
+    if len(df) > 0:
+        models = (df['model'].head(3).tolist()
+                  if 'model' in df.columns else 'Нет колонки model')
+        print(f"Первые 3 модели в таблице: {models}")
+        print(f"Колонки таблицы: {list(df.columns)[:5]}...")
     # Словарь переименований колонок в зависимости от возрастной группы
     if age_group == '0-5Y':
         column_rename = {
@@ -524,16 +532,33 @@ def create_table(df, age_group='0-10Y'):
             columns.append({'name': display_name, 'id': col})
 
     # Фильтруем строки и сортируем по total_ro_cost
-    df_table = df
+    df_table = df.copy()
     total_col = 'total_0_5' if age_group == '0-5Y' else 'total_0_10'
-    if total_col in df_table.columns:
-        df_table = df_table[df_table[total_col] != 0]
-    df_table = (
-        df_table.sort_values('total_ro_cost', ascending=False)
-        if 'total_ro_cost' in df_table.columns else df_table
-    )
 
-    return create_data_table(columns, df_table.to_dict('records'))
+    # Фильтруем строки с валидными данными
+    if total_col in df_table.columns:
+        df_table = df_table[df_table[total_col] > 0]
+
+    # Убираем строки с пустыми или нулевыми значениями в ключевых колонках
+    if 'total_ro_cost' in df_table.columns:
+        df_table = df_table[df_table['total_ro_cost'] > 0]
+
+    # Сортируем по total_ro_cost
+    if 'total_ro_cost' in df_table.columns:
+        df_table = df_table.sort_values('total_ro_cost', ascending=False)
+
+    print(f"create_table: создаем таблицу с {len(df_table)} строками и "
+          f"{len(columns)} колонками")
+    if len(df_table) > 0:
+        models_final = (df_table['model'].head(3).tolist()
+                        if 'model' in df_table.columns
+                        else 'Нет колонки model')
+        print(f"Первые 3 модели в финальной таблице: {models_final}")
+    result = create_data_table(columns, df_table.to_dict('records'),
+                               show_all_columns)
+    print(f"create_table: таблица создана, тип: {type(result)}")
+    print("=== КОНЕЦ СОЗДАНИЯ ТАБЛИЦЫ ===")
+    return result
 
 
 def calculate_metrics(df, age_group='0-10Y'):
@@ -639,18 +664,33 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
     try:
         # Получаем данные для выбранного года, возрастной группы,
         # кода дилера, holding и region
+        print("=== ЗАГРУЗКА ИЗ БД ===")
+        print(f"Параметры: год={selected_year}, группа={age_group}, "
+              f"mobis_code={selected_mobis_code}, holding={selected_holding}, "
+              f"region={selected_region}")
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
                           selected_holding, selected_region)
-        print(f'Данные загружены для года {selected_year}, '
+        print(f'Данные загружены из БД для года {selected_year}, '
               f'группы {age_group}, кода дилера {selected_mobis_code}, '
               f'holding {selected_holding} и region {selected_region}')
+        print(f"Размер данных из БД: {len(df)} строк")
+        if len(df) > 0:
+            models_db = (df['model'].head(3).tolist()
+                         if 'model' in df.columns else 'Нет колонки model')
+            print(f"Первые 3 модели из БД: {models_db}")
     except Exception as e:
         print(f'Ошибка при загрузке данных из БД для года '
               f'{selected_year}, группы {age_group}, кода дилера '
               f'{selected_mobis_code} и holding {selected_holding}: {e}')
         # Fallback на CSV файл в случае ошибки
-        df = pd.read_csv('data/aug_25.csv')
-        print('Используются данные из CSV файла')
+        if selected_year == 2024:
+            # Используем июль 2025 как 2024
+            df = pd.read_csv('data/jul_25.csv')
+            print('Используются данные из CSV файла jul_25.csv (как 2024 год)')
+        else:
+            # Используем август 2025 как 2025
+            df = pd.read_csv('data/aug_25.csv')
+            print('Используются данные из CSV файла aug_25.csv (как 2025 год)')
 
     return df
 

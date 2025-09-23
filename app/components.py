@@ -1,8 +1,8 @@
-from dash import html, dcc, dash_table
+from dash import html, dcc
 
 from .styles import (
     get_card_style, get_graph_style, get_section_style,
-    get_table_styles, CHART_COLORS
+    CHART_COLORS
 )
 from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS, REGION_OPTIONS
 
@@ -79,27 +79,166 @@ def create_graphs_row(graphs: list) -> html.Div:
     return html.Div(graphs, style=get_section_style('graphs_row'))
 
 
-def create_data_table(columns: list, data: list) -> dash_table.DataTable:
+def create_data_table(columns: list, data: list,
+                      show_all_columns: bool = False) -> html.Div:
     """
-    Создает таблицу данных
+    Создает таблицу данных с зеброй, фильтрацией и скрытием колонок
 
     Args:
         columns: Список колонок
         data: Данные для таблицы
+        show_all_columns: Показывать ли все колонки
 
     Returns:
-        dash_table.DataTable: Компонент таблицы
+        html.Div: Компонент таблицы
     """
-    table_styles = get_table_styles()
+    print("=== СОЗДАНИЕ DATA_TABLE ===")
+    print(f"Количество колонок: {len(columns)}")
+    print(f"Количество строк данных: {len(data)}")
+    if len(data) > 0:
+        print(f"Первые 3 записи: {data[:3] if len(data) >= 3 else data}")
+        col_names = [col.get('name', col.get('id', 'unknown'))
+                     for col in columns[:5]]
+        print(f"Колонки: {col_names}")
+    # table_styles = get_table_styles()  # Не используется в HTML таблице
 
-    return dash_table.DataTable(
-        columns=columns,
-        data=data,
-        style_table=table_styles['table'],
-        style_cell=table_styles['cell'],
-        style_header=table_styles['header'],
-        style_data_conditional=table_styles['data_conditional'],
-    )
+    # Находим индекс колонки PPR для скрытия колонок после неё
+    ppr_index = None
+    for i, col in enumerate(columns):
+        if col.get('name') == 'PPR':
+            ppr_index = i
+            break
+
+    # Создаем колонки с возможностью скрытия
+    table_columns = []
+    for i, col in enumerate(columns):
+        column_config = {
+            'name': col['name'],
+            'id': col['id'],
+            'type': col.get('type', 'text'),
+            'format': col.get('format'),
+            'selectable': True,
+            'hideable': True
+        }
+
+        # Скрываем колонки после PPR
+        if ppr_index is not None and i > ppr_index:
+            column_config['hidden'] = True
+
+        table_columns.append(column_config)
+
+    # Стили для зебры (чередующиеся строки)
+    zebra_styles = []
+    for i in range(len(data)):
+        if i % 2 == 0:
+            zebra_styles.append({
+                'if': {'row_index': i},
+                'backgroundColor': '#3a3a3a',  # Основной цвет
+                'color': '#ffffff'
+            })
+        else:
+            zebra_styles.append({
+                'if': {'row_index': i},
+                'backgroundColor': '#4a4a4a',  # Альтернативный цвет
+                'color': '#ffffff'
+            })
+
+    # Объединяем стили зебры с существующими (не используется в HTML таблице)
+    # all_conditional_styles = (table_styles['data_conditional'] +
+    #                          zebra_styles)
+
+    print(f"Создаем DataTable с {len(data)} строками и "
+          f"{len(table_columns)} колонками")
+
+    # Принудительное пересоздание таблицы через изменение структуры
+    import time
+    import random
+
+    # Создаем уникальный ключ для принудительного обновления
+    unique_key = f"table-{int(time.time())}-{random.randint(1000, 9999)}"
+    print(f"Уникальный ключ таблицы: {unique_key}")
+
+    # Создаем HTML таблицу вместо DataTable для гарантированного обновления
+    print(f"Создаем HTML таблицу с {len(data)} строками")
+
+    # Логика выбора колонок для отображения
+    if show_all_columns:
+        # Показываем все колонки
+        visible_columns = table_columns
+        print("Показываем ВСЕ колонки")
+    else:
+        # Находим индекс колонки PPR для скрытия колонок после неё
+        ppr_index = None
+        for i, col in enumerate(table_columns):
+            if col.get('name') == 'PPR':
+                ppr_index = i
+                break
+
+        # Показываем все колонки до PPR включительно
+        if ppr_index is not None:
+            visible_columns = table_columns[:ppr_index + 1]
+            print(f"Скрываем колонки после PPR (индекс {ppr_index})")
+        else:
+            visible_columns = table_columns
+            print("PPR колонка не найдена, показываем все колонки")
+
+    print(f"Показываем {len(visible_columns)} колонок из {len(table_columns)}")
+
+    # Создаем заголовок таблицы
+    header_style = {'padding': '8px', 'borderBottom': '2px solid #4a4a4a',
+                    'backgroundColor': '#2a2a2a', 'color': '#ffffff',
+                    'textAlign': 'center'}  # Центрируем заголовки
+    header_row = html.Tr([
+        html.Th(col['name'], style=header_style)
+        for col in visible_columns
+    ])
+
+    # Создаем строки данных (первые 20 для демонстрации)
+    data_rows = []
+    for i, row in enumerate(data[:20]):
+        cells = []
+        for col in visible_columns:
+            value = row.get(col['id'], '')
+            col_id = col['id']
+
+            # Форматируем числа с центрированием
+            if isinstance(value, (int, float)) and col_id != 'model':
+                if col_id == 'aver_labor_hours_per_vhc':
+                    value = f"{value:.1f}"  # Убираем символ часов
+                elif col_id in ['ro_ratio_of_uio_10y', 'ro_ratio_of_uio_5y']:
+                    value = f"{value:.1f}%"  # Проценты
+                elif col_id in ['pct_age_0_3', 'pct_age_4_5', 'pct_age_6_10']:
+                    value = f"{value:.1f}%"  # Проценты возрастных групп
+                else:
+                    value = f"{value:,.0f}"  # Обычные числа с разделителями
+
+            # Определяем выравнивание - все по центру
+            text_align = 'center'
+            cells.append(html.Td(str(value), style={
+                'padding': '6px 8px',
+                'borderBottom': '1px solid #4a4a4a',
+                'backgroundColor': '#3a3a3a' if i % 2 == 0 else '#4a4a4a',
+                'color': '#ffffff',
+                'textAlign': text_align  # Центрируем числа, левое для модели
+            }))
+        data_rows.append(html.Tr(cells))
+
+    # Создаем таблицу без кнопки
+    result = html.Div([
+        html.Table([
+            html.Thead(header_row),
+            html.Tbody(data_rows)
+        ], style={
+            'width': '100%',
+            'borderCollapse': 'collapse',
+            'backgroundColor': '#3a3a3a',
+            'color': '#ffffff',
+            'fontSize': '12px'
+        })
+    ], key=unique_key)
+
+    print("=== КОНЕЦ СОЗДАНИЯ DATA_TABLE ===")
+    return result
 
 
 def create_year_selector(available_years: list, current_year: int) -> html.Div:
@@ -432,6 +571,48 @@ def create_region_name_display() -> html.Div:
                   })
     ], style={
         'margin': '0',
+        'display': 'flex',
+        'align-items': 'center',
+        'justify-content': 'flex-start',
+        'padding': '10px 20px',
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
+    })
+
+
+def create_model_filter() -> html.Div:
+    """
+    Создает фильтр по модели для таблицы
+
+    Returns:
+        html.Div: Компонент фильтра по модели
+    """
+    return html.Div([
+        html.Label('Filter by Model:',
+                   style={
+                       'font-weight': 'bold',
+                       'margin-right': '15px',
+                       'font-size': '1.2em',
+                       'color': '#ffffff'
+                   }),
+        dcc.Dropdown(
+            id='model-filter',
+            placeholder='Select model to filter...',
+            clearable=True,
+            searchable=True,
+            style={
+                'width': '300px',
+                'display': 'inline-block',
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40
+        )
+    ], style={
+        'margin': '0 0 20px 0',
         'display': 'flex',
         'align-items': 'center',
         'justify-content': 'flex-start',

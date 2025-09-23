@@ -17,7 +17,6 @@ from .components import (
 from .functions import (
     process_dataframe,
     create_charts,
-    create_table,
     calculate_metrics,
     get_available_years,
     get_current_year,
@@ -99,7 +98,6 @@ app.layout = html.Div([
     [Output('data-store', 'data'),
      Output('metrics-cards', 'children'),
      Output('charts-container', 'children'),
-     Output('data-table', 'children'),
      Output('dealer-name-container', 'children'),
      Output('holding-name-container', 'children'),
      Output('region-name-container', 'children')],
@@ -127,17 +125,34 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
                отображение holding, отображение region
     """
     # Загружаем данные
+    print("=== ОБНОВЛЕНИЕ ДАШБОРДА ===")
+    print(f"Загружаем данные для года: {selected_year}, "
+          f"возрастной группы: {age_group}")
+    print(f"Mobis Code: {selected_mobis_code}, Holding: {selected_holding}, "
+          f"Region: {selected_region}")
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
                              selected_holding, selected_region)
+    print(f"Загружено {len(df)} строк данных")
+    if len(df) > 0:
+        models = (df['model'].head(3).tolist()
+                  if 'model' in df.columns else 'Нет колонки model')
+        print(f"Первые 3 модели: {models}")
+        print(f"Колонки: {list(df.columns)[:5]}...")
 
     # Обрабатываем данные
     df = process_dataframe(df)
+    print(f"После обработки: {len(df)} строк данных")
 
     # Создаем графики
     charts = create_charts(df, age_group)
 
     # Создаем таблицу
+    from .functions import create_table
+    print(f"Создаем таблицу с {len(df)} строками для возрастной группы "
+          f"{age_group}")
     table = create_table(df, age_group)
+    print(f"Таблица создана: {type(table)}")
+    print("=== ТАБЛИЦА ГОТОВА К ОТОБРАЖЕНИЮ ===")
 
     # Вычисляем метрики
     metrics = calculate_metrics(df, age_group)
@@ -158,7 +173,7 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     region_display = create_region_display(selected_region)
 
     return (df.to_dict('records'), metrics_cards, charts_container,
-            table, dealer_display, holding_display, region_display)
+            dealer_display, holding_display, region_display)
 
 
 @callback(
@@ -201,6 +216,52 @@ def update_mobis_code_options(selected_holding, selected_region):
     current_value = 'All'  # По умолчанию всегда 'All'
 
     return new_options, current_value
+
+
+@callback(
+    Output('data-table', 'children'),
+    [Input('year-selector', 'value'),
+     Input('age-group-selector', 'value'),
+     Input('mobis-code-selector', 'value'),
+     Input('holding-selector', 'value'),
+     Input('region-selector', 'value')]
+)
+def update_table(selected_year, age_group, selected_mobis_code,
+                 selected_holding, selected_region):
+    """
+    Обновляет таблицу при изменении параметров
+
+    Args:
+        selected_year: Выбранный год
+        age_group: Выбранная возрастная группа
+        selected_mobis_code: Выбранный код дилера
+        selected_holding: Выбранный holding
+        selected_region: Выбранный region
+
+    Returns:
+        html.Div: Обновленная таблица
+    """
+    print("=== ОБНОВЛЕНИЕ ТАБЛИЦЫ ===")
+    print(f"Параметры: год={selected_year}, группа={age_group}")
+
+    # По умолчанию скрываем колонки после PPR
+    show_all_columns = False
+    print(f"Состояние колонок: {show_all_columns}")
+
+    # Загружаем данные
+    df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
+                             selected_holding, selected_region)
+    print(f"Загружено {len(df)} строк для таблицы")
+
+    # Обрабатываем данные
+    df = process_dataframe(df)
+
+    # Создаем таблицу
+    from .functions import create_table
+    table = create_table(df, age_group, show_all_columns)
+    print("=== ТАБЛИЦА ОБНОВЛЕНА ===")
+
+    return table
 
 
 @callback(

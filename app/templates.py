@@ -58,6 +58,25 @@ DASHBOARD_TEMPLATE = '''
                 border-top-color: #ffffff !important;
             }
 
+            /* Стили для кнопки Toggle Columns */
+            .dash-table-toolbar button,
+            .dash-table-toolbar .dash-table-toolbar__button,
+            .dash-table-toolbar [role="button"] {
+                background-color: #00d4ff !important;
+                color: #1a1a1a !important;
+                border: 1px solid #00d4ff !important;
+                border-radius: 8px !important;
+                padding: 8px 16px !important;
+                font-weight: bold !important;
+                transition: all 0.3s ease !important;
+            }
+            .dash-table-toolbar button:hover,
+            .dash-table-toolbar .dash-table-toolbar__button:hover,
+            .dash-table-toolbar [role="button"]:hover {
+                background-color: #00b8e6 !important;
+                border-color: #00b8e6 !important;
+            }
+
             /* Планшеты и маленькие экраны */
             @media (max-width: 1024px) {
                 .metric-card {
