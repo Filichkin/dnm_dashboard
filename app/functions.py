@@ -108,20 +108,29 @@ def create_charts(df, age_group='0-10Y'):
     fig_profit.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
-        textfont_size=11
+        textfont_size=11,
+        textfont_color='white'
     )
     fig_profit.update_yaxes(
         tickformat=',d',
         title='Amount',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
     )
     fig_profit.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False,
+        tickangle=-45
     )
     fig_profit.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white')
     )
     fig_profit.update_traces(marker_color=get_chart_color(0))
 
@@ -151,20 +160,29 @@ def create_charts(df, age_group='0-10Y'):
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
-        textfont_size=11
+        textfont_size=11,
+        textfont_color='white'
     )
     fig_mh.update_yaxes(
         tickformat=',d',
         title='L/H',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
     )
     fig_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False,
+        tickangle=-45
     )
     fig_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white')
     )
     fig_mh.update_traces(marker_color=get_chart_color(1))
 
@@ -178,19 +196,28 @@ def create_charts(df, age_group='0-10Y'):
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
         textposition='inside',
-        textfont_size=11
+        textfont_size=11,
+        textfont_color='white'
     )
     fig_avg_mh.update_yaxes(
         title='L/H per RO',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
     )
     fig_avg_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False,
+        tickangle=-45
     )
     fig_avg_mh.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white')
     )
     fig_avg_mh.update_traces(marker_color=get_chart_color(2))
 
@@ -204,20 +231,29 @@ def create_charts(df, age_group='0-10Y'):
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
         textposition='inside',
-        textfont_size=11
+        textfont_size=11,
+        textfont_color='white'
     )
     fig_avg_check.update_yaxes(
         tickformat=',d',
         title='CPR',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
     )
     fig_avg_check.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False,
+        tickangle=-45
     )
     fig_avg_check.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white')
     )
     fig_avg_check.update_traces(marker_color=get_chart_color(3))
 
@@ -231,7 +267,8 @@ def create_charts(df, age_group='0-10Y'):
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
         textposition='inside',
-        textfont_size=11
+        textfont_size=11,
+        textfont_color='white'
     )
 
     # Определяем название для оси Y в зависимости от возрастной группы
@@ -240,15 +277,23 @@ def create_charts(df, age_group='0-10Y'):
 
     fig_ratio.update_yaxes(
         title=ratio_title,
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
     )
     fig_ratio.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='black')
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False,
+        tickangle=-45
     )
     fig_ratio.update_layout(
         margin=dict(t=60, b=60, l=60, r=60),
-        showlegend=False
+        showlegend=False,
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white')
     )
     fig_ratio.update_traces(marker_color=get_chart_color(4))
 
@@ -314,25 +359,36 @@ def create_charts(df, age_group='0-10Y'):
                 textfont=dict(size=11),
             ))
     fig_ro_years.update_traces(
-        texttemplate='%{text:,.0f}'
+        texttemplate='%{text:,.0f}',
+        textfont_color='white',
+        textfont_size=11
     )
     fig_ro_years.update_layout(
         barmode='stack',
         xaxis_title='Model',
         yaxis_title='RO qty',
         margin=dict(t=60, b=60, l=60, r=60),
+        plot_bgcolor='#3a3a3a',
+        paper_bgcolor='#3a3a3a',
+        font=dict(color='white'),
         legend=dict(
             orientation='h',
             yanchor='bottom',
             y=1.02,
             xanchor='right',
-            x=1
+            x=1,
+            font=dict(color='white')
         ),
         xaxis=dict(
-            title_font=dict(size=14, family='Arial', color='black')
+            title_font=dict(size=14, family='Arial', color='white'),
+            tickfont=dict(color='white'),
+            showgrid=False,
+            tickangle=-45
         ),
         yaxis=dict(
-            title_font=dict(size=14, family='Arial', color='black')
+            title_font=dict(size=14, family='Arial', color='white'),
+            tickfont=dict(color='white'),
+            showgrid=False
         )
     )
     fig_ro_years.update_yaxes(tickformat=',d')

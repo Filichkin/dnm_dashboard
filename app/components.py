@@ -42,7 +42,12 @@ def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
     styles = get_graph_style(height)
 
     return html.Div([
-        html.H2(title),
+        html.H2(title, style={
+            'color': '#ffffff',
+            'marginBottom': '15px',
+            'fontSize': '1.5em',
+            'fontWeight': 'bold'
+        }),
         dcc.Graph(figure=figure, style=styles['graph'])
     ], style=styles['container'],
        className=styles['container'].get('className', ''))
@@ -116,7 +121,7 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.2em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         dcc.Dropdown(
             id='year-selector',
@@ -126,8 +131,12 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em'
-            }
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40,
+            searchable=False
         )
     ], style={
         'margin': '0',
@@ -135,9 +144,10 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -172,7 +182,7 @@ def create_age_group_selector() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.2em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         dcc.Dropdown(
             id='age-group-selector',
@@ -182,8 +192,12 @@ def create_age_group_selector() -> html.Div:
             style={
                 'width': '150px',
                 'display': 'inline-block',
-                'font-size': '1.1em'
-            }
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40,
+            searchable=False
         )
     ], style={
         'margin': '0',
@@ -191,9 +205,10 @@ def create_age_group_selector() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -210,7 +225,7 @@ def create_mobis_code_selector() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.2em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         dcc.Dropdown(
             id='mobis-code-selector',
@@ -220,8 +235,12 @@ def create_mobis_code_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em'
-            }
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40,
+            searchable=False
         )
     ], style={
         'margin': '0',
@@ -229,9 +248,10 @@ def create_mobis_code_selector() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -248,7 +268,7 @@ def create_holding_selector() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.2em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         dcc.Dropdown(
             id='holding-selector',
@@ -258,8 +278,12 @@ def create_holding_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em'
-            }
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40,
+            searchable=False
         )
     ], style={
         'margin': '0',
@@ -267,9 +291,10 @@ def create_holding_selector() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -286,7 +311,7 @@ def create_region_selector() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.2em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         dcc.Dropdown(
             id='region-selector',
@@ -296,8 +321,12 @@ def create_region_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em'
-            }
+                'font-size': '1.1em',
+                'backgroundColor': '#3a3a3a',
+                'color': '#ffffff'
+            },
+            optionHeight=40,
+            searchable=False
         )
     ], style={
         'margin': '0',
@@ -305,9 +334,10 @@ def create_region_selector() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -324,12 +354,12 @@ def create_dealer_name_display() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.4em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         html.Span(id='dealer-name-display',
                   style={
                       'font-size': '1.3em',
-                      'color': '#2c3e50',
+                      'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
     ], style={
@@ -338,9 +368,10 @@ def create_dealer_name_display() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -357,12 +388,12 @@ def create_holding_name_display() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.4em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         html.Span(id='holding-name-display',
                   style={
                       'font-size': '1.3em',
-                      'color': '#2c3e50',
+                      'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
     ], style={
@@ -371,9 +402,10 @@ def create_holding_name_display() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -390,12 +422,12 @@ def create_region_name_display() -> html.Div:
                        'font-weight': 'bold',
                        'margin-right': '15px',
                        'font-size': '1.4em',
-                       'color': '#2c3e50'
+                       'color': '#ffffff'
                    }),
         html.Span(id='region-name-display',
                   style={
                       'font-size': '1.3em',
-                      'color': '#2c3e50',
+                      'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
     ], style={
@@ -404,9 +436,10 @@ def create_region_name_display() -> html.Div:
         'align-items': 'center',
         'justify-content': 'flex-start',
         'padding': '10px 20px',
-        'backgroundColor': '#ecf0f1',
-        'borderRadius': '10px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+        'backgroundColor': '#3a3a3a',
+        'borderRadius': '12px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': '1px solid #4a4a4a'
     })
 
 
@@ -423,16 +456,17 @@ def create_export_button() -> html.Div:
             id='export-csv-button',
             n_clicks=0,
             style={
-                'backgroundColor': '#3498db',
-                'color': 'white',
+                'backgroundColor': '#00d4ff',
+                'color': '#1a1a1a',
                 'border': 'none',
-                'padding': '10px 20px',
-                'borderRadius': '5px',
+                'padding': '12px 24px',
+                'borderRadius': '8px',
                 'cursor': 'pointer',
                 'fontSize': '14px',
                 'fontWeight': 'bold',
                 'margin': '10px 0',
-                'boxShadow': '0 2px 4px rgba(0,0,0,0.1)'
+                'boxShadow': '0 4px 12px rgba(0,212,255,0.3)',
+                'transition': 'all 0.3s ease'
             }
         ),
         dcc.Download(id='download-csv')

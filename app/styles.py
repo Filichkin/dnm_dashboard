@@ -3,43 +3,52 @@
 Содержит все повторяющиеся стили для компонентов интерфейса
 """
 
-# Цветовая палитра
+# Цветовая палитра для темной темы
 COLORS = {
-    'primary': '#3498db',
-    'secondary': '#2c3e50',
-    'background': '#ecf0f1',
-    'text_primary': '#2c3e50',
-    'text_secondary': '#3498db',
+    'primary': '#00d4ff',  # Яркий голубой
+    'secondary': '#1a1a1a',  # Очень темный серый
+    'background': '#2d2d2d',  # Темно-серый фон
+    'card_background': '#3a3a3a',  # Фон карточек
+    'text_primary': '#ffffff',  # Белый текст
+    'text_secondary': '#00d4ff',  # Голубой текст
+    'text_muted': '#b0b0b0',  # Приглушенный текст
+    'success': '#00ff88',  # Зеленый для успеха
+    'warning': '#ff6b35',  # Оранжевый для предупреждений
+    'danger': '#ff4757',  # Красный для ошибок
+    'border': '#4a4a4a',  # Границы
 }
 
 # Стили для карточек с метриками
 CARD_STYLES = {
     'container': {
-        'backgroundColor': COLORS['background'],
+        'backgroundColor': COLORS['card_background'],
         'padding': '20px',
-        'borderRadius': '10px',
+        'borderRadius': '12px',
         'textAlign': 'center',
         'margin': '10px',
         'flex': '1',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
-        'minHeight': '100px',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'minHeight': '120px',
         'display': 'flex',
         'flexDirection': 'column',
         'justifyContent': 'center',
         'alignItems': 'center',
-        'className': 'metric-card'
+        'border': f'1px solid {COLORS["border"]}',
+        'className': 'metric-card',
+        'transition': 'all 0.3s ease'
     },
     'title': {
         'margin': '0',
-        'color': COLORS['text_primary'],
-        'fontSize': '1.3em',
-        'marginBottom': '15px'
+        'color': COLORS['text_muted'],
+        'fontSize': '1.1em',
+        'marginBottom': '10px',
+        'fontWeight': '500'
     },
     'value': {
         'margin': '0',
-        'color': COLORS['text_secondary'],
-        'fontSize': '2.2em',
-        'fontWeight': 'normal'
+        'color': COLORS['text_primary'],
+        'fontSize': '2.5em',
+        'fontWeight': 'bold'
     }
 }
 
@@ -48,10 +57,11 @@ GRAPH_STYLES = {
     'container': {
         'flex': '1',
         'margin': '10px',
-        'backgroundColor': COLORS['background'],
-        'borderRadius': '10px',
+        'backgroundColor': COLORS['card_background'],
+        'borderRadius': '12px',
         'padding': '20px',
-        'boxShadow': '0 2px 4px rgba(0,0,0,0.1)',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
+        'border': f'1px solid {COLORS["border"]}',
         'className': 'graph-container'
     },
     'graph': {
@@ -83,27 +93,38 @@ SECTION_STYLES = {
 # Стили для таблицы
 TABLE_STYLES = {
     'table': {
-        'overflowX': 'auto'
+        'overflowX': 'auto',
+        'backgroundColor': COLORS['card_background'],
+        'borderRadius': '12px',
+        'border': f'1px solid {COLORS["border"]}',
+        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)'
     },
     'cell': {
         'textAlign': 'center',
         'minWidth': '40px',
         'maxWidth': '90px',
         'whiteSpace': 'normal',
-        'padding': '2px',
+        'padding': '8px',
         'fontSize': '11px',
+        'backgroundColor': COLORS['card_background'],
+        'color': COLORS['text_primary'],
+        'border': f'1px solid {COLORS["border"]}'
     },
     'header': {
         'whiteSpace': 'normal',
         'height': 'auto',
         'lineHeight': '14px',
-        'padding': '2px',
+        'padding': '8px',
         'overflow': 'visible',
         'textOverflow': 'clip',
         'maxWidth': 'none',
         'wordBreak': 'break-word',
         'overflowWrap': 'anywhere',
         'textAlign': 'center',
+        'backgroundColor': COLORS['secondary'],
+        'color': COLORS['text_primary'],
+        'fontWeight': 'bold',
+        'border': f'1px solid {COLORS["border"]}'
     },
     'data_conditional': [
         {
@@ -113,13 +134,18 @@ TABLE_STYLES = {
     ]
 }
 
-# Цвета для графиков
+# Цвета для графиков (темные тона для лучшей читаемости)
 CHART_COLORS = [
-    '#90a4ae',  # blue gray (calm)
-    '#a5d6a7',  # soft green
-    '#d7ccc8',  # soft brown/gray
-    '#b0bec5',  # light blue gray
-    '#cfd8dc',  # very light blue gray
+    '#2c3e50',  # Темно-синий
+    '#27ae60',  # Темно-зеленый
+    '#e67e22',  # Темно-оранжевый
+    '#e74c3c',  # Темно-красный
+    '#8e44ad',  # Темно-фиолетовый
+    '#f39c12',  # Темно-желтый
+    '#c0392b',  # Темно-бордовый
+    '#16a085',  # Темно-бирюзовый
+    '#9b59b6',  # Темно-пурпурный
+    '#3498db',  # Темно-голубой
 ]
 
 # Адаптивные стили для основного контейнера
@@ -128,7 +154,7 @@ RESPONSIVE_STYLES = {
         'padding': '20px',
         'maxWidth': '100%',
         'margin': '0 auto',
-        'backgroundColor': '#f8f9fa',
+        'backgroundColor': COLORS['background'],
         'minHeight': '100vh',
         'fontFamily': 'Arial, sans-serif',
         'className': 'main-container'

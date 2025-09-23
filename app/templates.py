@@ -21,6 +21,43 @@ DASHBOARD_TEMPLATE = '''
                 transition: all 0.3s ease;
             }
 
+            /* Темная тема для выпадающих списков */
+            .Select-control {
+                background-color: #3a3a3a !important;
+                border-color: #4a4a4a !important;
+                color: #ffffff !important;
+            }
+            .Select-value-label {
+                color: #ffffff !important;
+            }
+            .Select-input {
+                color: #ffffff !important;
+            }
+            .Select-menu-outer {
+                background-color: #3a3a3a !important;
+                border: 1px solid #4a4a4a !important;
+            }
+            .Select-option {
+                background-color: #3a3a3a !important;
+                color: #ffffff !important;
+            }
+            .Select-option:hover {
+                background-color: #4a4a4a !important;
+            }
+            .Select-option.is-selected {
+                background-color: #00d4ff !important;
+                color: #1a1a1a !important;
+            }
+            .Select-option.is-focused {
+                background-color: #4a4a4a !important;
+            }
+            .Select-placeholder {
+                color: #b0b0b0 !important;
+            }
+            .Select-arrow {
+                border-top-color: #ffffff !important;
+            }
+
             /* Планшеты и маленькие экраны */
             @media (max-width: 1024px) {
                 .metric-card {
