@@ -130,6 +130,18 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
           f"возрастной группы: {age_group}")
     print(f"Mobis Code: {selected_mobis_code}, Holding: {selected_holding}, "
           f"Region: {selected_region}")
+
+    # Проверяем, что все параметры не None
+    params = [selected_year, age_group, selected_mobis_code,
+              selected_holding, selected_region]
+    if any(param is None for param in params):
+        print("ОШИБКА: Один или несколько параметров равны None!")
+        print(f"selected_year: {selected_year}")
+        print(f"age_group: {age_group}")
+        print(f"selected_mobis_code: {selected_mobis_code}")
+        print(f"selected_holding: {selected_holding}")
+        print(f"selected_region: {selected_region}")
+        return [], [], [], [], [], []
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
                              selected_holding, selected_region)
     print(f"Загружено {len(df)} строк данных")
@@ -214,6 +226,13 @@ def update_mobis_code_options(selected_holding, selected_region):
     # Если текущее значение Mobis Code не входит в новые опции,
     # сбрасываем на 'All'
     current_value = 'All'  # По умолчанию всегда 'All'
+
+    # Добавляем отладочную информацию
+    print("=== ОБНОВЛЕНИЕ ОПЦИЙ MOBIS CODE ===")
+    print(f"selected_holding: {selected_holding}")
+    print(f"selected_region: {selected_region}")
+    print(f"Количество опций после фильтрации: {len(new_options)}")
+    print(f"Новое значение: {current_value}")
 
     return new_options, current_value
 
