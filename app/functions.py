@@ -107,6 +107,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         x='model',
         y='total_ro_cost',
         text='total_ro_cost',
+        color_discrete_sequence=['#1f77b4']
     )
 
     # Добавляем трассу с региональными данными, если они есть
@@ -123,14 +124,29 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 y=region_filtered['total_ro_cost'],
                 mode='markers',
                 name='Region Average',
-                marker=dict(
-                    color='red',
-                    size=12,
-                    symbol='circle',
-                    line=dict(width=2, color='white')
-                ),
-                yaxis='y2'
+                yaxis='y2',
+                marker=dict(size=8, symbol='circle',
+                            line=dict(width=1, color='white'))
             ))
+
+            # Жёстко задаём цвет именно последнему (scatter) трэйсу
+            sc = fig_profit.data[-1]
+
+            # 1) на всякий случай отключаем любую цветовую ось/палитру
+            sc.marker.coloraxis = None
+            fig_profit.update_layout(coloraxis=None)
+
+            # 2) задаём собственный цвет (как массив — ничего не перетрёт)
+            sc.marker.color = ['#00ff88'] * len(region_filtered)
+
+            # 3) обводка — как хотели
+            sc.marker.line.color = '#00ff88'
+            sc.marker.line.width = 1
+            sc.marker.symbol = 'circle'
+
+    # ЖЁСТКО зафиксировать цвета по типам трейсов
+    fig_profit.update_traces(marker=dict(color='#1f77b4'),
+                             selector=dict(type='bar'), overwrite=True)
 
     # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
@@ -140,14 +156,6 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         textfont_color='white',
         selector=dict(type='bar')
     )
-    fig_profit.update_yaxes(
-        tickformat=',d',
-        title='Amount',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
-        showgrid=False
-    )
-
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_profit.update_layout(
@@ -158,8 +166,18 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 overlaying='y',
                 side='right',
                 showgrid=False
-            )
+            ),
+            colorway=None  # отключаем автопалитру
         )
+
+    fig_profit.update_yaxes(
+        tickformat=',d',
+        title='Amount',
+        title_font=dict(size=14, family='Arial', color='white'),
+        tickfont=dict(color='white'),
+        showgrid=False
+    )
+
     fig_profit.update_xaxes(
         title='Model',
         title_font=dict(size=14, family='Arial', color='white'),
@@ -182,7 +200,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         )
     )
-    fig_profit.update_traces(marker_color=get_chart_color(0))
+    fig_profit.update_traces(marker_color=get_chart_color(0),
+                             selector=dict(type='bar'))
 
     # Определяем колонки в зависимости от возрастной группы
     if age_group == '0-5Y':
@@ -206,6 +225,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         x='model',
         y=labor_hours_col,
         text=labor_hours_col,
+        color_discrete_sequence=['#1f77b4']
     )
 
     # Добавляем трассу с региональными данными, если они есть
@@ -222,14 +242,29 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 y=region_filtered[labor_hours_col],
                 mode='markers',
                 name='Region Average',
-                marker=dict(
-                    color='red',
-                    size=12,
-                    symbol='circle',
-                    line=dict(width=2, color='white')
-                ),
-                yaxis='y2'
+                yaxis='y2',
+                marker=dict(size=8, symbol='circle',
+                            line=dict(width=1, color='white'))
             ))
+
+            # Жёстко задаём цвет именно последнему (scatter) трэйсу
+            sc = fig_mh.data[-1]
+
+            # 1) на всякий случай отключаем любую цветовую ось/палитру
+            sc.marker.coloraxis = None
+            fig_mh.update_layout(coloraxis=None)
+
+            # 2) задаём собственный цвет (как массив — ничего не перетрёт)
+            sc.marker.color = ['#00ff88'] * len(region_filtered)
+
+            # 3) обводка — как хотели
+            sc.marker.line.color = '#00ff88'
+            sc.marker.line.width = 1
+            sc.marker.symbol = 'circle'
+
+    # ЖЁСТКО зафиксировать цвета по типам трейсов
+    fig_mh.update_traces(marker=dict(color='#1f77b4'),
+                         selector=dict(type='bar'), overwrite=True)
 
     # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
@@ -257,7 +292,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 overlaying='y',
                 side='right',
                 showgrid=False
-            )
+            ),
+            colorway=None  # отключаем автопалитру
         )
     fig_mh.update_xaxes(
         title='Model',
@@ -281,7 +317,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         )
     )
-    fig_mh.update_traces(marker_color=get_chart_color(1))
+    fig_mh.update_traces(marker_color=get_chart_color(1),
+                         selector=dict(type='bar'))
 
     # 2.1 Среднее количество часов по моделям
     fig_avg_mh = px.bar(
@@ -289,6 +326,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         x='model',
         y='aver_labor_hours_per_vhc',
         text='aver_labor_hours_per_vhc',
+        color_discrete_sequence=['#1f77b4']
     )
 
     # Добавляем трассу с региональными данными, если они есть
@@ -305,14 +343,29 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 y=region_filtered['aver_labor_hours_per_vhc'],
                 mode='markers',
                 name='Region Average',
-                marker=dict(
-                    color='red',
-                    size=12,
-                    symbol='circle',
-                    line=dict(width=2, color='white')
-                ),
-                yaxis='y2'
+                yaxis='y2',
+                marker=dict(size=8, symbol='circle',
+                            line=dict(width=1, color='white'))
             ))
+
+            # Жёстко задаём цвет именно последнему (scatter) трэйсу
+            sc = fig_avg_mh.data[-1]
+
+            # 1) на всякий случай отключаем любую цветовую ось/палитру
+            sc.marker.coloraxis = None
+            fig_avg_mh.update_layout(coloraxis=None)
+
+            # 2) задаём собственный цвет (как массив — ничего не перетрёт)
+            sc.marker.color = ['#00ff88'] * len(region_filtered)
+
+            # 3) обводка — как хотели
+            sc.marker.line.color = '#00ff88'
+            sc.marker.line.width = 1
+            sc.marker.symbol = 'circle'
+
+    # ЖЁСТКО зафиксировать цвета по типам трейсов
+    fig_avg_mh.update_traces(marker=dict(color='#1f77b4'),
+                             selector=dict(type='bar'), overwrite=True)
 
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
@@ -339,7 +392,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 overlaying='y',
                 side='right',
                 showgrid=False
-            )
+            ),
+            colorway=None  # отключаем автопалитру
         )
     fig_avg_mh.update_xaxes(
         title='Model',
@@ -363,7 +417,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         )
     )
-    fig_avg_mh.update_traces(marker_color=get_chart_color(2))
+    fig_avg_mh.update_traces(marker_color=get_chart_color(2),
+                             selector=dict(type='bar'))
 
     # 3. Средний чек по моделям (Average RO cost)
     fig_avg_check = px.bar(
@@ -371,6 +426,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         x='model',
         y='avg_ro_cost',
         text='avg_ro_cost',
+        color_discrete_sequence=['#1f77b4']
     )
 
     # Добавляем трассу с региональными данными, если они есть
@@ -386,14 +442,29 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 y=region_filtered['avg_ro_cost'],
                 mode='markers',
                 name='Region Average',
-                marker=dict(
-                    color='red',
-                    size=12,
-                    symbol='circle',
-                    line=dict(width=2, color='white')
-                ),
-                yaxis='y2'
+                yaxis='y2',
+                marker=dict(size=8, symbol='circle',
+                            line=dict(width=1, color='white'))
             ))
+
+            # Жёстко задаём цвет именно последнему (scatter) трэйсу
+            sc = fig_avg_check.data[-1]
+
+            # 1) на всякий случай отключаем любую цветовую ось/палитру
+            sc.marker.coloraxis = None
+            fig_avg_check.update_layout(coloraxis=None)
+
+            # 2) задаём собственный цвет (как массив — ничего не перетрёт)
+            sc.marker.color = ['#00ff88'] * len(region_filtered)
+
+            # 3) обводка — как хотели
+            sc.marker.line.color = '#00ff88'
+            sc.marker.line.width = 1
+            sc.marker.symbol = 'circle'
+
+    # ЖЁСТКО зафиксировать цвета по типам трейсов
+    fig_avg_check.update_traces(marker=dict(color='#1f77b4'),
+                                selector=dict(type='bar'), overwrite=True)
 
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
@@ -421,7 +492,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 overlaying='y',
                 side='right',
                 showgrid=False
-            )
+            ),
+            colorway=None  # отключаем автопалитру
         )
     fig_avg_check.update_xaxes(
         title='Model',
@@ -445,7 +517,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         )
     )
-    fig_avg_check.update_traces(marker_color=get_chart_color(3))
+    fig_avg_check.update_traces(marker_color=get_chart_color(3),
+                                selector=dict(type='bar'))
 
     # 4. Ratio – кол-во заказ нарядов / UIO
     fig_ratio = px.bar(
@@ -453,6 +526,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         x='model',
         y=ratio_col,
         text=ratio_col,
+        color_discrete_sequence=['#1f77b4']
     )
 
     # Добавляем трассу с региональными данными, если они есть
@@ -468,14 +542,29 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 y=region_filtered[ratio_col],
                 mode='markers',
                 name='Region Average',
-                marker=dict(
-                    color='red',
-                    size=12,
-                    symbol='circle',
-                    line=dict(width=2, color='white')
-                ),
-                yaxis='y2'
+                yaxis='y2',
+                marker=dict(size=8, symbol='circle',
+                            line=dict(width=1, color='white'))
             ))
+
+            # Жёстко задаём цвет именно последнему (scatter) трэйсу
+            sc = fig_ratio.data[-1]
+
+            # 1) на всякий случай отключаем любую цветовую ось/палитру
+            sc.marker.coloraxis = None
+            fig_ratio.update_layout(coloraxis=None)
+
+            # 2) задаём собственный цвет (как массив — ничего не перетрёт)
+            sc.marker.color = ['#00ff88'] * len(region_filtered)
+
+            # 3) обводка — как хотели
+            sc.marker.line.color = '#00ff88'
+            sc.marker.line.width = 1
+            sc.marker.symbol = 'circle'
+
+    # ЖЁСТКО зафиксировать цвета по типам трейсов
+    fig_ratio.update_traces(marker=dict(color='#1f77b4'),
+                            selector=dict(type='bar'), overwrite=True)
 
     # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
@@ -507,7 +596,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 overlaying='y',
                 side='right',
                 showgrid=False
-            )
+            ),
+            colorway=None  # отключаем автопалитру
         )
     fig_ratio.update_xaxes(
         title='Model',
@@ -531,7 +621,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         )
     )
-    fig_ratio.update_traces(marker_color=get_chart_color(4))
+    fig_ratio.update_traces(marker_color=get_chart_color(4),
+                            selector=dict(type='bar'))
 
     # 5. Количество заказ-нарядов по годам
     df_ro = df
