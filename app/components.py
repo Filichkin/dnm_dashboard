@@ -92,14 +92,6 @@ def create_data_table(columns: list, data: list,
     Returns:
         html.Div: Компонент таблицы
     """
-    print("=== СОЗДАНИЕ DATA_TABLE ===")
-    print(f"Количество колонок: {len(columns)}")
-    print(f"Количество строк данных: {len(data)}")
-    if len(data) > 0:
-        print(f"Первые 3 записи: {data[:3] if len(data) >= 3 else data}")
-        col_names = [col.get('name', col.get('id', 'unknown'))
-                     for col in columns[:5]]
-        print(f"Колонки: {col_names}")
     # table_styles = get_table_styles()  # Не используется в HTML таблице
 
     # Находим индекс колонки PPR для скрытия колонок после неё
@@ -147,25 +139,19 @@ def create_data_table(columns: list, data: list,
     # all_conditional_styles = (table_styles['data_conditional'] +
     #                          zebra_styles)
 
-    print(f"Создаем DataTable с {len(data)} строками и "
-          f"{len(table_columns)} колонками")
-
     # Принудительное пересоздание таблицы через изменение структуры
     import time
     import random
 
     # Создаем уникальный ключ для принудительного обновления
     unique_key = f"table-{int(time.time())}-{random.randint(1000, 9999)}"
-    print(f"Уникальный ключ таблицы: {unique_key}")
 
     # Создаем HTML таблицу вместо DataTable для гарантированного обновления
-    print(f"Создаем HTML таблицу с {len(data)} строками")
 
     # Логика выбора колонок для отображения
     if show_all_columns:
         # Показываем все колонки
         visible_columns = table_columns
-        print("Показываем ВСЕ колонки")
     else:
         # Находим индекс колонки PPR для скрытия колонок после неё
         ppr_index = None
@@ -177,12 +163,8 @@ def create_data_table(columns: list, data: list,
         # Показываем все колонки до PPR включительно
         if ppr_index is not None:
             visible_columns = table_columns[:ppr_index + 1]
-            print(f"Скрываем колонки после PPR (индекс {ppr_index})")
         else:
             visible_columns = table_columns
-            print("PPR колонка не найдена, показываем все колонки")
-
-    print(f"Показываем {len(visible_columns)} колонок из {len(table_columns)}")
 
     # Создаем заголовок таблицы
     header_style = {'padding': '8px', 'borderBottom': '2px solid #4a4a4a',
@@ -237,7 +219,6 @@ def create_data_table(columns: list, data: list,
         })
     ], key=unique_key)
 
-    print("=== КОНЕЦ СОЗДАНИЯ DATA_TABLE ===")
     return result
 
 

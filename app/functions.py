@@ -108,13 +108,15 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         y='total_ro_cost',
         text='total_ro_cost',
     )
-    
+
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = filtered_df.sort_values('total_ro_cost', ascending=False).head(10)['model'].tolist()
+        top_10_models = (filtered_df.sort_values('total_ro_cost',
+                                                 ascending=False)
+                         .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
-        
+
         if not region_filtered.empty:
             fig_profit.add_trace(go.Scatter(
                 x=region_filtered['model'],
@@ -129,7 +131,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 yaxis='y2'
             ))
-    
+
     # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
         texttemplate='%{text:,.0f}',
@@ -145,7 +147,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         tickfont=dict(color='white'),
         showgrid=False
     )
-    
+
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_profit.update_layout(
@@ -205,13 +207,15 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         y=labor_hours_col,
         text=labor_hours_col,
     )
-    
+
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = filtered_df.sort_values(labor_hours_col, ascending=False).head(10)['model'].tolist()
+        top_10_models = (filtered_df.sort_values(labor_hours_col,
+                                                 ascending=False)
+                         .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
-        
+
         if not region_filtered.empty:
             fig_mh.add_trace(go.Scatter(
                 x=region_filtered['model'],
@@ -226,7 +230,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 yaxis='y2'
             ))
-    
+
     # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
@@ -242,7 +246,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         tickfont=dict(color='white'),
         showgrid=False
     )
-    
+
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_mh.update_layout(
@@ -286,13 +290,15 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         y='aver_labor_hours_per_vhc',
         text='aver_labor_hours_per_vhc',
     )
-    
+
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = df.sort_values('aver_labor_hours_per_vhc', ascending=False).head(10)['model'].tolist()
+        top_10_models = (df.sort_values('aver_labor_hours_per_vhc',
+                                        ascending=False)
+                         .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
-        
+
         if not region_filtered.empty:
             fig_avg_mh.add_trace(go.Scatter(
                 x=region_filtered['model'],
@@ -307,7 +313,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 yaxis='y2'
             ))
-    
+
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
@@ -322,7 +328,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         tickfont=dict(color='white'),
         showgrid=False
     )
-    
+
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_avg_mh.update_layout(
@@ -366,13 +372,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         y='avg_ro_cost',
         text='avg_ro_cost',
     )
-    
+
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = df.sort_values('avg_ro_cost', ascending=False).head(10)['model'].tolist()
+        top_10_models = (df.sort_values('avg_ro_cost', ascending=False)
+                         .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
-        
+
         if not region_filtered.empty:
             fig_avg_check.add_trace(go.Scatter(
                 x=region_filtered['model'],
@@ -387,7 +394,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 yaxis='y2'
             ))
-    
+
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
@@ -403,7 +410,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         tickfont=dict(color='white'),
         showgrid=False
     )
-    
+
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_avg_check.update_layout(
@@ -447,13 +454,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         y=ratio_col,
         text=ratio_col,
     )
-    
+
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = df.sort_values(ratio_col, ascending=False).head(10)['model'].tolist()
+        top_10_models = (df.sort_values(ratio_col, ascending=False)
+                         .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
-        
+
         if not region_filtered.empty:
             fig_ratio.add_trace(go.Scatter(
                 x=region_filtered['model'],
@@ -468,7 +476,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 yaxis='y2'
             ))
-    
+
     # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
@@ -488,7 +496,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         tickfont=dict(color='white'),
         showgrid=False
     )
-    
+
     # Добавляем вспомогательную ось Y для региональных данных
     if region_df is not None and not region_df.empty:
         fig_ratio.update_layout(
@@ -642,14 +650,6 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     Returns:
         dash_table.DataTable: Таблица данных
     """
-    print("=== СОЗДАНИЕ ТАБЛИЦЫ ===")
-    print(f"create_table: получено {len(df)} строк для возрастной группы "
-          f"{age_group}")
-    if len(df) > 0:
-        models = (df['model'].head(3).tolist()
-                  if 'model' in df.columns else 'Нет колонки model')
-        print(f"Первые 3 модели в таблице: {models}")
-        print(f"Колонки таблицы: {list(df.columns)[:5]}...")
     # Словарь переименований колонок в зависимости от возрастной группы
     if age_group == '0-5Y':
         column_rename = {
@@ -775,17 +775,8 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     if 'total_ro_cost' in df_table.columns:
         df_table = df_table.sort_values('total_ro_cost', ascending=False)
 
-    print(f"create_table: создаем таблицу с {len(df_table)} строками и "
-          f"{len(columns)} колонками")
-    if len(df_table) > 0:
-        models_final = (df_table['model'].head(3).tolist()
-                        if 'model' in df_table.columns
-                        else 'Нет колонки model')
-        print(f"Первые 3 модели в финальной таблице: {models_final}")
     result = create_data_table(columns, df_table.to_dict('records'),
                                show_all_columns)
-    print(f"create_table: таблица создана, тип: {type(result)}")
-    print("=== КОНЕЦ СОЗДАНИЯ ТАБЛИЦЫ ===")
     return result
 
 
@@ -875,8 +866,6 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # Если выбранный Mobis Code не соответствует Holding,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
-        print('Выбранный Mobis Code не соответствует Holding. '
-              'Используется "All" для Mobis Code.')
 
     # Проверяем совместимость выбранного Mobis Code с Region
     if (selected_region != 'All' and
@@ -886,39 +875,20 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # Если выбранный Mobis Code не соответствует Region,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
-        print('Выбранный Mobis Code не соответствует Region. '
-              'Используется "All" для Mobis Code.')
 
     try:
         # Получаем данные для выбранного года, возрастной группы,
         # кода дилера, holding и region
-        print("=== ЗАГРУЗКА ИЗ БД ===")
-        print(f"Параметры: год={selected_year}, группа={age_group}, "
-              f"mobis_code={selected_mobis_code}, holding={selected_holding}, "
-              f"region={selected_region}")
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
                           selected_holding, selected_region)
-        print(f'Данные загружены из БД для года {selected_year}, '
-              f'группы {age_group}, кода дилера {selected_mobis_code}, '
-              f'holding {selected_holding} и region {selected_region}')
-        print(f"Размер данных из БД: {len(df)} строк")
-        if len(df) > 0:
-            models_db = (df['model'].head(3).tolist()
-                         if 'model' in df.columns else 'Нет колонки model')
-            print(f"Первые 3 модели из БД: {models_db}")
-    except Exception as e:
-        print(f'Ошибка при загрузке данных из БД для года '
-              f'{selected_year}, группы {age_group}, кода дилера '
-              f'{selected_mobis_code} и holding {selected_holding}: {e}')
+    except Exception:
         # Fallback на CSV файл в случае ошибки
         if selected_year == 2024:
             # Используем июль 2025 как 2024
             df = pd.read_csv('data/jul_25.csv')
-            print('Используются данные из CSV файла jul_25.csv (как 2024 год)')
         else:
             # Используем август 2025 как 2025
             df = pd.read_csv('data/aug_25.csv')
-            print('Используются данные из CSV файла aug_25.csv (как 2025 год)')
 
     return df
 
@@ -938,22 +908,17 @@ def load_region_data(selected_year, age_group, selected_mobis_code):
     try:
         # Определяем регион по mobis_code
         region = get_region_by_mobis_code(selected_mobis_code)
-        print(f"Регион для mobis_code {selected_mobis_code}: {region}")
-        
         if not region:
-            print("Регион не найден, возвращаем пустой DataFrame")
             return pd.DataFrame()
-        
+
         # Получаем данные по региону
         df = get_dnm_data_by_region(
             selected_year=selected_year,
             age_group=age_group,
             selected_region=region
         )
-        print(f"Загружено {len(df)} строк данных по региону {region}")
         return df
-    except Exception as e:
-        print(f"Ошибка при загрузке данных по региону: {e}")
+    except Exception:
         return pd.DataFrame()
 
 
