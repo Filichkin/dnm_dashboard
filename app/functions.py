@@ -111,16 +111,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
-        # Находим пересекающиеся модели
-        common_models = set(filtered_df['model']) & set(region_df['model'])
-        if common_models:
-            region_filtered = region_df[region_df['model'].isin(common_models)]
-            region_sorted = region_filtered.sort_values(
-                'total_ro_cost', ascending=False).head(10)
-            
+        # Берем только модели из топ 10 основного дилера
+        top_10_models = filtered_df.sort_values('total_ro_cost', ascending=False).head(10)['model'].tolist()
+        region_filtered = region_df[region_df['model'].isin(top_10_models)]
+        
+        if not region_filtered.empty:
             fig_profit.add_trace(go.Scatter(
-                x=region_sorted['model'],
-                y=region_sorted['total_ro_cost'],
+                x=region_filtered['model'],
+                y=region_filtered['total_ro_cost'],
                 mode='markers',
                 name='Region Average',
                 marker=dict(
@@ -210,16 +208,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
-        # Находим пересекающиеся модели
-        common_models = set(filtered_df['model']) & set(region_df['model'])
-        if common_models:
-            region_filtered = region_df[region_df['model'].isin(common_models)]
-            region_sorted = region_filtered.sort_values(
-                labor_hours_col, ascending=False).head(10)
-            
+        # Берем только модели из топ 10 основного дилера
+        top_10_models = filtered_df.sort_values(labor_hours_col, ascending=False).head(10)['model'].tolist()
+        region_filtered = region_df[region_df['model'].isin(top_10_models)]
+        
+        if not region_filtered.empty:
             fig_mh.add_trace(go.Scatter(
-                x=region_sorted['model'],
-                y=region_sorted[labor_hours_col],
+                x=region_filtered['model'],
+                y=region_filtered[labor_hours_col],
                 mode='markers',
                 name='Region Average',
                 marker=dict(
@@ -293,16 +289,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
-        # Находим пересекающиеся модели
-        common_models = set(df['model']) & set(region_df['model'])
-        if common_models:
-            region_filtered = region_df[region_df['model'].isin(common_models)]
-            region_sorted = region_filtered.sort_values(
-                'aver_labor_hours_per_vhc', ascending=False).head(10)
-            
+        # Берем только модели из топ 10 основного дилера
+        top_10_models = df.sort_values('aver_labor_hours_per_vhc', ascending=False).head(10)['model'].tolist()
+        region_filtered = region_df[region_df['model'].isin(top_10_models)]
+        
+        if not region_filtered.empty:
             fig_avg_mh.add_trace(go.Scatter(
-                x=region_sorted['model'],
-                y=region_sorted['aver_labor_hours_per_vhc'],
+                x=region_filtered['model'],
+                y=region_filtered['aver_labor_hours_per_vhc'],
                 mode='markers',
                 name='Region Average',
                 marker=dict(
@@ -375,16 +369,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
-        # Находим пересекающиеся модели
-        common_models = set(df['model']) & set(region_df['model'])
-        if common_models:
-            region_filtered = region_df[region_df['model'].isin(common_models)]
-            region_sorted = region_filtered.sort_values(
-                'avg_ro_cost', ascending=False).head(10)
-            
+        # Берем только модели из топ 10 основного дилера
+        top_10_models = df.sort_values('avg_ro_cost', ascending=False).head(10)['model'].tolist()
+        region_filtered = region_df[region_df['model'].isin(top_10_models)]
+        
+        if not region_filtered.empty:
             fig_avg_check.add_trace(go.Scatter(
-                x=region_sorted['model'],
-                y=region_sorted['avg_ro_cost'],
+                x=region_filtered['model'],
+                y=region_filtered['avg_ro_cost'],
                 mode='markers',
                 name='Region Average',
                 marker=dict(
@@ -458,16 +450,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
-        # Находим пересекающиеся модели
-        common_models = set(df['model']) & set(region_df['model'])
-        if common_models:
-            region_filtered = region_df[region_df['model'].isin(common_models)]
-            region_sorted = region_filtered.sort_values(
-                ratio_col, ascending=False).head(10)
-            
+        # Берем только модели из топ 10 основного дилера
+        top_10_models = df.sort_values(ratio_col, ascending=False).head(10)['model'].tolist()
+        region_filtered = region_df[region_df['model'].isin(top_10_models)]
+        
+        if not region_filtered.empty:
             fig_ratio.add_trace(go.Scatter(
-                x=region_sorted['model'],
-                y=region_sorted[ratio_col],
+                x=region_filtered['model'],
+                y=region_filtered[ratio_col],
                 mode='markers',
                 name='Region Average',
                 marker=dict(
