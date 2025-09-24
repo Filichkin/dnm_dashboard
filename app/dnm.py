@@ -126,58 +126,29 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
                отображение holding, отображение region
     """
     # Загружаем данные
-    print("=== ОБНОВЛЕНИЕ ДАШБОРДА ===")
-    print(f"Загружаем данные для года: {selected_year}, "
-          f"возрастной группы: {age_group}")
-    print(f"Mobis Code: {selected_mobis_code}, Holding: {selected_holding}, "
-          f"Region: {selected_region}")
 
     # Проверяем, что все параметры не None
     params = [selected_year, age_group, selected_mobis_code,
               selected_holding, selected_region]
     if any(param is None for param in params):
-        print("ОШИБКА: Один или несколько параметров равны None!")
-        print(f"selected_year: {selected_year}")
-        print(f"age_group: {age_group}")
-        print(f"selected_mobis_code: {selected_mobis_code}")
-        print(f"selected_holding: {selected_holding}")
-        print(f"selected_region: {selected_region}")
         return [], [], [], [], [], []
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
                              selected_holding, selected_region)
-    print(f"Загружено {len(df)} строк данных")
-    if len(df) > 0:
-        models = (df['model'].head(3).tolist()
-                  if 'model' in df.columns else 'Нет колонки model')
-        print(f"Первые 3 модели: {models}")
-        print(f"Колонки: {list(df.columns)[:5]}...")
 
     # Обрабатываем данные
     df = process_dataframe(df)
-    print(f"После обработки: {len(df)} строк данных")
 
     # Загружаем данные по региону, если выбран конкретный дилер
     region_df = None
     if selected_mobis_code != 'All':
-        print(f"Загружаем данные по региону для mobis_code: "
-              f"{selected_mobis_code}")
         region_df = load_region_data(selected_year, age_group,
                                      selected_mobis_code)
-        if not region_df.empty:
-            print(f"Данные по региону загружены: {len(region_df)} моделей")
-        else:
-            print("Нет данных по региону")
-    
     # Создаем графики с региональными данными
     charts = create_charts(df, age_group, region_df)
 
     # Создаем таблицу
     from .functions import create_table
-    print(f"Создаем таблицу с {len(df)} строками для возрастной группы "
-          f"{age_group}")
-    table = create_table(df, age_group)
-    print(f"Таблица создана: {type(table)}")
-    print("=== ТАБЛИЦА ГОТОВА К ОТОБРАЖЕНИЮ ===")
+    create_table(df, age_group)
 
     # Вычисляем метрики
     metrics = calculate_metrics(df, age_group)
@@ -241,11 +212,6 @@ def update_mobis_code_options(selected_holding, selected_region):
     current_value = 'All'  # По умолчанию всегда 'All'
 
     # Добавляем отладочную информацию
-    print("=== ОБНОВЛЕНИЕ ОПЦИЙ MOBIS CODE ===")
-    print(f"selected_holding: {selected_holding}")
-    print(f"selected_region: {selected_region}")
-    print(f"Количество опций после фильтрации: {len(new_options)}")
-    print(f"Новое значение: {current_value}")
 
     return new_options, current_value
 
@@ -273,17 +239,12 @@ def update_table(selected_year, age_group, selected_mobis_code,
     Returns:
         html.Div: Обновленная таблица
     """
-    print("=== ОБНОВЛЕНИЕ ТАБЛИЦЫ ===")
-    print(f"Параметры: год={selected_year}, группа={age_group}")
-
     # По умолчанию скрываем колонки после PPR
     show_all_columns = False
-    print(f"Состояние колонок: {show_all_columns}")
 
     # Загружаем данные
     df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
                              selected_holding, selected_region)
-    print(f"Загружено {len(df)} строк для таблицы")
 
     # Обрабатываем данные
     df = process_dataframe(df)
@@ -291,7 +252,6 @@ def update_table(selected_year, age_group, selected_mobis_code,
     # Создаем таблицу
     from .functions import create_table
     table = create_table(df, age_group, show_all_columns)
-    print("=== ТАБЛИЦА ОБНОВЛЕНА ===")
 
     return table
 
