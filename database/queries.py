@@ -55,10 +55,12 @@ def get_dnm_data(
 
         # Выполняем запрос с параметрами
         if group_by_region:
-            # Для запросов с группировкой по регионам нужны только год и регион
+            # Для запросов с группировкой по регионам нужны все параметры
             df = db_connection.execute_query(
                 query, {
                     'selected_year': selected_year,
+                    'selected_mobis_code': selected_mobis_code,
+                    'selected_holding': selected_holding,
                     'selected_region': selected_region
                 }
             )
@@ -72,7 +74,6 @@ def get_dnm_data(
                     'selected_region': selected_region
                 }
             )
-
         return df
 
     except FileNotFoundError:
