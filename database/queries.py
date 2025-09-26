@@ -202,6 +202,58 @@ def get_dnm_data_by_region(
     )
 
 
+def get_uio_data(
+    selected_year: int = None,
+    age_group: str = '0-5Y'
+):
+    """
+    Получает данные UIO из базы данных используя SQL скрипт uio_by_dealer
+
+    Args:
+        selected_year: Выбранный год для фильтрации данных.
+                      Если None, используется текущий год.
+        age_group: Выбранная возрастная группа ('0-5Y' или '0-10Y').
+
+    Returns:
+        pd.DataFrame: Данные UIO
+    """
+    # Путь к SQL файлу
+    sql_file_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), 'SQL', 'uio_by_dealer.sql'
+    )
+
+    try:
+        # Читаем SQL скрипт из файла
+        with open(sql_file_path, 'r', encoding='utf-8') as file:
+            query = file.read()
+
+        # Если год не указан, используем текущий год
+        if selected_year is None:
+            from datetime import datetime
+            selected_year = datetime.now().year
+
+        # Определяем количество лет в зависимости от возрастной группы
+        if age_group == '0-5Y':
+            age_years = 5
+        else:
+            age_years = 10
+
+        # Выполняем запрос с параметрами
+        df = db_connection.execute_query(
+            query, {
+                'selected_year': selected_year,
+                'age_years': age_years
+            }
+        )
+
+        return df
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
+    except Exception as e:
+        raise Exception(f'Ошибка при получении данных UIO из базы: {e}')
+
+
 def test_database_connection():
     """
     Тестирует подключение к базе данных
