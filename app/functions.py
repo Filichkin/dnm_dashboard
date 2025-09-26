@@ -28,7 +28,6 @@ from .constants import (
 )
 from database.queries import (
     get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code,
-    get_uio_data
 )
 
 
@@ -746,7 +745,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     if age_group == '0-5Y':
         column_rename = {
             'model': 'Model',
-            'uio': 'UIO',
+            # 'uio': 'UIO',
             'uio_5y': 'UIO 5Y',
             'total_0_5': 'RO qty',
             'total_ro_cost': 'Amount',
@@ -772,7 +771,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     else:
         column_rename = {
             'model': 'Model',
-            'uio': 'UIO',
+            # 'uio': 'UIO',
             'uio_10y': 'UIO 10Y',
             'total_0_10': 'RO qty',
             'total_ro_cost': 'Amount',
@@ -984,25 +983,6 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # кода дилера, holding и region
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
                           selected_holding, selected_region)
-        # Получаем UIO данные и добавляем их к основным данным
-        uio_data = process_uio_data(
-            selected_year=selected_year,
-            age_group=age_group,
-            selected_mobis_code=selected_mobis_code,
-            selected_holding=selected_holding,
-            selected_region=selected_region
-        )
-
-        # Добавляем UIO данные к DataFrame
-        if not uio_data['table_data'].empty:
-            # Создаем словарь UIO по моделям
-            uio_dict = dict(zip(uio_data['table_data']['model'],
-                                uio_data['table_data']['uio']))
-
-            # Добавляем колонку UIO к основному DataFrame
-            df['uio'] = df['model'].map(uio_dict).fillna(0)
-        else:
-            df['uio'] = 0
     except Exception:
         # Fallback на CSV файл в случае ошибки
         if selected_year == 2024:
@@ -1177,73 +1157,3 @@ def create_region_display(selected_region):
         region_display.children[1].children = region_name
 
     return region_display
-
-
-def process_uio_data(
-    selected_year: int = None,
-    age_group: str = '0-5Y',
-    selected_mobis_code: str = 'All',
-    selected_holding: str = 'All',
-    selected_region: str = 'All'
-):
-    """
-    Обрабатывает данные UIO для отображения в таблице и картах
-
-    Args:
-        selected_year: Выбранный год
-        age_group: Выбранная возрастная группа
-        selected_mobis_code: Выбранный код дилера
-        selected_holding: Выбранный holding
-        selected_region: Выбранный регион
-
-    Returns:
-        dict: Словарь с данными для карты и таблицы
-    """
-    # Получаем данные UIO (только год и возрастная группа)
-    uio_df = get_uio_data(
-        selected_year=selected_year,
-        age_group=age_group
-    )
-
-    if uio_df.empty:
-        return {
-            'map_data': 0,
-            'table_data': pd.DataFrame()
-        }
-
-    # Применяем фильтрацию к DataFrame
-    filtered_df = uio_df.copy()
-
-    # Фильтрация по mobis_code
-    if selected_mobis_code != 'All':
-        filtered_df = filtered_df[
-            filtered_df['mobis_code'] == selected_mobis_code
-        ]
-
-    # Фильтрация по holding
-    if selected_holding != 'All':
-        if selected_holding == '':
-            # Для пустого holding фильтруем записи с пустым или NULL holding
-            filtered_df = filtered_df[
-                (filtered_df['holding'].isna()) |
-                (filtered_df['holding'] == '') |
-                (filtered_df['holding'] == '0')
-            ]
-        else:
-            filtered_df = filtered_df[
-                filtered_df['holding'] == selected_holding
-            ]
-
-    # Фильтрация по region
-    if selected_region != 'All':
-        filtered_df = filtered_df[filtered_df['region'] == selected_region]
-
-    # Определяем данные для карты и таблицы
-    # Всегда используем обычный uio и группируем по модели
-    map_data = filtered_df['uio'].sum()
-    table_data = filtered_df.groupby('model')['uio'].sum().reset_index()
-
-    return {
-        'map_data': map_data,
-        'table_data': table_data
-    }
