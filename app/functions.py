@@ -27,7 +27,7 @@ from .constants import (
     GRAPH_HEIGHT
 )
 from database.queries import (
-    get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code
+    get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code,
 )
 
 
@@ -745,6 +745,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     if age_group == '0-5Y':
         column_rename = {
             'model': 'Model',
+            # 'uio': 'UIO',
             'uio_5y': 'UIO 5Y',
             'total_0_5': 'RO qty',
             'total_ro_cost': 'Amount',
@@ -770,6 +771,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     else:
         column_rename = {
             'model': 'Model',
+            # 'uio': 'UIO',
             'uio_10y': 'UIO 10Y',
             'total_0_10': 'RO qty',
             'total_ro_cost': 'Amount',
@@ -804,6 +806,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     if age_group == '0-5Y':
         priority_cols = [
             'model',
+            'uio',
             'uio_5y',
             'total_0_5',
             'total_ro_cost',
@@ -818,6 +821,7 @@ def create_table(df, age_group='0-10Y', show_all_columns=False):
     else:
         priority_cols = [
             'model',
+            'uio',
             'uio_10y',
             'total_0_10',
             'total_ro_cost',
@@ -884,15 +888,22 @@ def calculate_metrics(df, age_group='0-10Y'):
     """
     # Определяем колонки в зависимости от возрастной группы
     if age_group == '0-5Y':
-        uio_col = 'uio_5y'
         total_col = 'total_0_5'
         labor_hours_col = 'labor_hours_0_5'
     else:
-        uio_col = 'uio_10y'
         total_col = 'total_0_10'
         labor_hours_col = 'labor_hours_0_10'
 
-    total_uio = df[uio_col].sum() if uio_col in df.columns else 0
+    # Используем новую колонку uio, если она есть, иначе fallback
+    if 'uio' in df.columns:
+        total_uio = df['uio'].sum()
+    elif age_group == '0-5Y' and 'uio_5y' in df.columns:
+        total_uio = df['uio_5y'].sum()
+    elif (age_group == '0-10Y' and
+          'uio_10y' in df.columns):
+        total_uio = df['uio_10y'].sum()
+    else:
+        total_uio = 0
     total_ro_qty = df[total_col].sum() if total_col in df.columns else 0
     total_cost = (df['total_ro_cost'].sum()
                   if 'total_ro_cost' in df.columns else 0)
@@ -980,6 +991,9 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         else:
             # Используем август 2025 как 2025
             df = pd.read_csv('data/aug_25.csv')
+
+        # Добавляем пустую колонку UIO для fallback данных
+        df['uio'] = 0
 
     return df
 

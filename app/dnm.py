@@ -87,6 +87,7 @@ app.layout = html.Div([
     # Графики
     html.Div(id='charts-container'),
 
+
     # Таблица
     html.H2('Items data by models', style=responsive_styles['section_title']),
     create_export_button(),
