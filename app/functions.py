@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 from datetime import datetime
 from dash import html
+from loguru import logger
 
 from .components import (
     create_metric_card,
@@ -23,11 +24,10 @@ from .constants import (
     get_holding_name,
     get_region_name,
     get_mobis_codes_by_holding,
-    get_mobis_codes_by_region,
     GRAPH_HEIGHT
 )
 from database.queries import (
-    get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code,
+    get_dnm_data, get_region_by_mobis_code,
 )
 
 
@@ -980,18 +980,35 @@ def get_current_year():
 def load_dashboard_data(selected_year, age_group, selected_mobis_code,
                         selected_holding, selected_region='All'):
     """
-    Загружает данные для дашборда
+    Загружает данные для дашборда с автоматическим определением региона
 
     Args:
         selected_year: Выбранный год
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
         selected_holding: Выбранный holding
-        selected_region: Выбранный region
+        selected_region: Выбранный region (игнорируется, определяется
+                         автоматически)
 
     Returns:
         pd.DataFrame: DataFrame с данными
     """
+    # НОВАЯ ЛОГИКА: Автоматически определяем регион по mobis_code
+    if selected_mobis_code != 'All':
+        # Определяем регион по выбранному дилеру
+        auto_region = get_region_by_mobis_code(selected_mobis_code)
+        if auto_region:
+            selected_region = auto_region
+            logger.info(f'Автоматически определен регион: {auto_region} '
+                        f'для дилера {selected_mobis_code}')
+        else:
+            selected_region = 'All'
+            logger.warning(f'Не удалось определить регион для дилера '
+                           f'{selected_mobis_code}')
+    else:
+        # Если выбран 'All' дилеров, используем 'All' регионов
+        selected_region = 'All'
+
     # Проверяем совместимость выбранного Mobis Code с Holding
     if (selected_holding != 'All' and
         selected_mobis_code != 'All' and
@@ -1001,18 +1018,9 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
 
-    # Проверяем совместимость выбранного Mobis Code с Region
-    if (selected_region != 'All' and
-        selected_mobis_code != 'All' and
-        selected_mobis_code not in get_mobis_codes_by_region(
-            selected_region)):
-        # Если выбранный Mobis Code не соответствует Region,
-        # используем 'All' для Mobis Code
-        selected_mobis_code = 'All'
-
     try:
         # Получаем данные для выбранного года, возрастной группы,
-        # кода дилера, holding и region
+        # кода дилера, holding и автоматически определенного region
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
                           selected_holding, selected_region)
     except Exception:
@@ -1032,7 +1040,7 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
 
 def load_region_data(selected_year, age_group, selected_mobis_code):
     """
-    Загружает данные по региону выбранного дилера
+    Загружает данные по региону выбранного дилера (НОВАЯ ЛОГИКА)
 
     Args:
         selected_year: Выбранный год
@@ -1046,16 +1054,25 @@ def load_region_data(selected_year, age_group, selected_mobis_code):
         # Определяем регион по mobis_code
         region = get_region_by_mobis_code(selected_mobis_code)
         if not region:
+            logger.warning(f'Не удалось определить регион для дилера '
+                           f'{selected_mobis_code}')
             return pd.DataFrame()
 
-        # Получаем данные по региону
-        df = get_dnm_data_by_region(
+        logger.info(f'Получаем данные по региону {region} для дилера '
+                    f'{selected_mobis_code}')
+
+        # Получаем данные по региону с использованием нового скрипта
+        df = get_dnm_data(
             selected_year=selected_year,
             age_group=age_group,
-            selected_region=region
+            selected_mobis_code='All',  # Все дилеры в регионе
+            selected_holding='All',    # Все холдинги в регионе
+            selected_region=region,     # Конкретный регион
+            group_by_region=True  # Используем скрипт с группировкой по региону
         )
         return df
-    except Exception:
+    except Exception as e:
+        logger.error(f'Ошибка при получении данных по региону: {e}')
         return pd.DataFrame()
 
 
