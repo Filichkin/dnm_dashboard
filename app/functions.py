@@ -31,6 +31,31 @@ from database.queries import (
 )
 
 
+def format_number_k_m(value):
+    """
+    Форматирует число в формат K/M (тысячи/миллионы)
+
+    Args:
+        value: Числовое значение для форматирования
+
+    Returns:
+        str: Отформатированная строка (например, 100K, 270M)
+    """
+    if pd.isna(value) or value == 0:
+        return '0'
+
+    abs_value = abs(value)
+
+    if abs_value >= 1_000_000:
+        formatted = f"{value / 1_000_000:.0f}M"
+    elif abs_value >= 1_000:
+        formatted = f"{value / 1_000:.0f}K"
+    else:
+        formatted = f"{value:.0f}"
+
+    return formatted
+
+
 def process_dataframe(df):
     """
     Обрабатывает DataFrame для корректного отображения
@@ -102,11 +127,18 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                    if 'model' in df.columns else df)
 
     # 1. Какая модель больше всего приносит прибыль (RO cost total)
+    # Подготавливаем данные для отображения с форматированием K/M
+    profit_data = (filtered_df.sort_values('total_ro_cost', ascending=False)
+                   .head(10))
+    profit_data = profit_data.copy()
+    profit_data['total_ro_cost_formatted'] = (
+        profit_data['total_ro_cost'].apply(format_number_k_m))
+
     fig_profit = px.bar(
-        filtered_df.sort_values('total_ro_cost', ascending=False).head(10),
+        profit_data,
         x='model',
         y='total_ro_cost',
-        text='total_ro_cost',
+        text='total_ro_cost_formatted',
         color_discrete_sequence=['#1f77b4']
     )
 
@@ -150,8 +182,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
 
     # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
-        texttemplate='%{text:,.0f}',
-        textposition='inside',
+        texttemplate='%{text}',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -269,7 +301,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -370,7 +402,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -469,7 +501,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -569,7 +601,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -643,7 +675,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=df_ro[age_0_3_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         fig_ro_years.add_trace(go.Bar(
@@ -652,7 +684,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=df_ro[age_4_5_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
     else:
@@ -663,7 +695,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=df_ro[age_0_3_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         fig_ro_years.add_trace(go.Bar(
@@ -672,7 +704,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=df_ro[age_4_5_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         if age_6_10_col and age_6_10_col in df_ro.columns:
@@ -682,7 +714,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name='6-10 years',
                 marker_color=get_chart_color(2),
                 text=df_ro[age_6_10_col],
-                textposition='inside',
+                textposition='auto',
                 textfont=dict(size=11),
             ))
     fig_ro_years.update_traces(
