@@ -23,11 +23,13 @@ from .constants import (
     get_dealer_name,
     get_holding_name,
     get_region_name,
+    get_holding_by_mobis_code,
+    get_region_by_mobis_code,
     get_mobis_codes_by_holding,
     GRAPH_HEIGHT
 )
 from database.queries import (
-    get_dnm_data, get_region_by_mobis_code,
+    get_dnm_data,
 )
 
 
@@ -1147,23 +1149,41 @@ def create_charts_container(charts):
 
 def create_dealer_display(selected_mobis_code):
     """
-    Создает компонент отображения названия дилера
+    Создает компонент отображения названия дилера, holding и region
 
     Args:
         selected_mobis_code: Выбранный код дилера
 
     Returns:
-        html.Div: Компонент отображения дилера
+        html.Div: Компонент отображения дилера с дополнительной информацией
     """
     dealer_name = get_dealer_name(selected_mobis_code)
-    dealer_display = (create_dealer_name_display()
-                      if dealer_name else html.Div())
+    holding = get_holding_by_mobis_code(selected_mobis_code)
+    region = get_region_by_mobis_code(selected_mobis_code)
 
-    # Обновляем текст названия дилера
-    if dealer_name:
-        dealer_display.children[1].children = dealer_name
+    # Создаем основной контейнер
+    if not dealer_name:
+        return html.Div()
 
-    return dealer_display
+    # Создаем отображение дилера
+    dealer_display = create_dealer_name_display()
+    dealer_display.children[1].children = dealer_name
+
+    # Создаем отображение holding
+    holding_display = create_holding_name_display()
+    holding_display.children[1].children = holding if holding else 'No holding'
+
+    # Создаем отображение region
+    region_display = create_region_name_display()
+    region_display.children[1].children = region if region else 'No region'
+
+    # Объединяем все компоненты в горизонтальную линию
+    return html.Div([
+        dealer_display,
+        holding_display,
+        region_display
+    ], style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px',
+              'alignItems': 'center'})
 
 
 def create_holding_display(selected_holding):

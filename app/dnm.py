@@ -181,14 +181,18 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     # Создаем контейнеры графиков
     charts_container = create_charts_container(charts)
 
-    # Создаем отображение названия дилера
+    # Создаем отображение названия дилера (включает holding и region)
     dealer_display = create_dealer_display(selected_mobis_code)
 
-    # Создаем отображение названия Holding
-    holding_display = create_holding_display(selected_holding)
+    # Создаем отображение названия Holding (только если не выбран дилер)
+    holding_display = (create_holding_display(selected_holding)
+                       if selected_mobis_code == 'All'
+                       else html.Div())
 
-    # Создаем отображение названия Region
-    region_display = create_region_display(selected_region)
+    # Создаем отображение названия Region (только если не выбран дилер)
+    region_display = (create_region_display(selected_region)
+                      if selected_mobis_code == 'All'
+                      else html.Div())
 
     logger.success('Дашборд успешно обновлен')
     return (df.to_dict('records'), metrics_cards, charts_container,
