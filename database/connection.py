@@ -1,9 +1,11 @@
 from contextlib import contextmanager
+import time
 
 import pandas as pd
 import psycopg2
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
+from loguru import logger
 
 from config import settings
 
@@ -49,12 +51,31 @@ class DatabaseConnection:
         Returns:
             pd.DataFrame: Результат запроса
         """
+        start_time = time.time()
+
+        # Логируем начало выполнения запроса
+        query_preview = query[:100] + '...' if len(query) > 100 else query
+        logger.info(f'Начинаем выполнение SQL запроса: {query_preview}')
+
+        if params:
+            logger.debug(f'Параметры запроса: {params}')
+
         try:
             # Используем SQLAlchemy engine для pandas
             df = pd.read_sql_query(query, self.engine, params=params)
+
+            execution_time = time.time() - start_time
+            logger.success(
+                f'Запрос выполнен успешно за {execution_time:.3f}с, '
+                f'получено {len(df)} строк'
+            )
+
             return df
         except Exception as e:
-            print(f'Ошибка при выполнении запроса: {e}')
+            execution_time = time.time() - start_time
+            logger.error(
+                f'Ошибка при выполнении запроса за {execution_time:.3f}с: {e}'
+            )
             raise e
 
     def test_connection(self) -> bool:
@@ -65,13 +86,15 @@ class DatabaseConnection:
             bool: True если подключение успешно, False в противном случае
         """
         try:
+            logger.info('Проверяем подключение к базе данных')
             with self.get_connection() as conn:
                 cursor = conn.cursor()
                 cursor.execute('SELECT 1')
                 cursor.fetchone()
+                logger.success('Подключение к базе данных успешно')
                 return True
         except Exception as e:
-            print(f'Ошибка подключения к базе данных: {e}')
+            logger.error(f'Ошибка подключения к базе данных: {e}')
             return False
 
     def close_engine(self):

@@ -6,6 +6,7 @@ import plotly.express as px
 import plotly.graph_objs as go
 from datetime import datetime
 from dash import html
+from loguru import logger
 
 from .components import (
     create_metric_card,
@@ -22,13 +23,39 @@ from .constants import (
     get_dealer_name,
     get_holding_name,
     get_region_name,
+    get_holding_by_mobis_code,
+    get_region_by_mobis_code,
     get_mobis_codes_by_holding,
-    get_mobis_codes_by_region,
     GRAPH_HEIGHT
 )
 from database.queries import (
-    get_dnm_data, get_dnm_data_by_region, get_region_by_mobis_code,
+    get_dnm_data,
 )
+
+
+def format_number_k_m(value):
+    """
+    Форматирует число в формат K/M (тысячи/миллионы)
+
+    Args:
+        value: Числовое значение для форматирования
+
+    Returns:
+        str: Отформатированная строка (например, 100K, 270M)
+    """
+    if pd.isna(value) or value == 0:
+        return '0'
+
+    abs_value = abs(value)
+
+    if abs_value >= 1_000_000:
+        formatted = f"{value / 1_000_000:.0f}M"
+    elif abs_value >= 1_000:
+        formatted = f"{value / 1_000:.0f}K"
+    else:
+        formatted = f"{value:.0f}"
+
+    return formatted
 
 
 def process_dataframe(df):
@@ -102,11 +129,18 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                    if 'model' in df.columns else df)
 
     # 1. Какая модель больше всего приносит прибыль (RO cost total)
+    # Подготавливаем данные для отображения с форматированием K/M
+    profit_data = (filtered_df.sort_values('total_ro_cost', ascending=False)
+                   .head(10))
+    profit_data = profit_data.copy()
+    profit_data['total_ro_cost_formatted'] = (
+        profit_data['total_ro_cost'].apply(format_number_k_m))
+
     fig_profit = px.bar(
-        filtered_df.sort_values('total_ro_cost', ascending=False).head(10),
+        profit_data,
         x='model',
         y='total_ro_cost',
-        text='total_ro_cost',
+        text='total_ro_cost_formatted',
         color_discrete_sequence=['#1f77b4']
     )
 
@@ -150,8 +184,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
 
     # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
-        texttemplate='%{text:,.0f}',
-        textposition='inside',
+        texttemplate='%{text}',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -269,7 +303,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -370,7 +404,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -469,7 +503,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -569,7 +603,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
-        textposition='inside',
+        textposition='auto',
         textfont_size=11,
         textfont_color='white',
         selector=dict(type='bar')
@@ -643,7 +677,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=df_ro[age_0_3_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         fig_ro_years.add_trace(go.Bar(
@@ -652,7 +686,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=df_ro[age_4_5_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
     else:
@@ -663,7 +697,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=df_ro[age_0_3_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         fig_ro_years.add_trace(go.Bar(
@@ -672,7 +706,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=df_ro[age_4_5_col],
-            textposition='inside',
+            textposition='auto',
             textfont=dict(size=11),
         ))
         if age_6_10_col and age_6_10_col in df_ro.columns:
@@ -682,7 +716,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name='6-10 years',
                 marker_color=get_chart_color(2),
                 text=df_ro[age_6_10_col],
-                textposition='inside',
+                textposition='auto',
                 textfont=dict(size=11),
             ))
     fig_ro_years.update_traces(
@@ -948,18 +982,35 @@ def get_current_year():
 def load_dashboard_data(selected_year, age_group, selected_mobis_code,
                         selected_holding, selected_region='All'):
     """
-    Загружает данные для дашборда
+    Загружает данные для дашборда с автоматическим определением региона
 
     Args:
         selected_year: Выбранный год
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
         selected_holding: Выбранный holding
-        selected_region: Выбранный region
+        selected_region: Выбранный region (игнорируется, определяется
+                         автоматически)
 
     Returns:
         pd.DataFrame: DataFrame с данными
     """
+    # НОВАЯ ЛОГИКА: Автоматически определяем регион по mobis_code
+    if selected_mobis_code != 'All':
+        # Определяем регион по выбранному дилеру
+        auto_region = get_region_by_mobis_code(selected_mobis_code)
+        if auto_region:
+            selected_region = auto_region
+            logger.info(f'Автоматически определен регион: {auto_region} '
+                        f'для дилера {selected_mobis_code}')
+        else:
+            selected_region = 'All'
+            logger.warning(f'Не удалось определить регион для дилера '
+                           f'{selected_mobis_code}')
+    else:
+        # Если выбран 'All' дилеров, используем 'All' регионов
+        selected_region = 'All'
+
     # Проверяем совместимость выбранного Mobis Code с Holding
     if (selected_holding != 'All' and
         selected_mobis_code != 'All' and
@@ -969,18 +1020,9 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
 
-    # Проверяем совместимость выбранного Mobis Code с Region
-    if (selected_region != 'All' and
-        selected_mobis_code != 'All' and
-        selected_mobis_code not in get_mobis_codes_by_region(
-            selected_region)):
-        # Если выбранный Mobis Code не соответствует Region,
-        # используем 'All' для Mobis Code
-        selected_mobis_code = 'All'
-
     try:
         # Получаем данные для выбранного года, возрастной группы,
-        # кода дилера, holding и region
+        # кода дилера, holding и автоматически определенного region
         df = get_dnm_data(selected_year, age_group, selected_mobis_code,
                           selected_holding, selected_region)
     except Exception:
@@ -1000,7 +1042,7 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
 
 def load_region_data(selected_year, age_group, selected_mobis_code):
     """
-    Загружает данные по региону выбранного дилера
+    Загружает данные по региону выбранного дилера (НОВАЯ ЛОГИКА)
 
     Args:
         selected_year: Выбранный год
@@ -1014,16 +1056,25 @@ def load_region_data(selected_year, age_group, selected_mobis_code):
         # Определяем регион по mobis_code
         region = get_region_by_mobis_code(selected_mobis_code)
         if not region:
+            logger.warning(f'Не удалось определить регион для дилера '
+                           f'{selected_mobis_code}')
             return pd.DataFrame()
 
-        # Получаем данные по региону
-        df = get_dnm_data_by_region(
+        logger.info(f'Получаем данные по региону {region} для дилера '
+                    f'{selected_mobis_code}')
+
+        # Получаем данные по региону с использованием нового скрипта
+        df = get_dnm_data(
             selected_year=selected_year,
             age_group=age_group,
-            selected_region=region
+            selected_mobis_code='All',  # Все дилеры в регионе
+            selected_holding='All',    # Все холдинги в регионе
+            selected_region=region,     # Конкретный регион
+            group_by_region=True  # Используем скрипт с группировкой по региону
         )
         return df
-    except Exception:
+    except Exception as e:
+        logger.error(f'Ошибка при получении данных по региону: {e}')
         return pd.DataFrame()
 
 
@@ -1098,23 +1149,41 @@ def create_charts_container(charts):
 
 def create_dealer_display(selected_mobis_code):
     """
-    Создает компонент отображения названия дилера
+    Создает компонент отображения названия дилера, holding и region
 
     Args:
         selected_mobis_code: Выбранный код дилера
 
     Returns:
-        html.Div: Компонент отображения дилера
+        html.Div: Компонент отображения дилера с дополнительной информацией
     """
     dealer_name = get_dealer_name(selected_mobis_code)
-    dealer_display = (create_dealer_name_display()
-                      if dealer_name else html.Div())
+    holding = get_holding_by_mobis_code(selected_mobis_code)
+    region = get_region_by_mobis_code(selected_mobis_code)
 
-    # Обновляем текст названия дилера
-    if dealer_name:
-        dealer_display.children[1].children = dealer_name
+    # Создаем основной контейнер
+    if not dealer_name:
+        return html.Div()
 
-    return dealer_display
+    # Создаем отображение дилера
+    dealer_display = create_dealer_name_display()
+    dealer_display.children[1].children = dealer_name
+
+    # Создаем отображение holding
+    holding_display = create_holding_name_display()
+    holding_display.children[1].children = holding if holding else 'No holding'
+
+    # Создаем отображение region
+    region_display = create_region_name_display()
+    region_display.children[1].children = region if region else 'No region'
+
+    # Объединяем все компоненты в горизонтальную линию
+    return html.Div([
+        dealer_display,
+        holding_display,
+        region_display
+    ], style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px',
+              'alignItems': 'center'})
 
 
 def create_holding_display(selected_holding):

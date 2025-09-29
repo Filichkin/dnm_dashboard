@@ -1,5 +1,6 @@
 import os
 
+from loguru import logger
 from database.connection import db_connection
 
 
@@ -44,7 +45,15 @@ def get_dnm_data(
     )
 
     try:
+        logger.info(
+            f'Загружаем данные DNM: год={selected_year}, группа={age_group}, '
+            f'дилер={selected_mobis_code}, холдинг={selected_holding}, '
+            f'регион={selected_region}, '
+            f'группировка_по_региону={group_by_region}'
+        )
+
         # Читаем SQL скрипт из файла
+        logger.debug(f'Читаем SQL файл: {sql_file_path}')
         with open(sql_file_path, 'r', encoding='utf-8') as file:
             query = file.read()
 
@@ -52,33 +61,30 @@ def get_dnm_data(
         if selected_year is None:
             from datetime import datetime
             selected_year = datetime.now().year
+            logger.info(f'Год не указан, используем текущий: {selected_year}')
 
         # Выполняем запрос с параметрами
+        params = {
+            'selected_year': selected_year,
+            'selected_mobis_code': selected_mobis_code,
+            'selected_holding': selected_holding,
+            'selected_region': selected_region
+        }
+
         if group_by_region:
-            # Для запросов с группировкой по регионам нужны все параметры
-            df = db_connection.execute_query(
-                query, {
-                    'selected_year': selected_year,
-                    'selected_mobis_code': selected_mobis_code,
-                    'selected_holding': selected_holding,
-                    'selected_region': selected_region
-                }
-            )
+            logger.info('Выполняем запрос с группировкой по регионам')
         else:
-            # Для обычных запросов нужны все параметры
-            df = db_connection.execute_query(
-                query, {
-                    'selected_year': selected_year,
-                    'selected_mobis_code': selected_mobis_code,
-                    'selected_holding': selected_holding,
-                    'selected_region': selected_region
-                }
-            )
+            logger.info('Выполняем обычный запрос')
+
+        df = db_connection.execute_query(query, params)
+        logger.success(f'Данные DNM успешно загружены: {len(df)} строк')
         return df
 
     except FileNotFoundError:
+        logger.error(f'SQL файл не найден: {sql_file_path}')
         raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
     except Exception as e:
+        logger.error(f'Ошибка при получении данных из базы: {e}')
         raise Exception(f'Ошибка при получении данных из базы: {e}')
 
 
@@ -90,13 +96,16 @@ def get_dealers_data():
         pd.DataFrame: Данные дилеров с колонками mobis_code, dealer_name,
                       holding, region
     """
+    logger.info('Загружаем данные дилеров')
     query = """
     SELECT mobis_code, dealer_name, holding, region
     FROM public.dealers_data
     WHERE mobis_code IS NOT NULL
     ORDER BY mobis_code
     """
-    return db_connection.execute_query(query)
+    df = db_connection.execute_query(query)
+    logger.success(f'Данные дилеров загружены: {len(df)} записей')
+    return df
 
 
 def get_regions():
@@ -106,6 +115,7 @@ def get_regions():
     Returns:
         list: Список уникальных регионов
     """
+    logger.info('Загружаем список регионов')
     query = """
     SELECT DISTINCT region
     FROM public.dealers_data
@@ -113,7 +123,9 @@ def get_regions():
     ORDER BY region
     """
     df = db_connection.execute_query(query)
-    return df['region'].tolist()
+    regions = df['region'].tolist()
+    logger.success(f'Список регионов загружен: {len(regions)} регионов')
+    return regions
 
 
 def get_region_by_mobis_code(mobis_code):
@@ -127,8 +139,12 @@ def get_region_by_mobis_code(mobis_code):
         str: Название региона или пустая строка
     """
     if mobis_code == 'All' or not mobis_code:
+        logger.debug(
+            'Код дилера не указан или равен All, возвращаем пустую строку'
+        )
         return ''
 
+    logger.info(f'Получаем регион для дилера: {mobis_code}')
     query = """
     SELECT region
     FROM public.dealers_data
@@ -139,7 +155,10 @@ def get_region_by_mobis_code(mobis_code):
         query, {'mobis_code': mobis_code}
     )
     if not df.empty:
-        return df['region'].iloc[0] if df['region'].iloc[0] else ''
+        region = df['region'].iloc[0] if df['region'].iloc[0] else ''
+        logger.success(f'Регион найден: {region}')
+        return region
+    logger.warning(f'Регион для дилера {mobis_code} не найден')
     return ''
 
 
@@ -153,6 +172,8 @@ def get_mobis_codes_by_region(region):
     Returns:
         list: Список mobis_code
     """
+    logger.info(f'Получаем коды дилеров для региона: {region}')
+
     if region == 'All':
         query = """
         SELECT mobis_code
@@ -169,7 +190,11 @@ def get_mobis_codes_by_region(region):
         """
 
     df = db_connection.execute_query(query, {'region': region})
-    return df['mobis_code'].tolist()
+    codes = df['mobis_code'].tolist()
+    logger.success(
+        f'Коды дилеров загружены: {len(codes)} кодов для региона {region}'
+    )
+    return codes
 
 
 def get_dnm_data_by_region(
@@ -210,4 +235,10 @@ def test_database_connection():
     Returns:
         bool: True если подключение успешно
     """
-    return db_connection.test_connection()
+    logger.info('Тестируем подключение к базе данных')
+    result = db_connection.test_connection()
+    if result:
+        logger.success('Тест подключения к базе данных прошел успешно')
+    else:
+        logger.error('Тест подключения к базе данных не прошел')
+    return result
