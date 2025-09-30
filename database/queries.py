@@ -1,7 +1,38 @@
 import os
+from functools import lru_cache
 
 from loguru import logger
 from database.connection import db_connection
+
+
+@lru_cache(maxsize=10)
+def load_sql_file(sql_filename: str) -> str:
+    """
+    Загружает SQL файл из директории SQL с кэшированием в памяти
+
+    Args:
+        sql_filename: Имя SQL файла
+
+    Returns:
+        str: Содержимое SQL файла
+
+    Note:
+        Результаты кэшируются в памяти для ускорения повторных загрузок
+    """
+    sql_file_path = os.path.join(
+        os.path.dirname(os.path.dirname(__file__)), 'SQL', sql_filename
+    )
+
+    logger.debug(f'Загружаем SQL файл: {sql_file_path}')
+
+    try:
+        with open(sql_file_path, 'r', encoding='utf-8') as file:
+            query = file.read()
+        logger.debug(f'SQL файл успешно загружен: {sql_filename}')
+        return query
+    except FileNotFoundError:
+        logger.error(f'SQL файл не найден: {sql_file_path}')
+        raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
 
 
 def get_dnm_data(
@@ -39,11 +70,6 @@ def get_dnm_data(
         else:
             sql_filename = 'dnm_script_age_0_10.sql'
 
-    # Путь к SQL файлу
-    sql_file_path = os.path.join(
-        os.path.dirname(os.path.dirname(__file__)), 'SQL', sql_filename
-    )
-
     try:
         logger.info(
             f'Загружаем данные DNM: год={selected_year}, группа={age_group}, '
@@ -52,10 +78,8 @@ def get_dnm_data(
             f'группировка_по_региону={group_by_region}'
         )
 
-        # Читаем SQL скрипт из файла
-        logger.debug(f'Читаем SQL файл: {sql_file_path}')
-        with open(sql_file_path, 'r', encoding='utf-8') as file:
-            query = file.read()
+        # Читаем SQL скрипт из кэша (или из файла при первой загрузке)
+        query = load_sql_file(sql_filename)
 
         # Если год не указан, используем текущий год
         if selected_year is None:
@@ -81,11 +105,11 @@ def get_dnm_data(
         return df
 
     except FileNotFoundError:
-        logger.error(f'SQL файл не найден: {sql_file_path}')
-        raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
+        logger.error(f'SQL файл не найден: {sql_filename}')
+        raise
     except Exception as e:
         logger.error(f'Ошибка при получении данных из базы: {e}')
-        raise Exception(f'Ошибка при получении данных из базы: {e}')
+        raise
 
 
 def get_dealers_data():
