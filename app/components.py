@@ -177,7 +177,7 @@ def create_data_table(columns: list, data: list,
 
     # Создаем строки данных (первые 20 для демонстрации)
     data_rows = []
-    for i, row in enumerate(data[:20]):
+    for i, row in enumerate(data[:25]):
         cells = []
         for col in visible_columns:
             value = row.get(col['id'], '')

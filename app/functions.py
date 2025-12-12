@@ -658,7 +658,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     fig_ratio.update_traces(marker_color=get_chart_color(4),
                             selector=dict(type='bar'))
 
-    # 5. Количество заказ-нарядов по годам
+    # 5. Количество заказ-нарядов по годам с линейным графиком UIO
     df_ro = df
     if 'model' in df_ro.columns:
         df_ro = df_ro[df_ro['model'] != 'TOTAL']
@@ -667,6 +667,9 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     df_ro = df_ro.head(10)
 
     fig_ro_years = go.Figure()
+
+    # Определяем колонку UIO в зависимости от возрастной группы
+    uio_col = 'uio_5y' if age_group == '0-5Y' else 'uio_10y'
 
     # Добавляем группы в зависимости от возрастной группы
     if age_group == '0-5Y':
@@ -719,16 +722,41 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 textposition='auto',
                 textfont=dict(size=11),
             ))
+
+    # Добавляем линейный график UIO на вспомогательную ось
+    if uio_col in df_ro.columns:
+        fig_ro_years.add_trace(go.Scatter(
+            x=df_ro['model'],
+            y=df_ro[uio_col],
+            name=f'UIO ({age_group})',
+            mode='lines+markers',
+            yaxis='y2',
+            opacity=0.5,
+            line=dict(color='#FFFFE0', width=2),
+            marker=dict(
+                size=8,
+                symbol='circle',
+                color='#FFFFE0',
+                line=dict(width=1, color='#FFFFE0')
+            ),
+            hovertemplate='%{x}<br>UIO: %{y:,.0f}<extra></extra>'
+        ))
+
     fig_ro_years.update_traces(
         texttemplate='%{text:,.0f}',
         textfont_color='white',
-        textfont_size=11
+        textfont_size=11,
+        selector=dict(type='bar')
     )
+
+    # Определяем название оси UIO
+    uio_axis_title = f'UIO ({age_group})'
+
     fig_ro_years.update_layout(
         barmode='stack',
         xaxis_title='Model',
         yaxis_title='RO qty',
-        margin=dict(t=60, b=60, l=60, r=60),
+        margin=dict(t=60, b=60, l=60, r=80),
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
         font=dict(color='white'),
@@ -750,9 +778,17 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             title_font=dict(size=14, family='Arial', color='white'),
             tickfont=dict(color='white'),
             showgrid=False
+        ),
+        yaxis2=dict(
+            title=uio_axis_title,
+            title_font=dict(size=12, family='Arial', color='#00d4ff'),
+            tickfont=dict(color='#00d4ff'),
+            overlaying='y',
+            side='right',
+            showgrid=False
         )
     )
-    fig_ro_years.update_yaxes(tickformat=',d')
+    fig_ro_years.update_yaxes(tickformat=',d', selector=dict(overlaying=None))
 
     return {
         'fig_profit': fig_profit,
