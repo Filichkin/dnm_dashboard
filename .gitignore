@@ -149,4 +149,5 @@ commands.txt
 
 # Project specific files
 app/constants.py
+
 SQL/
