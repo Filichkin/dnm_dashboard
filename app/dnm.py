@@ -167,10 +167,6 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
     logger.info('Создаем графики')
     charts = create_charts(df, age_group, region_df)
 
-    # Создаем таблицу
-    from .functions import create_table
-    create_table(df, age_group)
-
     # Вычисляем метрики
     logger.info('Вычисляем метрики')
     metrics = calculate_metrics(df, age_group)

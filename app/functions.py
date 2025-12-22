@@ -1029,12 +1029,15 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         age_group: Выбранная возрастная группа
         selected_mobis_code: Выбранный код дилера
         selected_holding: Выбранный holding
-        selected_region: Выбранный region (игнорируется, определяется
-                         автоматически)
+        selected_region: Выбранный region
 
     Returns:
         pd.DataFrame: DataFrame с данными
     """
+    logger.info(f'load_dashboard_data вызвана с параметрами: '
+                f'selected_region={selected_region}, '
+                f'selected_mobis_code={selected_mobis_code}')
+
     # НОВАЯ ЛОГИКА: Автоматически определяем регион по mobis_code
     if selected_mobis_code != 'All':
         # Определяем регион по выбранному дилеру
@@ -1048,8 +1051,12 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
             logger.warning(f'Не удалось определить регион для дилера '
                            f'{selected_mobis_code}')
     else:
-        # Если выбран 'All' дилеров, используем 'All' регионов
-        selected_region = 'All'
+        # Если выбран 'All' дилеров, используем выбранный пользователем регион
+        # (если он был выбран, иначе 'All')
+        if selected_region is None or selected_region == '':
+            selected_region = 'All'
+        logger.info(f'Используем выбранный регион: {selected_region} '
+                    f'(исходное значение было передано)')
 
     # Проверяем совместимость выбранного Mobis Code с Holding
     if (selected_holding != 'All' and
@@ -1059,6 +1066,14 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # Если выбранный Mobis Code не соответствует Holding,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
+        # Если mobis_code изменился на 'All', но регион был выбран
+        # пользователем, сохраняем выбранный регион
+        logger.info(f'Mobis Code изменен на All, '
+                    f'сохраняем selected_region={selected_region}')
+
+    logger.info(f'Вызываем get_dnm_data с параметрами: '
+                f'selected_region={selected_region}, '
+                f'selected_mobis_code={selected_mobis_code}')
 
     try:
         # Получаем данные для выбранного года, возрастной группы,
