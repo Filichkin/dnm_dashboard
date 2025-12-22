@@ -241,10 +241,43 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     if age_group == '0-5Y':
         labor_hours_col = 'labor_hours_0_5'
         total_col = 'total_0_5'
-        ratio_col = 'ro_ratio_of_uio_5y'
         age_0_3_col = 'age_0_3'
         age_4_5_col = 'age_4_5'
         age_6_10_col = None
+        # Создаем новую колонку с ratio на основе avg_uio_5y для графика
+        if 'avg_uio_5y' in df.columns and 'total_0_5' in df.columns:
+            df = df.copy()
+            df['ro_ratio_of_avg_uio_5y'] = (
+                df.apply(
+                    lambda row: (
+                        round(100 * row['total_0_5'] / row['avg_uio_5y'], 2)
+                        if row['avg_uio_5y'] > 0 else 0
+                    ),
+                    axis=1
+                )
+            )
+            ratio_col = 'ro_ratio_of_avg_uio_5y'
+            # Обновляем filtered_df после создания новой колонки
+            filtered_df = (df[df['model'] != 'TOTAL']
+                           if 'model' in df.columns else df)
+            # Также обновляем region_df, если он есть
+            if region_df is not None and not region_df.empty:
+                if ('avg_uio_5y' in region_df.columns and
+                        'total_0_5' in region_df.columns):
+                    region_df = region_df.copy()
+                    region_df['ro_ratio_of_avg_uio_5y'] = (
+                        region_df.apply(
+                            lambda row: (
+                                round(100 * row['total_0_5'] /
+                                      row['avg_uio_5y'], 2)
+                                if row['avg_uio_5y'] > 0 else 0
+                            ),
+                            axis=1
+                        )
+                    )
+        else:
+            # Fallback на старую колонку, если avg_uio_5y не найдена
+            ratio_col = 'ro_ratio_of_uio_5y'
     else:
         labor_hours_col = 'labor_hours_0_10'
         total_col = 'total_0_10'
@@ -555,8 +588,21 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                                 selector=dict(type='bar'))
 
     # 4. Ratio – кол-во заказ нарядов / UIO
+    # Используем filtered_df для исключения TOTAL
+    if ratio_col in filtered_df.columns:
+        ratio_data = (filtered_df.sort_values(ratio_col, ascending=False)
+                      .head(10))
+    elif ratio_col in df.columns:
+        ratio_data = df.sort_values(ratio_col, ascending=False).head(10)
+    else:
+        # Fallback на старую колонку
+        if age_group == '0-5Y':
+            ratio_col = 'ro_ratio_of_uio_5y'
+        else:
+            ratio_col = 'ro_ratio_of_uio_10y'
+        ratio_data = df.sort_values(ratio_col, ascending=False).head(10)
     fig_ratio = px.bar(
-        df.sort_values(ratio_col, ascending=False).head(10),
+        ratio_data,
         x='model',
         y=ratio_col,
         text=ratio_col,
@@ -566,8 +612,11 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = (df.sort_values(ratio_col, ascending=False)
-                         .head(10)['model'].tolist())
+        if ratio_col in ratio_data.columns:
+            top_10_models = ratio_data['model'].tolist()
+        else:
+            top_10_models = (df.sort_values(ratio_col, ascending=False)
+                             .head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -610,7 +659,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     )
 
     # Определяем название для оси Y в зависимости от возрастной группы
-    ratio_title = ('RO ratio from UIO 5Y' if age_group == '0-5Y'
+    ratio_title = ('RO ratio from AVG_UIO 5Y' if age_group == '0-5Y'
                    else 'RO ratio from UIO 10Y')
 
     fig_ratio.update_yaxes(
@@ -1034,10 +1083,6 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
     Returns:
         pd.DataFrame: DataFrame с данными
     """
-    logger.info(f'load_dashboard_data вызвана с параметрами: '
-                f'selected_region={selected_region}, '
-                f'selected_mobis_code={selected_mobis_code}')
-
     # НОВАЯ ЛОГИКА: Автоматически определяем регион по mobis_code
     if selected_mobis_code != 'All':
         # Определяем регион по выбранному дилеру
@@ -1055,8 +1100,6 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # (если он был выбран, иначе 'All')
         if selected_region is None or selected_region == '':
             selected_region = 'All'
-        logger.info(f'Используем выбранный регион: {selected_region} '
-                    f'(исходное значение было передано)')
 
     # Проверяем совместимость выбранного Mobis Code с Holding
     if (selected_holding != 'All' and
@@ -1066,14 +1109,6 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
         # Если выбранный Mobis Code не соответствует Holding,
         # используем 'All' для Mobis Code
         selected_mobis_code = 'All'
-        # Если mobis_code изменился на 'All', но регион был выбран
-        # пользователем, сохраняем выбранный регион
-        logger.info(f'Mobis Code изменен на All, '
-                    f'сохраняем selected_region={selected_region}')
-
-    logger.info(f'Вызываем get_dnm_data с параметрами: '
-                f'selected_region={selected_region}, '
-                f'selected_mobis_code={selected_mobis_code}')
 
     try:
         # Получаем данные для выбранного года, возрастной группы,
