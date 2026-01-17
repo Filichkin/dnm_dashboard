@@ -130,8 +130,12 @@ def create_charts(df, age_group='0-10Y', region_df=None):
 
     # 1. Какая модель больше всего приносит прибыль (RO cost total)
     # Подготавливаем данные для отображения с форматированием K/M
-    profit_data = (filtered_df.sort_values('total_ro_cost', ascending=False)
-                   .head(10))
+    profit_data = (
+        filtered_df.sort_values(
+            'total_ro_cost',
+            ascending=False
+            ).head(10)
+        )
     profit_data = profit_data.copy()
     profit_data['total_ro_cost_formatted'] = (
         profit_data['total_ro_cost'].apply(format_number_k_m))
@@ -147,9 +151,12 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = (filtered_df.sort_values('total_ro_cost',
-                                                 ascending=False)
-                         .head(10)['model'].tolist())
+        top_10_models = (
+            filtered_df.sort_values(
+                'total_ro_cost',
+                ascending=False
+                ).head(10)['model'].tolist()
+            )
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -298,9 +305,12 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = (filtered_df.sort_values(labor_hours_col,
-                                                 ascending=False)
-                         .head(10)['model'].tolist())
+        top_10_models = (
+            filtered_df.sort_values(
+                labor_hours_col,
+                ascending=False
+                ).head(10)['model'].tolist()
+            )
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -399,9 +409,12 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = (df.sort_values('aver_labor_hours_per_vhc',
-                                        ascending=False)
-                         .head(10)['model'].tolist())
+        top_10_models = (
+            df.sort_values(
+                'aver_labor_hours_per_vhc',
+                ascending=False
+                ).head(10)['model'].tolist()
+            )
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -499,8 +512,12 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Добавляем трассу с региональными данными, если они есть
     if region_df is not None and not region_df.empty:
         # Берем только модели из топ 10 основного дилера
-        top_10_models = (df.sort_values('avg_ro_cost', ascending=False)
-                         .head(10)['model'].tolist())
+        top_10_models = (
+            df.sort_values(
+                'avg_ro_cost',
+                ascending=False
+                ).head(10)['model'].tolist()
+            )
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -590,8 +607,11 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # 4. Ratio – кол-во заказ нарядов / UIO
     # Используем filtered_df для исключения TOTAL
     if ratio_col in filtered_df.columns:
-        ratio_data = (filtered_df.sort_values(ratio_col, ascending=False)
-                      .head(10))
+        ratio_data = (
+            filtered_df.sort_values(
+                ratio_col,
+                ascending=False
+            ).head(10))
     elif ratio_col in df.columns:
         ratio_data = df.sort_values(ratio_col, ascending=False).head(10)
     else:
@@ -615,8 +635,11 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         if ratio_col in ratio_data.columns:
             top_10_models = ratio_data['model'].tolist()
         else:
-            top_10_models = (df.sort_values(ratio_col, ascending=False)
-                             .head(10)['model'].tolist())
+            top_10_models = (
+                df.sort_values(
+                    ratio_col,
+                    ascending=False
+                ).head(10)['model'].tolist())
         region_filtered = region_df[region_df['model'].isin(top_10_models)]
 
         if not region_filtered.empty:
@@ -724,25 +747,26 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Для каждого сегмента показываем количество RO и UIO
     if age_group == '0-5Y':
         # Для 0-5Y показываем 0-3, 4-5 и UIO
-        # Текст для 0-3 years: показываем только количество RO
-        text_0_3 = df_ro.apply(
-            lambda row: (
-                f"{int(row[age_0_3_col]):,}"
-                if pd.notna(row[age_0_3_col]) else ""
-            ),
-            axis=1
-        )
-        fig_ro_years.add_trace(go.Bar(
-            x=df_ro['model'],
-            y=df_ro[age_0_3_col],
-            name='0-3 years',
-            marker_color=get_chart_color(0),
-            text=text_0_3,
-            textposition='outside',
-            textfont=dict(size=14, color='white'),
-            hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
-        ))
-
+        # Добавляем UIO как отдельный сегмент в том же stacked bar
+        if avg_uio_col in df_ro.columns:
+            text_uio = df_ro.apply(
+                lambda row: (
+                    f"{int(row[avg_uio_col]):,}"
+                    if (pd.notna(row[avg_uio_col]) and
+                        row[avg_uio_col] > 0) else ""
+                ),
+                axis=1
+            )
+            fig_ro_years.add_trace(go.Bar(
+                x=df_ro['model'],
+                y=df_ro[avg_uio_col],
+                name=f'AVG_UIO ({age_group})',
+                marker_color=get_chart_color(3),
+                text=text_uio,
+                textposition='outside',
+                textfont=dict(size=11, color='white'),
+                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
+            ))
         # Текст для 4-5 years: показываем только количество RO
         text_4_5 = df_ro.apply(
             lambda row: (
@@ -758,33 +782,10 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(1),
             text=text_4_5,
             textposition='outside',
-            textfont=dict(size=14, color='white'),
+            textfont=dict(size=11, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
-
-        # Добавляем UIO как отдельный сегмент в том же stacked bar
-        if avg_uio_col in df_ro.columns:
-            text_uio = df_ro.apply(
-                lambda row: (
-                    f"UIO: {int(row[avg_uio_col]):,}"
-                    if (pd.notna(row[avg_uio_col]) and
-                        row[avg_uio_col] > 0) else ""
-                ),
-                axis=1
-            )
-            fig_ro_years.add_trace(go.Bar(
-                x=df_ro['model'],
-                y=df_ro[avg_uio_col],
-                name=f'AVG_UIO ({age_group})',
-                marker_color=get_chart_color(3),
-                text=text_uio,
-                textposition='outside',
-                textfont=dict(size=14, color='white'),
-                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
-            ))
-    else:
-        # Для 0-10Y показываем 0-3, 4-5, 6-10 и UIO
-        # Текст для 0-3 years
+        # Текст для 0-3 years: показываем только количество RO
         text_0_3 = df_ro.apply(
             lambda row: (
                 f"{int(row[age_0_3_col]):,}"
@@ -799,9 +800,32 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(0),
             text=text_0_3,
             textposition='outside',
-            textfont=dict(size=14, color='white'),
+            textfont=dict(size=11, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
+
+    else:
+        # Для 0-10Y показываем 0-3, 4-5, 6-10 и UIO
+        # Добавляем UIO как отдельный сегмент в том же stacked bar
+        if avg_uio_col in df_ro.columns:
+            text_uio = df_ro.apply(
+                lambda row: (
+                    f"{int(row[avg_uio_col]):,}"
+                    if (pd.notna(row[avg_uio_col]) and
+                        row[avg_uio_col] > 0) else ""
+                ),
+                axis=1
+            )
+            fig_ro_years.add_trace(go.Bar(
+                x=df_ro['model'],
+                y=df_ro[avg_uio_col],
+                name=f'AVG_UIO ({age_group})',
+                marker_color=get_chart_color(3),
+                text=text_uio,
+                textposition='outside',
+                textfont=dict(size=11, color='white'),
+                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
+            ))
 
         # Текст для 4-5 years
         text_4_5 = df_ro.apply(
@@ -818,7 +842,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(1),
             text=text_4_5,
             textposition='outside',
-            textfont=dict(size=14, color='white'),
+            textfont=dict(size=11, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -838,33 +862,30 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 marker_color=get_chart_color(2),
                 text=text_6_10,
                 textposition='outside',
-                textfont=dict(size=14, color='white'),
+                textfont=dict(size=11, color='white'),
                 hovertemplate='%{x}<br>6-10 years: %{y:,.0f}<extra></extra>'
             ))
-
-        # Добавляем UIO как отдельный сегмент в том же stacked bar
-        if avg_uio_col in df_ro.columns:
-            text_uio = df_ro.apply(
-                lambda row: (
-                    f"UIO: {int(row[avg_uio_col]):,}"
-                    if (pd.notna(row[avg_uio_col]) and
-                        row[avg_uio_col] > 0) else ""
-                ),
-                axis=1
-            )
-            fig_ro_years.add_trace(go.Bar(
-                x=df_ro['model'],
-                y=df_ro[avg_uio_col],
-                name=f'AVG_UIO ({age_group})',
-                marker_color=get_chart_color(3),
-                text=text_uio,
-                textposition='outside',
-                textfont=dict(size=14, color='white'),
-                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
-            ))
+        # Текст для 0-3 years
+        text_0_3 = df_ro.apply(
+            lambda row: (
+                f"{int(row[age_0_3_col]):,}"
+                if pd.notna(row[age_0_3_col]) else ""
+            ),
+            axis=1
+        )
+        fig_ro_years.add_trace(go.Bar(
+            x=df_ro['model'],
+            y=df_ro[age_0_3_col],
+            name='0-3 years',
+            marker_color=get_chart_color(0),
+            text=text_0_3,
+            textposition='outside',
+            textfont=dict(size=11, color='white'),
+            hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
+        ))
 
     fig_ro_years.update_layout(
-        barmode='relative',
+        barmode='overlay',
         xaxis_title='Model',
         yaxis_title='RO qty / UIO',
         margin=dict(t=60, b=60, l=60, r=60),
