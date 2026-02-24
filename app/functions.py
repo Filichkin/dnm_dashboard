@@ -885,7 +885,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         ))
 
     fig_ro_years.update_layout(
-        barmode='overlay',
+        barmode='group',
         xaxis_title='Model',
         yaxis_title='RO qty / UIO',
         margin=dict(t=60, b=60, l=60, r=60),
