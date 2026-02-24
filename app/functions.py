@@ -763,8 +763,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name=f'AVG_UIO ({age_group})',
                 marker_color=get_chart_color(3),
                 text=text_uio,
-                textposition='outside',
-                textfont=dict(size=11, color='white'),
+                textposition='inside',
+                textfont=dict(size=13, color='white'),
                 hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
             ))
         # Текст для 4-5 years: показываем только количество RO
@@ -781,8 +781,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=text_4_5,
-            textposition='outside',
-            textfont=dict(size=11, color='white'),
+            textposition='inside',
+            textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
         # Текст для 0-3 years: показываем только количество RO
@@ -799,8 +799,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=text_0_3,
-            textposition='outside',
-            textfont=dict(size=11, color='white'),
+            textposition='inside',
+            textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -822,8 +822,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name=f'AVG_UIO ({age_group})',
                 marker_color=get_chart_color(3),
                 text=text_uio,
-                textposition='outside',
-                textfont=dict(size=11, color='white'),
+                textposition='inside',
+                textfont=dict(size=13, color='white'),
                 hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
             ))
 
@@ -841,8 +841,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=text_4_5,
-            textposition='outside',
-            textfont=dict(size=11, color='white'),
+            textposition='inside',
+            textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -861,8 +861,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name='6-10 years',
                 marker_color=get_chart_color(2),
                 text=text_6_10,
-                textposition='outside',
-                textfont=dict(size=11, color='white'),
+                textposition='inside',
+                textfont=dict(size=13, color='white'),
                 hovertemplate='%{x}<br>6-10 years: %{y:,.0f}<extra></extra>'
             ))
         # Текст для 0-3 years
@@ -879,8 +879,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=text_0_3,
-            textposition='outside',
-            textfont=dict(size=11, color='white'),
+            textposition='inside',
+            textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
