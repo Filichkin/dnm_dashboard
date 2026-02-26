@@ -743,11 +743,9 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Определяем колонку AVG_UIO в зависимости от возрастной группы
     avg_uio_col = 'avg_uio_5y' if age_group == '0-5Y' else 'avg_uio_10y'
 
-    # Подготавливаем данные для текста на барах
-    # Для каждого сегмента показываем количество RO и UIO
+    # Подготавливаем данные для графика
     if age_group == '0-5Y':
-        # Для 0-5Y показываем 0-3, 4-5 и UIO
-        # Добавляем UIO как отдельный сегмент в том же stacked bar
+        # Для 0-5Y показываем 0-3, 4-5 и AVG_UIO линией
         if avg_uio_col in df_ro.columns:
             text_uio = df_ro.apply(
                 lambda row: (
@@ -757,15 +755,18 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 axis=1
             )
-            fig_ro_years.add_trace(go.Bar(
+            fig_ro_years.add_trace(go.Scatter(
                 x=df_ro['model'],
                 y=df_ro[avg_uio_col],
                 name=f'AVG_UIO ({age_group})',
-                marker_color=get_chart_color(3),
+                mode='lines+markers+text',
+                line=dict(color=get_chart_color(3), width=2),
+                marker=dict(size=8, color=get_chart_color(3)),
                 text=text_uio,
-                textposition='inside',
+                textposition='middle right',
                 textfont=dict(size=13, color='white'),
-                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
+                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>',
+                yaxis='y2'
             ))
         # Текст для 4-5 years: показываем только количество RO
         text_4_5 = df_ro.apply(
@@ -781,7 +782,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=text_4_5,
-            textposition='inside',
+            textposition='outside',
             textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
@@ -799,14 +800,13 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=text_0_3,
-            textposition='inside',
+            textposition='outside',
             textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
     else:
-        # Для 0-10Y показываем 0-3, 4-5, 6-10 и UIO
-        # Добавляем UIO как отдельный сегмент в том же stacked bar
+        # Для 0-10Y показываем 0-3, 4-5, 6-10 и AVG_UIO линией
         if avg_uio_col in df_ro.columns:
             text_uio = df_ro.apply(
                 lambda row: (
@@ -816,15 +816,18 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 ),
                 axis=1
             )
-            fig_ro_years.add_trace(go.Bar(
+            fig_ro_years.add_trace(go.Scatter(
                 x=df_ro['model'],
                 y=df_ro[avg_uio_col],
                 name=f'AVG_UIO ({age_group})',
-                marker_color=get_chart_color(3),
+                mode='lines+markers+text',
+                line=dict(color=get_chart_color(3), width=2),
+                marker=dict(size=8, color=get_chart_color(3)),
                 text=text_uio,
-                textposition='inside',
+                textposition='middle right',
                 textfont=dict(size=13, color='white'),
-                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>'
+                hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>',
+                yaxis='y2'
             ))
 
         # Текст для 4-5 years
@@ -841,7 +844,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='4-5 years',
             marker_color=get_chart_color(1),
             text=text_4_5,
-            textposition='inside',
+            textposition='outside',
             textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
@@ -861,7 +864,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 name='6-10 years',
                 marker_color=get_chart_color(2),
                 text=text_6_10,
-                textposition='inside',
+                textposition='outside',
                 textfont=dict(size=13, color='white'),
                 hovertemplate='%{x}<br>6-10 years: %{y:,.0f}<extra></extra>'
             ))
@@ -879,16 +882,23 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             name='0-3 years',
             marker_color=get_chart_color(0),
             text=text_0_3,
-            textposition='inside',
+            textposition='outside',
             textfont=dict(size=13, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
+    # Вычисляем диапазон правой оси — сдвигаем "0" ниже оси X,
+    # чтобы оно не накладывалось на "0" левой оси
+    if avg_uio_col in df_ro.columns and not df_ro[avg_uio_col].empty:
+        max_uio_val = df_ro[avg_uio_col].max()
+        yaxis2_range = [max_uio_val * 0.001, max_uio_val * 1.2]
+    else:
+        yaxis2_range = None
+
     fig_ro_years.update_layout(
         barmode='group',
         xaxis_title='Model',
-        yaxis_title='RO qty / UIO',
-        margin=dict(t=60, b=60, l=60, r=60),
+        margin=dict(t=60, b=60, l=60, r=80),
         plot_bgcolor='#3a3a3a',
         paper_bgcolor='#3a3a3a',
         font=dict(color='white'),
@@ -907,10 +917,21 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             tickangle=-45
         ),
         yaxis=dict(
+            title='RO qty',
             title_font=dict(size=14, family='Arial', color='white'),
             tickfont=dict(color='white'),
             showgrid=False,
             tickformat=',d'
+        ),
+        yaxis2=dict(
+            title='AVG UIO',
+            title_font=dict(size=14, family='Arial', color='white'),
+            tickfont=dict(color='white'),
+            showgrid=False,
+            tickformat=',d',
+            overlaying='y',
+            side='right',
+            range=yaxis2_range
         )
     )
 
