@@ -319,5 +319,6 @@ if __name__ == '__main__':
     app.run(
         debug=settings.app.debug,
         host=settings.app.host,
-        port=settings.app.port
+        port=settings.app.port,
+        use_reloader=True
     )
