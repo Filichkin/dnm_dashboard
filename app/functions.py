@@ -192,8 +192,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_profit.update_traces(
         texttemplate='%{text}',
-        textposition='auto',
-        textfont_size=11,
+        textposition='outside',
+        textfont_size=15,
         textfont_color='white',
         selector=dict(type='bar')
     )
@@ -202,8 +202,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_profit.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=12, family='Arial', color='white'),
-                tickfont=dict(color='white'),
+                title_font=dict(size=14, family='Arial', color='white'),
+                tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
                 showgrid=False
@@ -214,15 +214,15 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     fig_profit.update_yaxes(
         tickformat=',d',
         title='Amount',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
     fig_profit.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
     )
@@ -346,16 +346,16 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_mh.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='auto',
-        textfont_size=11,
+        textposition='outside',
+        textfont_size=15,
         textfont_color='white',
         selector=dict(type='bar')
     )
     fig_mh.update_yaxes(
         tickformat=',d',
         title='L/H',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
@@ -364,8 +364,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_mh.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=12, family='Arial', color='white'),
-                tickfont=dict(color='white'),
+                title_font=dict(size=14, family='Arial', color='white'),
+                tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
                 showgrid=False
@@ -374,8 +374,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
     )
@@ -450,15 +450,15 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_mh.update_traces(
         texttemplate='%{text:,.1f}',
-        textposition='auto',
-        textfont_size=11,
+        textposition='outside',
+        textfont_size=15,
         textfont_color='white',
         selector=dict(type='bar')
     )
     fig_avg_mh.update_yaxes(
         title='L/H per RO',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
@@ -467,8 +467,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_avg_mh.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=12, family='Arial', color='white'),
-                tickfont=dict(color='white'),
+                title_font=dict(size=14, family='Arial', color='white'),
+                tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
                 showgrid=False
@@ -477,8 +477,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_avg_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
     )
@@ -553,16 +553,16 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_avg_check.update_traces(
         texttemplate='%{text:,.0f}',
-        textposition='auto',
-        textfont_size=11,
+        textposition='outside',
+        textfont_size=15,
         textfont_color='white',
         selector=dict(type='bar')
     )
     fig_avg_check.update_yaxes(
         tickformat=',d',
         title='CPR',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
@@ -571,8 +571,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_avg_check.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=12, family='Arial', color='white'),
-                tickfont=dict(color='white'),
+                title_font=dict(size=14, family='Arial', color='white'),
+                tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
                 showgrid=False
@@ -581,8 +581,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_avg_check.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
     )
@@ -675,8 +675,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     # Обновляем только bar traces (основные данные дилера)
     fig_ratio.update_traces(
         texttemplate='%{text:.2f}',
-        textposition='auto',
-        textfont_size=11,
+        textposition='outside',
+        textfont_size=15,
         textfont_color='white',
         selector=dict(type='bar')
     )
@@ -687,8 +687,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
 
     fig_ratio.update_yaxes(
         title=ratio_title,
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
@@ -697,8 +697,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_ratio.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=12, family='Arial', color='white'),
-                tickfont=dict(color='white'),
+                title_font=dict(size=14, family='Arial', color='white'),
+                tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
                 showgrid=False
@@ -707,8 +707,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_ratio.update_xaxes(
         title='Model',
-        title_font=dict(size=14, family='Arial', color='white'),
-        tickfont=dict(color='white'),
+        title_font=dict(size=16, family='Arial', color='white'),
+        tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
     )
@@ -763,8 +763,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 line=dict(color=get_chart_color(3), width=2),
                 marker=dict(size=8, color=get_chart_color(3)),
                 text=text_uio,
-                textposition='middle right',
-                textfont=dict(size=13, color='white'),
+                textposition='bottom left',
+                textfont=dict(size=11, color='white'),
                 hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>',
                 yaxis='y2'
             ))
@@ -783,7 +783,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(1),
             text=text_4_5,
             textposition='outside',
-            textfont=dict(size=13, color='white'),
+            textfont=dict(size=15, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
         # Текст для 0-3 years: показываем только количество RO
@@ -801,7 +801,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(0),
             text=text_0_3,
             textposition='outside',
-            textfont=dict(size=13, color='white'),
+            textfont=dict(size=15, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -824,8 +824,8 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 line=dict(color=get_chart_color(3), width=2),
                 marker=dict(size=8, color=get_chart_color(3)),
                 text=text_uio,
-                textposition='middle right',
-                textfont=dict(size=13, color='white'),
+                textposition='bottom left',
+                textfont=dict(size=11, color='white'),
                 hovertemplate='%{x}<br>AVG_UIO: %{y:,.0f}<extra></extra>',
                 yaxis='y2'
             ))
@@ -845,7 +845,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(1),
             text=text_4_5,
             textposition='outside',
-            textfont=dict(size=13, color='white'),
+            textfont=dict(size=15, color='white'),
             hovertemplate='%{x}<br>4-5 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -865,7 +865,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
                 marker_color=get_chart_color(2),
                 text=text_6_10,
                 textposition='outside',
-                textfont=dict(size=13, color='white'),
+                textfont=dict(size=15, color='white'),
                 hovertemplate='%{x}<br>6-10 years: %{y:,.0f}<extra></extra>'
             ))
         # Текст для 0-3 years
@@ -883,7 +883,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             marker_color=get_chart_color(0),
             text=text_0_3,
             textposition='outside',
-            textfont=dict(size=13, color='white'),
+            textfont=dict(size=15, color='white'),
             hovertemplate='%{x}<br>0-3 years: %{y:,.0f}<extra></extra>'
         ))
 
@@ -911,22 +911,22 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         ),
         xaxis=dict(
-            title_font=dict(size=14, family='Arial', color='white'),
-            tickfont=dict(color='white'),
+            title_font=dict(size=16, family='Arial', color='white'),
+            tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickangle=-45
         ),
         yaxis=dict(
             title='RO qty',
-            title_font=dict(size=14, family='Arial', color='white'),
-            tickfont=dict(color='white'),
+            title_font=dict(size=16, family='Arial', color='white'),
+            tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickformat=',d'
         ),
         yaxis2=dict(
             title='AVG UIO',
-            title_font=dict(size=14, family='Arial', color='white'),
-            tickfont=dict(color='white'),
+            title_font=dict(size=16, family='Arial', color='white'),
+            tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickformat=',d',
             overlaying='y',
