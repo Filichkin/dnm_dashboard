@@ -53,7 +53,10 @@ available_years = get_available_years()
 current_year = get_current_year()
 
 app.layout = html.Div([
-    html.H1('DNM RO DATA', style=responsive_styles['title']),
+    html.H1(
+        id='dashboard-title',
+        style=responsive_styles['title']
+        ),
 
     # Скрытые div для хранения данных
     dcc.Store(id='data-store'),
@@ -310,6 +313,14 @@ def export_to_csv(n_clicks, data):
     return None
 
 
+@callback(
+    Output('dashboard-title', 'children'),
+    Input('year-selector', 'value')
+)
+def update_title(selected_year):
+    return f'{selected_year} DNM commercial RO data analysis'
+
+
 if __name__ == '__main__':
     logger.info(
         f'Запускаем DNM Dashboard на {settings.app.host}:{settings.app.port}'
@@ -319,5 +330,6 @@ if __name__ == '__main__':
     app.run(
         debug=settings.app.debug,
         host=settings.app.host,
-        port=settings.app.port
+        port=settings.app.port,
+        use_reloader=True
     )

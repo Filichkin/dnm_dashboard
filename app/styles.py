@@ -40,7 +40,7 @@ CARD_STYLES = {
     'title': {
         'margin': '0',
         'color': COLORS['text_muted'],
-        'fontSize': '1.1em',
+        'fontSize': '1.2em',
         'marginBottom': '10px',
         'fontWeight': '500'
     },
@@ -136,7 +136,7 @@ TABLE_STYLES = {
 
 # Цвета для графиков (темные тона для лучшей читаемости)
 CHART_COLORS = [
-    '#2c3e50',  # Темно-синий
+    '#3498db',  # Ярко-синий
     '#27ae60',  # Темно-зеленый
     '#e67e22',  # Темно-оранжевый
     '#e74c3c',  # Темно-красный
@@ -162,16 +162,16 @@ RESPONSIVE_STYLES = {
     'title': {
         'textAlign': 'left',
         'color': COLORS['text_primary'],
-        'marginBottom': '30px',
-        'fontSize': '2.5em',
-        'fontWeight': 'bold'
+        'marginBottom': '40px',
+        'fontSize': '3.0em',
+        'fontWeight': '500'
     },
     'section_title': {
         'textAlign': 'left',
         'color': COLORS['text_primary'],
         'marginBottom': '20px',
         'fontSize': '1.8em',
-        'fontWeight': 'bold'
+        'fontWeight': '500'
     }
 }
 
