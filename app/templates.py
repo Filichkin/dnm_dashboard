@@ -13,6 +13,35 @@ DASHBOARD_TEMPLATE = '''
         {%favicon%}
         {%css%}
         <style>
+            /* Подключение корпоративного шрифта Kia Signature */
+            @font-face {
+                font-family: 'KiaSignature';
+                src: url('/assets/fonts/KiaSignatureRegular.woff2') format('woff2');
+                font-weight: 400;
+                font-style: normal;
+                font-display: swap;
+            }
+            @font-face {
+                font-family: 'KiaSignature';
+                src: url('/assets/fonts/KiaSignatureBold.woff2') format('woff2');
+                font-weight: 700;
+                font-style: normal;
+                font-display: swap;
+            }
+
+            /* Применяем шрифт ко всему интерфейсу */
+            body,
+            .main-container,
+            .Select-control,
+            .Select-value-label,
+            .Select-menu-outer,
+            .Select-option,
+            input, button, table,
+            .dash-table-container,
+            .js-plotly-plot {
+                font-family: 'KiaSignature', Arial, sans-serif !important;
+            }
+
             /* Базовые стили для адаптивности */
             .metric-card {
                 transition: all 0.3s ease;
