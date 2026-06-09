@@ -203,7 +203,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_profit.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=14, family='Arial', color='white'),
+                title_font=dict(size=14, family='KiaSignature', color='white'),
                 tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
@@ -215,14 +215,14 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     fig_profit.update_yaxes(
         tickformat=',d',
         title='Amount',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False
     )
 
     fig_profit.update_xaxes(
         title='Model',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
@@ -356,7 +356,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     fig_mh.update_yaxes(
         tickformat=',d',
         title='L/H',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False
     )
@@ -366,7 +366,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_mh.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=14, family='Arial', color='white'),
+                title_font=dict(size=14, family='KiaSignature', color='white'),
                 tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
@@ -376,7 +376,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
@@ -460,7 +460,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     )
     fig_avg_mh.update_yaxes(
         title='L/H per RO',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False
     )
@@ -470,7 +470,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_avg_mh.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=14, family='Arial', color='white'),
+                title_font=dict(size=14, family='KiaSignature', color='white'),
                 tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
@@ -480,7 +480,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_avg_mh.update_xaxes(
         title='Model',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
@@ -565,7 +565,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
     fig_avg_check.update_yaxes(
         tickformat=',d',
         title='CPR',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False
     )
@@ -575,7 +575,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_avg_check.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=14, family='Arial', color='white'),
+                title_font=dict(size=14, family='KiaSignature', color='white'),
                 tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
@@ -585,7 +585,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_avg_check.update_xaxes(
         title='Model',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
@@ -692,7 +692,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
 
     fig_ratio.update_yaxes(
         title=ratio_title,
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False
     )
@@ -702,7 +702,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         fig_ratio.update_layout(
             yaxis2=dict(
                 title='Region Average',
-                title_font=dict(size=14, family='Arial', color='white'),
+                title_font=dict(size=14, family='KiaSignature', color='white'),
                 tickfont=dict(size=14, color='white'),
                 overlaying='y',
                 side='right',
@@ -712,7 +712,7 @@ def create_charts(df, age_group='0-10Y', region_df=None):
         )
     fig_ratio.update_xaxes(
         title='Model',
-        title_font=dict(size=16, family='Arial', color='white'),
+        title_font=dict(size=16, family='KiaSignature', color='white'),
         tickfont=dict(size=14, color='white'),
         showgrid=False,
         tickangle=-45
@@ -921,21 +921,21 @@ def create_charts(df, age_group='0-10Y', region_df=None):
             font=dict(color='white')
         ),
         xaxis=dict(
-            title_font=dict(size=16, family='Arial', color='white'),
+            title_font=dict(size=16, family='KiaSignature', color='white'),
             tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickangle=-45
         ),
         yaxis=dict(
             title='RO qty',
-            title_font=dict(size=16, family='Arial', color='white'),
+            title_font=dict(size=16, family='KiaSignature', color='white'),
             tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickformat=',d'
         ),
         yaxis2=dict(
             title='AVG UIO',
-            title_font=dict(size=16, family='Arial', color='white'),
+            title_font=dict(size=16, family='KiaSignature', color='white'),
             tickfont=dict(size=14, color='white'),
             showgrid=False,
             tickformat=',d',

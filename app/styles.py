@@ -156,7 +156,7 @@ RESPONSIVE_STYLES = {
         'margin': '0 auto',
         'backgroundColor': COLORS['background'],
         'minHeight': '100vh',
-        'fontFamily': 'Arial, sans-serif',
+        'fontFamily': "'KiaSignature', Arial, sans-serif",
         'className': 'main-container'
     },
     'title': {
