@@ -40,14 +40,14 @@ CARD_STYLES = {
     'title': {
         'margin': '0',
         'color': COLORS['text_muted'],
-        'fontSize': '1.2em',
+        'fontSize': '0.9em',
         'marginBottom': '10px',
         'fontWeight': '500'
     },
     'value': {
         'margin': '0',
         'color': COLORS['text_primary'],
-        'fontSize': '2.5em',
+        'fontSize': '1.7em',
         'fontWeight': 'bold'
     }
 }
@@ -163,14 +163,14 @@ RESPONSIVE_STYLES = {
         'textAlign': 'left',
         'color': COLORS['text_primary'],
         'marginBottom': '40px',
-        'fontSize': '3.0em',
+        'fontSize': '1.9em',
         'fontWeight': '500'
     },
     'section_title': {
         'textAlign': 'left',
         'color': COLORS['text_primary'],
         'marginBottom': '20px',
-        'fontSize': '1.8em',
+        'fontSize': '1.3em',
         'fontWeight': '500'
     }
 }

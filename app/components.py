@@ -45,7 +45,7 @@ def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
         html.H2(title, style={
             'color': '#ffffff',
             'marginBottom': '15px',
-            'fontSize': '1.5em',
+            'fontSize': '1.15em',
             'fontWeight': 'bold'
         }),
         dcc.Graph(figure=figure, style=styles['graph'])
@@ -215,7 +215,7 @@ def create_data_table(columns: list, data: list,
             'borderCollapse': 'collapse',
             'backgroundColor': '#3a3a3a',
             'color': '#ffffff',
-            'fontSize': '12px'
+            'fontSize': '11px'
         })
     ], key=unique_key)
 
@@ -240,7 +240,7 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -251,7 +251,7 @@ def create_year_selector(available_years: list, current_year: int) -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -301,7 +301,7 @@ def create_age_group_selector() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -312,7 +312,7 @@ def create_age_group_selector() -> html.Div:
             style={
                 'width': '150px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -344,7 +344,7 @@ def create_mobis_code_selector() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -355,7 +355,7 @@ def create_mobis_code_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -387,7 +387,7 @@ def create_holding_selector() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -398,7 +398,7 @@ def create_holding_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -430,7 +430,7 @@ def create_region_selector() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -441,7 +441,7 @@ def create_region_selector() -> html.Div:
             style={
                 'width': '200px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -473,12 +473,12 @@ def create_dealer_name_display() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.4em',
+                       'font-size': '1.1em',
                        'color': '#ffffff'
                    }),
         html.Span(id='dealer-name-display',
                   style={
-                      'font-size': '1.3em',
+                      'font-size': '1.05em',
                       'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
@@ -507,12 +507,12 @@ def create_holding_name_display() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.4em',
+                       'font-size': '1.1em',
                        'color': '#ffffff'
                    }),
         html.Span(id='holding-name-display',
                   style={
-                      'font-size': '1.3em',
+                      'font-size': '1.05em',
                       'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
@@ -541,12 +541,12 @@ def create_region_name_display() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.4em',
+                       'font-size': '1.1em',
                        'color': '#ffffff'
                    }),
         html.Span(id='region-name-display',
                   style={
-                      'font-size': '1.3em',
+                      'font-size': '1.05em',
                       'color': '#00d4ff',
                       'font-weight': 'normal'
                   })
@@ -575,7 +575,7 @@ def create_model_filter() -> html.Div:
                    style={
                        'font-weight': 'bold',
                        'margin-right': '15px',
-                       'font-size': '1.2em',
+                       'font-size': '1.0em',
                        'color': '#ffffff'
                    }),
         dcc.Dropdown(
@@ -586,7 +586,7 @@ def create_model_filter() -> html.Div:
             style={
                 'width': '300px',
                 'display': 'inline-block',
-                'font-size': '1.1em',
+                'font-size': '0.95em',
                 'backgroundColor': '#3a3a3a',
                 'color': '#ffffff'
             },
@@ -624,7 +624,7 @@ def create_export_button() -> html.Div:
                 'padding': '12px 24px',
                 'borderRadius': '8px',
                 'cursor': 'pointer',
-                'fontSize': '14px',
+                'fontSize': '13px',
                 'fontWeight': 'bold',
                 'margin': '10px 0',
                 'boxShadow': '0 4px 12px rgba(0,212,255,0.3)',
