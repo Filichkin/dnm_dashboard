@@ -141,9 +141,11 @@ dmypy.json
 static/
 media/
 data/
+design/
 draft/
 .DS_Store
 commands.txt
+prompts.txt
 *.csv
 *.pdf
 
