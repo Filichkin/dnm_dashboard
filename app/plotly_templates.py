@@ -242,11 +242,15 @@ def age_groups(df, age_group='0-10Y', theme='dark'):
         ))
 
     if avg_uio_col in data.columns:
+        uio_vals = data[avg_uio_col].tolist()
+        uio_text = [_abbr(v) for v in uio_vals]
         traces.append(go.Scatter(
-            name='AVG UIO', x=order, y=data[avg_uio_col].tolist(),
-            mode='lines+markers', yaxis='y2',
+            name='AVG UIO', x=order, y=uio_vals,
+            mode='lines+markers+text', yaxis='y2',
             line=dict(color=ACCENT_2, width=2.5, shape='spline'),
             marker=dict(size=6, color=ACCENT_2),
+            text=uio_text, textposition='top center',
+            textfont=dict(family=MONO_STACK, size=10, color=ACCENT_2),
             hovertemplate='%{x} · AVG UIO<br>%{y:,}<extra></extra>',
         ))
 
