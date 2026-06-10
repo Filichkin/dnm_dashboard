@@ -116,7 +116,8 @@ def get_chart_color(index: int) -> str:
 # DATA TABLE  (restyled fully in a later step)
 # ----------------------------------------------------------------------
 def create_data_table(columns: list, data: list,
-                      show_all_columns: bool = False) -> html.Div:
+                      show_all_columns: bool = False,
+                      title: str = 'Items data by models') -> html.Div:
     """Создает HTML-таблицу данных со скрытием колонок после PPR."""
     # Находим индекс колонки PPR для скрытия колонок после неё
     ppr_index = None
@@ -160,12 +161,18 @@ def create_data_table(columns: list, data: list,
 
     # Строки данных
     data_rows = []
-    for row in data[:25]:
+    for row in data:
         cells = []
         for col in visible_columns:
             value = row.get(col['id'], '')
             col_id = col['id']
-            if isinstance(value, (int, float)) and col_id != 'model':
+            if col_id == 'model':
+                cells.append(html.Td(html.Span([
+                    html.Span(className='mk'),
+                    html.Span(str(value)),
+                ], className='model-chip')))
+                continue
+            if isinstance(value, (int, float)):
                 if col_id == 'aver_labor_hours_per_vhc':
                     value = f'{value:.1f}'
                 elif col_id in ['ro_ratio_of_uio_10y',
@@ -176,16 +183,18 @@ def create_data_table(columns: list, data: list,
                     value = f'{value:.1f}%'
                 else:
                     value = f'{value:,.0f}'
-            cells.append(html.Td(str(value)))
+            cells.append(html.Td(html.Span(str(value), className='num')))
         data_rows.append(html.Tr(cells))
 
     return html.Div([
         html.Div([
-            html.Table([
-                html.Thead(header_row),
-                html.Tbody(data_rows),
-            ]),
-        ], className='t-scroll'),
+            html.Div(title, className='c-title'),
+            create_export_button(),
+        ], className='t-head'),
+        html.Table([
+            html.Thead(header_row),
+            html.Tbody(data_rows),
+        ]),
     ], className='tablecard')
 
 
@@ -228,4 +237,4 @@ def create_export_button() -> html.Div:
             className='btn primary',
         ),
         dcc.Download(id='download-csv'),
-    ], style={'marginBottom': '20px'})
+    ], style={'marginLeft': 'auto'})

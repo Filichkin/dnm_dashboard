@@ -16,8 +16,7 @@ from .components import (
     create_age_group_selector,
     create_mobis_code_selector,
     create_holding_selector,
-    create_region_selector,
-    create_export_button
+    create_region_selector
 )
 from .functions import (
     process_dataframe,
@@ -38,14 +37,11 @@ from .constants import (
     get_mobis_code_options_by_region
 )
 from config import settings
-from .styles import get_responsive_styles
 from .templates import get_dashboard_template
 
-# Layout Dash
-app = dash.Dash(__name__)
-
-# Получаем адаптивные стили
-responsive_styles = get_responsive_styles()
+# Layout Dash (кнопка экспорта рендерится внутри динамической таблицы,
+# поэтому разрешаем колбэки на компоненты вне стартового layout)
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
 # Добавляем CSS для адаптивности
 app.index_string = get_dashboard_template()
@@ -110,12 +106,7 @@ app.layout = html.Div([
         # Графики
         html.Div(id='charts-container'),
 
-        # Таблица
-        html.H2(
-            'Items data by models',
-            style=responsive_styles['section_title']
-        ),
-        create_export_button(),
+        # Таблица (заголовок и экспорт внутри карточки .tablecard)
         html.Div(id='data-table'),
     ], className='wrap'),
 
