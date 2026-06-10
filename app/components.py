@@ -1,6 +1,7 @@
 from dash import html, dcc
 
 from .styles import get_graph_style, get_section_style, CHART_COLORS
+from .plotly_templates import CONFIG
 from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS, REGION_OPTIONS
 
 
@@ -105,6 +106,26 @@ def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
 def create_graphs_row(graphs: list) -> html.Div:
     """Создает ряд графиков."""
     return html.Div(graphs, style=get_section_style('graphs_row'))
+
+
+def create_chart_card(figure, title: str, subtitle: str, tag: str,
+                      tall: bool = False) -> html.Div:
+    """Карточка графика дизайн-системы (.card)."""
+    return html.Div([
+        html.Div([
+            html.Div([
+                html.Div(title, className='c-title'),
+                html.Div(subtitle, className='c-sub'),
+            ]),
+            html.Span(tag, className='c-tag'),
+        ], className='c-head'),
+        dcc.Graph(
+            figure=figure,
+            config=CONFIG,
+            className='plot tall' if tall else 'plot',
+            style={'height': '300px' if tall else '248px'},
+        ),
+    ], className='card')
 
 
 def get_chart_color(index: int) -> str:
