@@ -29,31 +29,6 @@ from database.queries import (
 )
 
 
-def format_number_k_m(value):
-    """
-    Форматирует число в формат K/M (тысячи/миллионы)
-
-    Args:
-        value: Числовое значение для форматирования
-
-    Returns:
-        str: Отформатированная строка (например, 100K, 270M)
-    """
-    if pd.isna(value) or value == 0:
-        return '0'
-
-    abs_value = abs(value)
-
-    if abs_value >= 1_000_000:
-        formatted = f"{value / 1_000_000:.0f}M"
-    elif abs_value >= 1_000:
-        formatted = f"{value / 1_000:.0f}K"
-    else:
-        formatted = f"{value:.0f}"
-
-    return formatted
-
-
 def process_dataframe(df):
     """
     Обрабатывает DataFrame для корректного отображения

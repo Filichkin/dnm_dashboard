@@ -1,6 +1,5 @@
 from dash import html, dcc
 
-from .styles import get_graph_style, get_section_style, CHART_COLORS
 from .plotly_templates import CONFIG
 from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS, REGION_OPTIONS
 
@@ -86,28 +85,8 @@ def create_cards_row(cards: list) -> html.Div:
 
 
 # ----------------------------------------------------------------------
-# CHART CONTAINERS  (restyled fully in a later step)
+# CHART CARD
 # ----------------------------------------------------------------------
-def create_graph_container(title: str, figure, height: int = 350) -> html.Div:
-    """Создает контейнер для графика."""
-    styles = get_graph_style(height)
-    return html.Div([
-        html.H2(title, style={
-            'color': 'var(--text)',
-            'marginBottom': '15px',
-            'fontSize': '1.15em',
-            'fontWeight': 'bold',
-        }),
-        dcc.Graph(figure=figure, style=styles['graph']),
-    ], style=styles['container'],
-       className=styles['container'].get('className', ''))
-
-
-def create_graphs_row(graphs: list) -> html.Div:
-    """Создает ряд графиков."""
-    return html.Div(graphs, style=get_section_style('graphs_row'))
-
-
 def create_chart_card(figure, title: str, subtitle: str, tag: str,
                       tall: bool = False) -> html.Div:
     """Карточка графика дизайн-системы (.card)."""
@@ -128,13 +107,8 @@ def create_chart_card(figure, title: str, subtitle: str, tag: str,
     ], className='card')
 
 
-def get_chart_color(index: int) -> str:
-    """Возвращает цвет для графика по индексу."""
-    return CHART_COLORS[index % len(CHART_COLORS)]
-
-
 # ----------------------------------------------------------------------
-# DATA TABLE  (restyled fully in a later step)
+# DATA TABLE
 # ----------------------------------------------------------------------
 def create_data_table(columns: list, data: list,
                       show_all_columns: bool = False,
