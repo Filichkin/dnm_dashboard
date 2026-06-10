@@ -1287,15 +1287,20 @@ def create_metrics_cards(metrics, age_group):
     """
     return create_cards_row([
         create_metric_card(f'UIO ({age_group})',
-                           f'{metrics["total_uio"]:,.0f}'),
+                           f'{metrics["total_uio"]:,.0f}',
+                           unit='units in operation'),
         create_metric_card(f'RO qty ({age_group})',
-                           f'{metrics["total_ro_qty"]:,.0f}'),
+                           f'{metrics["total_ro_qty"]:,.0f}',
+                           unit='repair orders'),
         create_metric_card(f'Total cost ({age_group})',
-                           f'{metrics["total_cost"]:,.0f}'),
+                           f'{metrics["total_cost"]:,.0f}',
+                           unit='RUB', hero=True),
         create_metric_card('Total L/H',
-                           f'{metrics["total_labor_hours"]:,.0f}'),
+                           f'{metrics["total_labor_hours"]:,.0f}',
+                           unit='labor hours'),
         create_metric_card('Average RO cost',
-                           f'{metrics["avg_ro_cost"]:,.0f}'),
+                           f'{metrics["avg_ro_cost"]:,.0f}',
+                           unit='RUB per RO'),
     ])
 
 
@@ -1378,8 +1383,7 @@ def create_dealer_display(selected_mobis_code):
         dealer_display,
         holding_display,
         region_display
-    ], style={'display': 'flex', 'flexDirection': 'row', 'gap': '20px',
-              'alignItems': 'center'})
+    ], className='namebar')
 
 
 def create_holding_display(selected_holding):

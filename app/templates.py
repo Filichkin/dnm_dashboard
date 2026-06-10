@@ -6,6 +6,13 @@
 JetBrains Mono подключается из Google Fonts для числовых колонок.
 """
 
+# JetBrains Mono из Google Fonts (URL разбит для длины строки <=79)
+_FONT_LINK = (
+    '<link href="https://fonts.googleapis.com/css2?'
+    'family=JetBrains+Mono:wght@400;500;600&display=swap" '
+    'rel="stylesheet">'
+)
+
 # HTML шаблон: тема через data-theme, стили — в assets/
 DASHBOARD_TEMPLATE = '''<!DOCTYPE html>
 <html data-theme="dark">
@@ -14,7 +21,7 @@ DASHBOARD_TEMPLATE = '''<!DOCTYPE html>
         <title>{%title%}</title>
         {%favicon%}
         {%css%}
-        <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+        ''' + _FONT_LINK + '''
     </head>
     <body>
         {%app_entry%}

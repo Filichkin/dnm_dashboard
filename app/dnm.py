@@ -85,25 +85,21 @@ app.layout = html.Div([
 
         # Селекторы и карты в одном блоке
         html.Div([
-            # Селекторы и отображение дилера/holding/region
+            # Фильтр-бар (.filters)
             html.Div([
                 create_year_selector(available_years, current_year),
                 create_age_group_selector(),
                 create_mobis_code_selector(),
                 create_holding_selector(),
                 create_region_selector(),
+            ], className='filters'),
+
+            # Отображение дилера / holding / region (.namebar)
+            html.Div([
                 html.Div(id='dealer-name-container'),
                 html.Div(id='holding-name-container'),
-                html.Div(id='region-name-container')
-            ], style={
-                'display': 'flex',
-                'align-items': 'flex-start',
-                'justify-content': 'flex-start',
-                'flex-wrap': 'wrap',
-                'gap': '20px',
-                'marginBottom': '20px',
-                'padding': '0 10px'
-            }),
+                html.Div(id='region-name-container'),
+            ], className='namebar', style={'marginBottom': '20px'}),
 
             # Карты с суммарными показателями
             html.Div(id='metrics-cards')

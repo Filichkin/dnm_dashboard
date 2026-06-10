@@ -18,40 +18,6 @@ COLORS = {
     'border': '#4a4a4a',  # Границы
 }
 
-# Стили для карточек с метриками
-CARD_STYLES = {
-    'container': {
-        'backgroundColor': COLORS['card_background'],
-        'padding': '20px',
-        'borderRadius': '12px',
-        'textAlign': 'center',
-        'margin': '10px',
-        'flex': '1',
-        'boxShadow': '0 4px 12px rgba(0,0,0,0.3)',
-        'minHeight': '120px',
-        'display': 'flex',
-        'flexDirection': 'column',
-        'justifyContent': 'center',
-        'alignItems': 'center',
-        'border': f'1px solid {COLORS["border"]}',
-        'className': 'metric-card',
-        'transition': 'all 0.3s ease'
-    },
-    'title': {
-        'margin': '0',
-        'color': COLORS['text_muted'],
-        'fontSize': '0.9em',
-        'marginBottom': '10px',
-        'fontWeight': '500'
-    },
-    'value': {
-        'margin': '0',
-        'color': COLORS['text_primary'],
-        'fontSize': '1.7em',
-        'fontWeight': 'bold'
-    }
-}
-
 # Стили для графиков
 GRAPH_STYLES = {
     'container': {
@@ -161,39 +127,19 @@ RESPONSIVE_STYLES = {
     },
     'title': {
         'textAlign': 'left',
-        'color': COLORS['text_primary'],
+        'color': 'var(--text)',
         'marginBottom': '40px',
         'fontSize': '1.9em',
         'fontWeight': '500'
     },
     'section_title': {
         'textAlign': 'left',
-        'color': COLORS['text_primary'],
+        'color': 'var(--text-2)',
         'marginBottom': '20px',
         'fontSize': '1.3em',
         'fontWeight': '500'
     }
 }
-
-
-def get_card_style(title: str, value: str) -> dict:
-    """
-    Возвращает стили для карточки с метрикой
-
-    Args:
-        title: Заголовок карточки
-        value: Значение метрики
-
-    Returns:
-        dict: Стили для компонента карточки
-    """
-    return {
-        'title': title,
-        'value': value,
-        'title_style': CARD_STYLES['title'],
-        'value_style': CARD_STYLES['value'],
-        'container_style': CARD_STYLES['container']
-    }
 
 
 def get_graph_style(height: int = 350) -> dict:
