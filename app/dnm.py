@@ -2,7 +2,10 @@
 DNM Dashboard - основное приложение Dash
 """
 import dash
-from dash import html, dcc, callback, Input, Output, State
+from dash import (
+    html, dcc, callback, Input, Output, State, clientside_callback
+)
+from dash.exceptions import PreventUpdate
 import pandas as pd
 from datetime import datetime
 
@@ -14,8 +17,7 @@ from .components import (
     create_age_group_selector,
     create_mobis_code_selector,
     create_holding_selector,
-    create_region_selector,
-    create_export_button
+    create_region_selector
 )
 from .functions import (
     process_dataframe,
@@ -27,6 +29,7 @@ from .functions import (
     load_region_data,
     create_metrics_cards,
     create_charts_container,
+    build_charts_container,
     create_dealer_display,
     create_holding_display,
     create_region_display
@@ -36,14 +39,11 @@ from .constants import (
     get_mobis_code_options_by_region
 )
 from config import settings
-from .styles import get_responsive_styles
 from .templates import get_dashboard_template
 
-# Layout Dash
-app = dash.Dash(__name__)
-
-# Получаем адаптивные стили
-responsive_styles = get_responsive_styles()
+# Layout Dash (кнопка экспорта рендерится внутри динамической таблицы,
+# поэтому разрешаем колбэки на компоненты вне стартового layout)
+app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
 # Добавляем CSS для адаптивности
 app.index_string = get_dashboard_template()
@@ -53,53 +53,68 @@ available_years = get_available_years()
 current_year = get_current_year()
 
 app.layout = html.Div([
-    html.H1(
-        id='dashboard-title',
-        style=responsive_styles['title']
-        ),
+    # ---- header: brand + theme toggle ----
+    html.Header(className='top', children=[
+        html.Div(className='top-inner', children=[
+            html.Div(className='brand', children=[
+                html.Div(className='mark'),
+                html.Div([
+                    html.H1(id='dashboard-title'),
+                    html.Div(
+                        'After-sales performance — repair orders',
+                        className='sub'
+                    ),
+                ]),
+            ]),
+            html.Div(className='spacer'),
+            dcc.RadioItems(
+                id='theme', className='seg',
+                options=[{'label': 'Light', 'value': 'light'},
+                         {'label': 'Dark', 'value': 'dark'}],
+                value='dark', inline=True
+            ),
+        ])
+    ]),
 
-    # Скрытые div для хранения данных
-    dcc.Store(id='data-store'),
-
-    # Селекторы и карты в одном блоке
+    # ---- body ----
     html.Div([
-        # Селекторы года, возрастных групп, кода дилера, holding, region
-        # и отображение дилера и holding
+        # Скрытые div для хранения данных
+        dcc.Store(id='data-store'),
+
+        # Селекторы и карты в одном блоке
         html.Div([
-            create_year_selector(available_years, current_year),
-            create_age_group_selector(),
-            create_mobis_code_selector(),
-            create_holding_selector(),
-            create_region_selector(),
-            html.Div(id='dealer-name-container'),
-            html.Div(id='holding-name-container'),
-            html.Div(id='region-name-container')
+            # Фильтр-бар (.filters)
+            html.Div([
+                create_year_selector(available_years, current_year),
+                create_age_group_selector(),
+                create_mobis_code_selector(),
+                create_holding_selector(),
+                create_region_selector(),
+            ], className='filters'),
+
+            # Отображение дилера / holding / region (.namebar)
+            html.Div([
+                html.Div(id='dealer-name-container'),
+                html.Div(id='holding-name-container'),
+                html.Div(id='region-name-container'),
+            ], className='namebar', style={'marginBottom': '20px'}),
+
+            # Карты с суммарными показателями
+            html.Div(id='metrics-cards')
         ], style={
-            'display': 'flex',
-            'align-items': 'flex-start',
-            'justify-content': 'flex-start',
-            'flex-wrap': 'wrap',
-            'gap': '20px',
-            'marginBottom': '20px',
-            'padding': '0 10px'
+            'marginBottom': '40px'
         }),
 
-        # Карты с суммарными показателями
-        html.Div(id='metrics-cards')
-    ], style={
-        'marginBottom': '40px'
-    }),
+        # Графики
+        html.Div(id='charts-container'),
 
-    # Графики
-    html.Div(id='charts-container'),
+        # Таблица (заголовок и экспорт внутри карточки .tablecard)
+        html.Div(id='data-table'),
+    ], className='wrap'),
 
-
-    # Таблица
-    html.H2('Items data by models', style=responsive_styles['section_title']),
-    create_export_button(),
-    html.Div(id='data-table'),
-], style=responsive_styles['main_container'],
-    className=responsive_styles['main_container'].get('className', ''))
+    # hidden sink for the clientside theme toggle
+    html.Div(id='_theme_sink', style={'display': 'none'}),
+])
 
 
 @callback(
@@ -113,10 +128,11 @@ app.layout = html.Div([
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
      Input('holding-selector', 'value'),
-     Input('region-selector', 'value')]
+     Input('region-selector', 'value')],
+    State('theme', 'value')
 )
 def update_dashboard(selected_year, age_group, selected_mobis_code,
-                     selected_holding, selected_region):
+                     selected_holding, selected_region, theme):
     """
     Обновляет дашборд при изменении года, возрастной группы,
     кода дилера, holding или region.
@@ -168,7 +184,7 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
 
     # Создаем графики с региональными данными
     logger.info('Создаем графики')
-    charts = create_charts(df, age_group, region_df)
+    charts = create_charts(df, age_group, region_df, theme)
 
     # Вычисляем метрики
     logger.info('Вычисляем метрики')
@@ -319,6 +335,43 @@ def export_to_csv(n_clicks, data):
 )
 def update_title(selected_year):
     return f'{selected_year} DNM commercial RO data analysis'
+
+
+# ---- rebuild only the charts when the theme changes ----
+# Данные берутся из кеша (lru_cache), поэтому пересборка мгновенна и
+# без обращения к БД; метрики/таблица/имена не трогаются (их
+# перекрашивает CSS), что убирает мерцание при смене темы.
+@callback(
+    Output('charts-container', 'children', allow_duplicate=True),
+    Input('theme', 'value'),
+    [State('year-selector', 'value'),
+     State('age-group-selector', 'value'),
+     State('mobis-code-selector', 'value'),
+     State('holding-selector', 'value'),
+     State('region-selector', 'value')],
+    prevent_initial_call=True
+)
+def rerender_charts_on_theme(theme, selected_year, age_group,
+                             selected_mobis_code, selected_holding,
+                             selected_region):
+    params = [selected_year, age_group, selected_mobis_code,
+              selected_holding, selected_region]
+    if any(param is None for param in params):
+        raise PreventUpdate
+    return build_charts_container(
+        selected_year, age_group, selected_mobis_code,
+        selected_holding, selected_region, theme
+    )
+
+
+# ---- flip data-theme on <html> so the CSS variables switch ----
+clientside_callback(
+    "function(t){"
+    "document.documentElement.setAttribute('data-theme', t);"
+    "return '';}",
+    Output('_theme_sink', 'children'),
+    Input('theme', 'value')
+)
 
 
 if __name__ == '__main__':
