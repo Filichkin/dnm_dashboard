@@ -154,6 +154,11 @@ def create_data_table(columns: list, data: list,
         html.Th(col['name']) for col in visible_columns
     ])
 
+    # Максимум по Amount для пропорциональных баров в колонке
+    amount_vals = [row.get('total_ro_cost') for row in data
+                   if isinstance(row.get('total_ro_cost'), (int, float))]
+    amount_max = max(amount_vals) if amount_vals else 0
+
     # Строки данных
     data_rows = []
     for row in data:
@@ -166,6 +171,16 @@ def create_data_table(columns: list, data: list,
                     html.Span(className='mk'),
                     html.Span(str(value)),
                 ], className='model-chip')))
+                continue
+            # Amount: число поверх пропорционального бар-фона
+            if col_id == 'total_ro_cost' and isinstance(
+                    value, (int, float)):
+                pct = (value / amount_max * 100) if amount_max else 0
+                cells.append(html.Td(html.Div([
+                    html.Div(className='barfill',
+                             style={'width': f'{pct:.1f}%'}),
+                    html.Span(f'{value:,.0f}', className='num'),
+                ], className='bar-cell')))
                 continue
             if isinstance(value, (int, float)):
                 if col_id == 'aver_labor_hours_per_vhc':

@@ -3,6 +3,7 @@
 """
 import pandas as pd
 from datetime import datetime
+from functools import lru_cache
 from dash import html
 from loguru import logger
 
@@ -314,6 +315,23 @@ def get_current_year():
     return datetime.now().year
 
 
+@lru_cache(maxsize=64)
+def _cached_dnm_data(selected_year, age_group, selected_mobis_code,
+                     selected_holding, selected_region, group_by_region):
+    """Кешируемая обёртка над тяжёлым SQL-запросом get_dnm_data.
+
+    Все аргументы хешируемы (скаляры). Результат кешируется, поэтому
+    повторные вызовы с теми же параметрами (например, при смене темы)
+    не идут в БД. Вызывающий код обязан копировать DataFrame перед
+    мутацией, чтобы не портить кеш.
+    """
+    return get_dnm_data(
+        selected_year, age_group, selected_mobis_code,
+        selected_holding, selected_region,
+        group_by_region=group_by_region
+    )
+
+
 def load_dashboard_data(selected_year, age_group, selected_mobis_code,
                         selected_holding, selected_region='All'):
     """
@@ -359,8 +377,11 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
     try:
         # Получаем данные для выбранного года, возрастной группы,
         # кода дилера, holding и автоматически определенного region
-        df = get_dnm_data(selected_year, age_group, selected_mobis_code,
-                          selected_holding, selected_region)
+        # (через кеш; копируем, т.к. дальше данные мутируются)
+        df = _cached_dnm_data(
+            selected_year, age_group, selected_mobis_code,
+            selected_holding, selected_region, False
+        ).copy()
     except Exception:
         # Fallback на CSV файл в случае ошибки
         if selected_year == 2024:
@@ -399,15 +420,14 @@ def load_region_data(selected_year, age_group, selected_mobis_code):
         logger.info(f'Получаем данные по региону {region} для дилера '
                     f'{selected_mobis_code}')
 
-        # Получаем данные по региону с использованием нового скрипта
-        df = get_dnm_data(
-            selected_year=selected_year,
-            age_group=age_group,
-            selected_mobis_code='All',  # Все дилеры в регионе
-            selected_holding='All',    # Все холдинги в регионе
-            selected_region=region,     # Конкретный регион
-            group_by_region=True  # Используем скрипт с группировкой по региону
-        )
+        # Получаем данные по региону (через кеш; копируем перед отдачей)
+        df = _cached_dnm_data(
+            selected_year, age_group,
+            'All',     # Все дилеры в регионе
+            'All',     # Все холдинги в регионе
+            region,    # Конкретный регион
+            True       # Группировка по региону
+        ).copy()
         return df
     except Exception as e:
         logger.error(f'Ошибка при получении данных по региону: {e}')
@@ -468,6 +488,26 @@ def create_charts_container(charts):
         create_chart_card(charts['fig_ro_years'], 'RO Count by Age Groups',
                           '0-3y / 4-5y · vs AVG UIO', 'Mix', tall=True),
     ], className='charts')
+
+
+def build_charts_container(selected_year, age_group, selected_mobis_code,
+                           selected_holding, selected_region, theme):
+    """Собирает контейнер графиков из (кешированных) данных под тему.
+
+    Используется колбэком смены темы: загрузка идёт через кеш, поэтому
+    повторная сборка мгновенна и без обращения к БД.
+    """
+    df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
+                             selected_holding, selected_region)
+    df = process_dataframe(df)
+
+    region_df = None
+    if selected_mobis_code != 'All':
+        region_df = load_region_data(selected_year, age_group,
+                                     selected_mobis_code)
+
+    charts = create_charts(df, age_group, region_df, theme)
+    return create_charts_container(charts)
 
 
 def create_dealer_display(selected_mobis_code):

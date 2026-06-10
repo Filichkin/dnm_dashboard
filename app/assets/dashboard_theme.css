@@ -206,8 +206,8 @@ tbody tr:hover td{background:var(--surface-hover);}
 .model-chip{display:inline-flex;align-items:center;gap:8px;font-weight:700;font-size:12.5px;letter-spacing:.02em;}
 .model-chip .mk{width:8px;height:8px;border-radius:2px;background:var(--accent);flex:none;}
 .td-muted{color:var(--text-3);}
-.bar-cell{position:relative;}
-.bar-cell .barfill{position:absolute;left:0;top:50%;transform:translateY(-50%);height:60%;border-radius:3px;background:color-mix(in srgb,var(--accent) 16%,transparent);z-index:0;}
+.bar-cell{position:relative;display:flex;align-items:center;justify-content:center;min-width:150px;height:30px;padding:0 12px;}
+.bar-cell .barfill{position:absolute;left:0;top:0;height:100%;border-radius:7px;background:color-mix(in srgb,var(--accent) 16%,transparent);z-index:0;min-width:6px;}
 .bar-cell span{position:relative;z-index:1;}
 
 /* ============ DASH DATATABLE (dnm-table) ============ */

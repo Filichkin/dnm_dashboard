@@ -5,6 +5,7 @@ import dash
 from dash import (
     html, dcc, callback, Input, Output, State, clientside_callback
 )
+from dash.exceptions import PreventUpdate
 import pandas as pd
 from datetime import datetime
 
@@ -28,6 +29,7 @@ from .functions import (
     load_region_data,
     create_metrics_cards,
     create_charts_container,
+    build_charts_container,
     create_dealer_display,
     create_holding_display,
     create_region_display
@@ -126,8 +128,8 @@ app.layout = html.Div([
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
      Input('holding-selector', 'value'),
-     Input('region-selector', 'value'),
-     Input('theme', 'value')]
+     Input('region-selector', 'value')],
+    State('theme', 'value')
 )
 def update_dashboard(selected_year, age_group, selected_mobis_code,
                      selected_holding, selected_region, theme):
@@ -333,6 +335,33 @@ def export_to_csv(n_clicks, data):
 )
 def update_title(selected_year):
     return f'{selected_year} DNM commercial RO data analysis'
+
+
+# ---- rebuild only the charts when the theme changes ----
+# Данные берутся из кеша (lru_cache), поэтому пересборка мгновенна и
+# без обращения к БД; метрики/таблица/имена не трогаются (их
+# перекрашивает CSS), что убирает мерцание при смене темы.
+@callback(
+    Output('charts-container', 'children', allow_duplicate=True),
+    Input('theme', 'value'),
+    [State('year-selector', 'value'),
+     State('age-group-selector', 'value'),
+     State('mobis-code-selector', 'value'),
+     State('holding-selector', 'value'),
+     State('region-selector', 'value')],
+    prevent_initial_call=True
+)
+def rerender_charts_on_theme(theme, selected_year, age_group,
+                             selected_mobis_code, selected_holding,
+                             selected_region):
+    params = [selected_year, age_group, selected_mobis_code,
+              selected_holding, selected_region]
+    if any(param is None for param in params):
+        raise PreventUpdate
+    return build_charts_container(
+        selected_year, age_group, selected_mobis_code,
+        selected_holding, selected_region, theme
+    )
 
 
 # ---- flip data-theme on <html> so the CSS variables switch ----
