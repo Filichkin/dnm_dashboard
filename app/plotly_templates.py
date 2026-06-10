@@ -249,7 +249,7 @@ def age_groups(df, age_group='0-10Y', theme='dark'):
             mode='lines+markers+text', yaxis='y2',
             line=dict(color=ACCENT_2, width=2.5, shape='spline'),
             marker=dict(size=6, color=ACCENT_2),
-            text=uio_text, textposition='middle right',
+            text=uio_text, textposition='top right',
             textfont=dict(family=MONO_STACK, size=10, color=ACCENT_2),
             hovertemplate='%{x} · AVG UIO<br>%{y:,}<extra></extra>',
         ))
