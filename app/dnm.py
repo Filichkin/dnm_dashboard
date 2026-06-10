@@ -2,7 +2,9 @@
 DNM Dashboard - основное приложение Dash
 """
 import dash
-from dash import html, dcc, callback, Input, Output, State
+from dash import (
+    html, dcc, callback, Input, Output, State, clientside_callback
+)
 import pandas as pd
 from datetime import datetime
 
@@ -53,53 +55,77 @@ available_years = get_available_years()
 current_year = get_current_year()
 
 app.layout = html.Div([
-    html.H1(
-        id='dashboard-title',
-        style=responsive_styles['title']
-        ),
+    # ---- header: brand + theme toggle ----
+    html.Header(className='top', children=[
+        html.Div(className='top-inner', children=[
+            html.Div(className='brand', children=[
+                html.Div(className='mark'),
+                html.Div([
+                    html.H1(id='dashboard-title'),
+                    html.Div(
+                        'After-sales performance — repair orders',
+                        className='sub'
+                    ),
+                ]),
+            ]),
+            html.Div(className='spacer'),
+            dcc.RadioItems(
+                id='theme', className='seg',
+                options=[{'label': 'Light', 'value': 'light'},
+                         {'label': 'Dark', 'value': 'dark'}],
+                value='dark', inline=True
+            ),
+        ])
+    ]),
 
-    # Скрытые div для хранения данных
-    dcc.Store(id='data-store'),
-
-    # Селекторы и карты в одном блоке
+    # ---- body ----
     html.Div([
-        # Селекторы года, возрастных групп, кода дилера, holding, region
-        # и отображение дилера и holding
+        # Скрытые div для хранения данных
+        dcc.Store(id='data-store'),
+
+        # Селекторы и карты в одном блоке
         html.Div([
-            create_year_selector(available_years, current_year),
-            create_age_group_selector(),
-            create_mobis_code_selector(),
-            create_holding_selector(),
-            create_region_selector(),
-            html.Div(id='dealer-name-container'),
-            html.Div(id='holding-name-container'),
-            html.Div(id='region-name-container')
+            # Селекторы и отображение дилера/holding/region
+            html.Div([
+                create_year_selector(available_years, current_year),
+                create_age_group_selector(),
+                create_mobis_code_selector(),
+                create_holding_selector(),
+                create_region_selector(),
+                html.Div(id='dealer-name-container'),
+                html.Div(id='holding-name-container'),
+                html.Div(id='region-name-container')
+            ], style={
+                'display': 'flex',
+                'align-items': 'flex-start',
+                'justify-content': 'flex-start',
+                'flex-wrap': 'wrap',
+                'gap': '20px',
+                'marginBottom': '20px',
+                'padding': '0 10px'
+            }),
+
+            # Карты с суммарными показателями
+            html.Div(id='metrics-cards')
         ], style={
-            'display': 'flex',
-            'align-items': 'flex-start',
-            'justify-content': 'flex-start',
-            'flex-wrap': 'wrap',
-            'gap': '20px',
-            'marginBottom': '20px',
-            'padding': '0 10px'
+            'marginBottom': '40px'
         }),
 
-        # Карты с суммарными показателями
-        html.Div(id='metrics-cards')
-    ], style={
-        'marginBottom': '40px'
-    }),
+        # Графики
+        html.Div(id='charts-container'),
 
-    # Графики
-    html.Div(id='charts-container'),
+        # Таблица
+        html.H2(
+            'Items data by models',
+            style=responsive_styles['section_title']
+        ),
+        create_export_button(),
+        html.Div(id='data-table'),
+    ], className='wrap'),
 
-
-    # Таблица
-    html.H2('Items data by models', style=responsive_styles['section_title']),
-    create_export_button(),
-    html.Div(id='data-table'),
-], style=responsive_styles['main_container'],
-    className=responsive_styles['main_container'].get('className', ''))
+    # hidden sink for the clientside theme toggle
+    html.Div(id='_theme_sink', style={'display': 'none'}),
+])
 
 
 @callback(
@@ -113,10 +139,11 @@ app.layout = html.Div([
      Input('age-group-selector', 'value'),
      Input('mobis-code-selector', 'value'),
      Input('holding-selector', 'value'),
-     Input('region-selector', 'value')]
+     Input('region-selector', 'value'),
+     Input('theme', 'value')]
 )
 def update_dashboard(selected_year, age_group, selected_mobis_code,
-                     selected_holding, selected_region):
+                     selected_holding, selected_region, theme):
     """
     Обновляет дашборд при изменении года, возрастной группы,
     кода дилера, holding или region.
@@ -168,7 +195,7 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
 
     # Создаем графики с региональными данными
     logger.info('Создаем графики')
-    charts = create_charts(df, age_group, region_df)
+    charts = create_charts(df, age_group, region_df, theme)
 
     # Вычисляем метрики
     logger.info('Вычисляем метрики')
@@ -319,6 +346,16 @@ def export_to_csv(n_clicks, data):
 )
 def update_title(selected_year):
     return f'{selected_year} DNM commercial RO data analysis'
+
+
+# ---- flip data-theme on <html> so the CSS variables switch ----
+clientside_callback(
+    "function(t){"
+    "document.documentElement.setAttribute('data-theme', t);"
+    "return '';}",
+    Output('_theme_sink', 'children'),
+    Input('theme', 'value')
+)
 
 
 if __name__ == '__main__':

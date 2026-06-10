@@ -112,7 +112,7 @@ def process_dataframe(df):
     return df
 
 
-def create_charts(df, age_group='0-10Y', region_df=None):
+def create_charts(df, age_group='0-10Y', region_df=None, theme='dark'):
     """
     Создает все графики на основе данных
 
