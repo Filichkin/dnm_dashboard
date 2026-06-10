@@ -76,7 +76,6 @@ body{
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   font-feature-settings:"ss01","cv01";
-  transition:background .35s ease,color .25s ease;
 }
 .num{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em;}
 .wrap{max-width:var(--maxw);margin:0 auto;padding:0 28px 56px;}
