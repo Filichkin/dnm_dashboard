@@ -33,7 +33,6 @@ html[data-theme="dark"]{
   --accent:#BFC2BF;
   --accent-contrast:#05141f;
   --bg:#05141f;
-  --bg-grad:radial-gradient(1200px 700px at 78% -10%, color-mix(in srgb, var(--accent) 14%, transparent), transparent 62%), #05141f;
   --bg-2:#0a1c28;
   --surface:#0c2230;
   --surface-2:#102a39;
@@ -51,7 +50,6 @@ html[data-theme="light"]{
   --accent:#05141f;
   --accent-contrast:#ffffff;
   --bg:#eef1f4;
-  --bg-grad:radial-gradient(1100px 640px at 80% -12%, color-mix(in srgb, var(--accent) 7%, transparent), transparent 58%), #eef1f4;
   --bg-2:#e6eaee;
   --surface:#ffffff;
   --surface-2:#f5f7f9;
@@ -71,7 +69,7 @@ html,body{background:var(--bg);}
 body{
   font-family:var(--ff);
   color:var(--text);
-  background:var(--bg-grad);
+  background:var(--bg);
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   font-feature-settings:"ss01","cv01";
@@ -82,8 +80,7 @@ body{
 /* ============ HEADER ============ */
 header.top{
   position:sticky;top:0;z-index:40;
-  backdrop-filter:blur(14px) saturate(140%);
-  background:color-mix(in srgb, var(--bg) 78%, transparent);
+  background:var(--bg);
   border-bottom:1px solid var(--border);
 }
 .top-inner{max-width:var(--maxw);margin:0 auto;padding:0 28px;height:64px;display:flex;align-items:center;gap:18px;}
@@ -236,14 +233,8 @@ footer.foot .pill{padding:3px 9px;border:1px solid var(--border);border-radius:2
 }
 
 /* ============ PRINT / PDF ============
-   Safari растеризует radial-gradient + color-mix и backdrop-filter в
-   PDF как жёсткое «пятно». Для печати используем плоский фон и
-   убираем sticky/blur у хедера, чтобы экспорт был чистым. */
+   Фон и хедер на экране уже плоские (печатно-безопасные). Здесь только
+   убираем sticky-хедер, чтобы он не накладывался при печати. */
 @media print{
-  html,body{background:var(--bg) !important;}
-  header.top{
-    position:static !important;
-    backdrop-filter:none !important;
-    background:var(--bg) !important;
-  }
+  header.top{position:static !important;}
 }
