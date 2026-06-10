@@ -72,7 +72,6 @@ body{
   font-family:var(--ff);
   color:var(--text);
   background:var(--bg-grad);
-  background-attachment:fixed;
   min-height:100vh;
   -webkit-font-smoothing:antialiased;
   font-feature-settings:"ss01","cv01";
@@ -234,4 +233,17 @@ footer.foot .pill{padding:3px 9px;border:1px solid var(--border);border-radius:2
   .kpis{grid-template-columns:repeat(2,1fr);}
   .charts{grid-template-columns:1fr;}
   .meta{display:none;}
+}
+
+/* ============ PRINT / PDF ============
+   Safari растеризует radial-gradient + color-mix и backdrop-filter в
+   PDF как жёсткое «пятно». Для печати используем плоский фон и
+   убираем sticky/blur у хедера, чтобы экспорт был чистым. */
+@media print{
+  html,body{background:var(--bg) !important;}
+  header.top{
+    position:static !important;
+    backdrop-filter:none !important;
+    background:var(--bg) !important;
+  }
 }
