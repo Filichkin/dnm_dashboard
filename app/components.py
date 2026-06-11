@@ -1,7 +1,11 @@
 from dash import html, dcc
 
-from .plotly_templates import CONFIG
-from .constants import MOBIS_CODE_OPTIONS, HOLDING_OPTIONS, REGION_OPTIONS
+from .constants import (
+    CONFIG,
+    HOLDING_OPTIONS,
+    MOBIS_CODE_OPTIONS,
+    REGION_OPTIONS,
+)
 
 
 # ----------------------------------------------------------------------

@@ -5,48 +5,13 @@ Single source of truth for chart styling, mirroring the CSS design
 system (assets/dashboard_theme.css) 1:1 in both dark and light themes.
 Pure Plotly + Dash compatible (no extra deps).
 
-Token values in THEMES are kept identical to the CSS custom properties —
-if a color changes in the CSS, change it here too.
+Theme tokens (THEMES, ACCENT_2, font stacks) live in constants.py.
 """
 
 import pandas as pd
 import plotly.graph_objects as go
 
-
-# ----------------------------------------------------------------------
-# THEME TOKENS  (kept identical to dashboard_theme.css)
-# ----------------------------------------------------------------------
-ACCENT_2 = '#16AFC0'      # secondary accent — AVG UIO line / region dots
-
-THEMES = {
-    'dark': {
-        'accent': '#BFC2BF',
-        'paper': 'rgba(0,0,0,0)',
-        'plot': 'rgba(0,0,0,0)',
-        'font': '#9fb3c2',
-        'axis': '#7d92a4',
-        'grid': 'rgba(255,255,255,0.07)',
-        'text': '#eef4f8',
-        'surface': '#0c2230',
-        'border': 'rgba(255,255,255,0.16)',
-    },
-    'light': {
-        'accent': '#05141f',
-        'paper': 'rgba(0,0,0,0)',
-        'plot': 'rgba(0,0,0,0)',
-        'font': '#48586a',
-        'axis': '#9aa6b1',
-        'grid': 'rgba(5,20,31,0.08)',
-        'text': '#05141f',
-        'surface': '#ffffff',
-        'border': 'rgba(5,20,31,0.18)',
-    },
-}
-
-FONT_STACK = 'KiaSignature, "Helvetica Neue", Arial, sans-serif'
-MONO_STACK = 'JetBrains Mono, ui-monospace, monospace'
-
-CONFIG = {'responsive': True, 'displayModeBar': False}
+from .constants import ACCENT_2, FONT_STACK, MONO_STACK, THEMES
 
 
 # ----------------------------------------------------------------------
