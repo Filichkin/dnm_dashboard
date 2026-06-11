@@ -9,15 +9,17 @@ from dash.exceptions import PreventUpdate
 import pandas as pd
 from datetime import datetime
 
-# Инициализация логирования
-from .logging_config import logger
-
+from config import settings
 from .components import (
     create_year_selector,
     create_age_group_selector,
     create_mobis_code_selector,
     create_holding_selector,
     create_region_selector
+)
+from .constants import (
+    get_mobis_code_options_by_holding,
+    get_mobis_code_options_by_region
 )
 from .functions import (
     process_dataframe,
@@ -34,21 +36,14 @@ from .functions import (
     create_holding_display,
     create_region_display
 )
-from .constants import (
-    get_mobis_code_options_by_holding,
-    get_mobis_code_options_by_region
-)
-from config import settings
+from .logging_config import logger
 from .templates import get_dashboard_template
 
-# Layout Dash (кнопка экспорта рендерится внутри динамической таблицы,
-# поэтому разрешаем колбэки на компоненты вне стартового layout)
+
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
-# Добавляем CSS для адаптивности
 app.index_string = get_dashboard_template()
 
-# Получаем доступные годы и текущий год
 available_years = get_available_years()
 current_year = get_current_year()
 
