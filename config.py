@@ -71,7 +71,7 @@ class AppSettings(BaseSettings):
         env_file='.env',
         env_file_encoding='utf-8',
         case_sensitive=False,
-        extra='ignore'  # Игнорируем лишние переменные окружения
+        extra='ignore'
     )
 
 
@@ -85,17 +85,8 @@ class Settings(BaseSettings):
         env_file='.env',
         env_file_encoding='utf-8',
         case_sensitive=False,
-        extra='ignore'  # Игнорируем лишние переменные окружения
+        extra='ignore'
     )
 
 
-# Создаем глобальный экземпляр настроек
 settings = Settings()
-
-# Для обратной совместимости
-DB_CONFIG = settings.database.connection_params
-APP_CONFIG = {
-    'debug': settings.app.debug,
-    'host': settings.app.host,
-    'port': settings.app.port,
-}

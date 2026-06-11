@@ -32,12 +32,6 @@ def main():
     print(f'  Host: {settings.app.host}')
     print(f'  Port: {settings.app.port}')
 
-    # Тест обратной совместимости
-    print('\n🔄 Обратная совместимость:')
-    from config import DB_CONFIG, APP_CONFIG
-    print(f'  DB_CONFIG: {DB_CONFIG}')
-    print(f'  APP_CONFIG: {APP_CONFIG}')
-
     print('\n✅ Все тесты пройдены успешно!')
 
 
