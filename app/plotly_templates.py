@@ -232,30 +232,34 @@ def age_groups(df, age_group='0-10Y', theme='dark'):
     for col, name, alpha in bands:
         if col not in data.columns:
             continue
+        vals = data[col].tolist()
         hov = '%{x} · ' + name + '<br>%{y:,} RO<extra></extra>'
         traces.append(go.Bar(
-            name=name, x=order, y=data[col].tolist(),
+            name=name, x=order, y=vals,
             marker=dict(
                 color=f'rgba({r},{g},{b},{alpha})', cornerradius=3,
             ),
+            text=['' if pd.isna(v) else f'{v:,.0f}' for v in vals],
+            textposition='outside', cliponaxis=False,
+            constraintext='none',
+            textfont=dict(family=MONO_STACK, size=9, color=tok['font']),
             hovertemplate=hov,
         ))
 
     if avg_uio_col in data.columns:
-        uio_vals = data[avg_uio_col].tolist()
-        uio_text = [_abbr(v) for v in uio_vals]
+        r2, g2, b2 = _hex2rgb(ACCENT_2)
+        uio_color = f'rgba({r2},{g2},{b2},0.5)'
         traces.append(go.Scatter(
-            name='AVG UIO', x=order, y=uio_vals,
-            mode='lines+markers+text', yaxis='y2',
-            line=dict(color=ACCENT_2, width=2.5, shape='spline'),
-            marker=dict(size=6, color=ACCENT_2),
-            text=uio_text, textposition='top right',
-            textfont=dict(family=MONO_STACK, size=10, color=ACCENT_2),
+            name='AVG UIO', x=order, y=data[avg_uio_col].tolist(),
+            mode='lines+markers', yaxis='y2',
+            line=dict(color=uio_color, width=1.5, shape='spline'),
+            marker=dict(size=5, color=uio_color),
             hovertemplate='%{x} · AVG UIO<br>%{y:,}<extra></extra>',
         ))
 
     lay = base_layout(
-        theme, barmode='stack',
+        theme, barmode='group',
+        bargap=0.25, bargroupgap=0.08,
         margin=dict(l=8, r=42, t=30, b=44), showlegend=True,
         legend=dict(
             orientation='h', y=1.16, x=0,
