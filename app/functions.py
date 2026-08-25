@@ -1,33 +1,37 @@
 """
 Функции для обработки данных и создания компонентов DNM Dashboard
 """
-import pandas as pd
 from datetime import datetime
 from functools import lru_cache
+
+import pandas as pd
 from dash import html
 from loguru import logger
+from sqlalchemy.exc import SQLAlchemyError
+
+from config import MOSCOW_TZ
+from database.queries import (
+    get_dnm_data,
+)
 
 from .components import (
-    create_metric_card,
     create_cards_row,
     create_chart_card,
     create_data_table,
     create_dealer_name_display,
     create_holding_name_display,
-    create_region_name_display
+    create_metric_card,
+    create_region_name_display,
 )
-from .plotly_templates import build_dashboard_figures
 from .constants import (
     get_dealer_name,
-    get_holding_name,
-    get_region_name,
     get_holding_by_mobis_code,
+    get_holding_name,
+    get_mobis_codes_by_holding,
     get_region_by_mobis_code,
-    get_mobis_codes_by_holding
+    get_region_name,
 )
-from database.queries import (
-    get_dnm_data,
-)
+from .plotly_templates import build_dashboard_figures
 
 
 def process_dataframe(df):
@@ -52,7 +56,7 @@ def process_dataframe(df):
 
     # Создаем агрегированные колонки для 0-10Y
     if 'age_0_3' not in df.columns:
-        cols_0_3 = [f'age_{y}' for y in range(0, 4)
+        cols_0_3 = [f'age_{y}' for y in range(4)
                     if f'age_{y}' in df.columns]
         if cols_0_3:
             df['age_0_3'] = df[cols_0_3].sum(axis=1)
@@ -69,7 +73,7 @@ def process_dataframe(df):
 
     # Создаем агрегированные колонки для 0-5Y (используем age_0_3 и age_4_5)
     if 'age_0_3' not in df.columns:
-        cols_0_3 = [f'age_{y}' for y in range(0, 4)
+        cols_0_3 = [f'age_{y}' for y in range(4)
                     if f'age_{y}' in df.columns]
         if cols_0_3:
             df['age_0_3'] = df[cols_0_3].sum(axis=1)
@@ -298,7 +302,7 @@ def get_available_years():
     Returns:
         list: Список годов
     """
-    current_year = datetime.now().year
+    current_year = datetime.now(MOSCOW_TZ).year
     # Последние 5 лет + текущий
     return list(range(current_year - 5, current_year + 1))
 
@@ -310,7 +314,7 @@ def get_current_year():
     Returns:
         int: Текущий год
     """
-    return datetime.now().year
+    return datetime.now(MOSCOW_TZ).year
 
 
 @lru_cache(maxsize=64)
@@ -380,8 +384,9 @@ def load_dashboard_data(selected_year, age_group, selected_mobis_code,
             selected_year, age_group, selected_mobis_code,
             selected_holding, selected_region, False
         ).copy()
-    except Exception:
+    except (SQLAlchemyError, OSError) as e:
         # Fallback на CSV файл в случае ошибки
+        logger.warning(f'БД недоступна, используем CSV-фоллбэк: {e}')
         if selected_year == 2024:
             # Используем июль 2025 как 2024
             df = pd.read_csv('data/jul_25.csv')
@@ -426,10 +431,11 @@ def load_region_data(selected_year, age_group, selected_mobis_code):
             region,    # Конкретный регион
             True       # Группировка по региону
         ).copy()
-        return df
-    except Exception as e:
+    except (SQLAlchemyError, OSError, KeyError) as e:
         logger.error(f'Ошибка при получении данных по региону: {e}')
         return pd.DataFrame()
+    else:
+        return df
 
 
 def create_metrics_cards(metrics, age_group):

@@ -3,17 +3,24 @@ import subprocess
 import time
 
 import matplotlib.pyplot as plt
-from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfgen import canvas
 
 from app.dnm import (
-    fig_profit, fig_mh, fig_avg_mh, fig_avg_check, fig_ratio, fig_ro_years, df
+    df,
+    fig_avg_check,
+    fig_avg_mh,
+    fig_mh,
+    fig_profit,
+    fig_ratio,
+    fig_ro_years,
 )
 
 # Для скриншота браузера
 try:
     from selenium import webdriver
+    from selenium.common.exceptions import WebDriverException
     from selenium.webdriver.chrome.options import Options
     SELENIUM_AVAILABLE = True
 except ImportError:
@@ -34,10 +41,11 @@ def start_dashboard_server():
 
         # Ждём запуска сервера
         time.sleep(5)
-        return process
-    except Exception as e:
+    except OSError as e:
         print(f"Ошибка запуска дашборда: {e}")
         return None
+    else:
+        return process
 
 
 def save_plotly_fig(fig, filename):
@@ -117,11 +125,12 @@ def capture_dashboard_screenshot(
         driver.quit()
 
         print(f"Скриншот сохранён как {output_file}")
-        return True
 
-    except Exception as e:
+    except (WebDriverException, OSError) as e:
         print(f"Ошибка при создании скриншота: {e}")
         return False
+    else:
+        return True
 
 
 def save_dashboard_to_pdf(pdf_path='dashboard.pdf'):
@@ -145,7 +154,7 @@ def save_dashboard_to_pdf(pdf_path='dashboard.pdf'):
 
     # Создаём PDF
     c = canvas.Canvas(pdf_path, pagesize=A4)
-    width, height = A4
+    _width, height = A4
     for title, img in img_files:
         c.setFont('Helvetica-Bold', 14)
         c.drawString(40, height - 40, title)

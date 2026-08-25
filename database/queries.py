@@ -1,7 +1,10 @@
 import os
+from datetime import datetime
 from functools import lru_cache
 
 from loguru import logger
+
+from config import MOSCOW_TZ
 from database.connection import db_connection
 
 
@@ -26,17 +29,18 @@ def load_sql_file(sql_filename: str) -> str:
     logger.debug(f'Загружаем SQL файл: {sql_file_path}')
 
     try:
-        with open(sql_file_path, 'r', encoding='utf-8') as file:
+        with open(sql_file_path, encoding='utf-8') as file:
             query = file.read()
-        logger.debug(f'SQL файл успешно загружен: {sql_filename}')
-        return query
     except FileNotFoundError:
         logger.error(f'SQL файл не найден: {sql_file_path}')
-        raise FileNotFoundError(f'SQL файл не найден: {sql_file_path}')
+        raise
+    else:
+        logger.debug(f'SQL файл успешно загружен: {sql_filename}')
+        return query
 
 
 def get_dnm_data(
-    selected_year: int = None,
+    selected_year: int | None = None,
     age_group: str = '0-10Y',
     selected_mobis_code: str = 'All',
     selected_holding: str = 'All',
@@ -83,8 +87,7 @@ def get_dnm_data(
 
         # Если год не указан, используем текущий год
         if selected_year is None:
-            from datetime import datetime
-            selected_year = datetime.now().year
+            selected_year = datetime.now(MOSCOW_TZ).year
             logger.info(f'Год не указан, используем текущий: {selected_year}')
 
         # Выполняем запрос с параметрами
@@ -102,7 +105,6 @@ def get_dnm_data(
 
         df = db_connection.execute_query(query, params)
         logger.success(f'Данные DNM успешно загружены: {len(df)} строк')
-        return df
 
     except FileNotFoundError:
         logger.error(f'SQL файл не найден: {sql_filename}')
@@ -110,6 +112,8 @@ def get_dnm_data(
     except Exception as e:
         logger.error(f'Ошибка при получении данных из базы: {e}')
         raise
+    else:
+        return df
 
 
 def get_dealers_data():
@@ -222,7 +226,7 @@ def get_mobis_codes_by_region(region):
 
 
 def get_dnm_data_by_region(
-    selected_year: int = None,
+    selected_year: int | None = None,
     age_group: str = '0-10Y',
     selected_mobis_code: str = 'All',
     selected_holding: str = 'All',

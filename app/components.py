@@ -1,4 +1,4 @@
-from dash import html, dcc
+from dash import dcc, html
 
 from .constants import (
     CONFIG,
@@ -70,7 +70,7 @@ def create_region_selector() -> html.Div:
 # ----------------------------------------------------------------------
 # KPI CARDS
 # ----------------------------------------------------------------------
-def create_metric_card(title: str, value: str, unit: str = None,
+def create_metric_card(title: str, value: str, unit: str | None = None,
                        hero: bool = False) -> html.Div:
     """Создает KPI-карточку (.kpi / .kpi.hero для акцентной)."""
     children = [
@@ -190,9 +190,8 @@ def create_data_table(columns: list, data: list,
                 if col_id == 'aver_labor_hours_per_vhc':
                     value = f'{value:.1f}'
                 elif col_id in ['ro_ratio_of_uio_10y',
-                                'ro_ratio_of_uio_5y']:
-                    value = f'{value:.1f}%'
-                elif col_id in ['pct_age_0_3', 'pct_age_4_5',
+                                'ro_ratio_of_uio_5y',
+                                'pct_age_0_3', 'pct_age_4_5',
                                 'pct_age_6_10']:
                     value = f'{value:.1f}%'
                 else:

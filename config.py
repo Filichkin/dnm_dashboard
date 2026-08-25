@@ -1,5 +1,12 @@
+from zoneinfo import ZoneInfo
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+# Часовой пояс, в котором работает дилерская сеть. От него считаются
+# «текущий год» и метки времени в выгрузках, чтобы результат не зависел
+# от часового пояса сервера.
+MOSCOW_TZ = ZoneInfo('Europe/Moscow')
 
 
 class DatabaseSettings(BaseSettings):

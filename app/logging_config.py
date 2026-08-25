@@ -3,8 +3,8 @@
 """
 import sys
 from pathlib import Path
-from loguru import logger
 
+from loguru import logger
 
 # Удаляем стандартный обработчик loguru
 logger.remove()

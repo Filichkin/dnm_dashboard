@@ -1,11 +1,12 @@
-from contextlib import contextmanager
 import time
+from contextlib import contextmanager
 
 import pandas as pd
 import psycopg2
+from loguru import logger
 from sqlalchemy import create_engine
 from sqlalchemy.engine import Engine
-from loguru import logger
+from sqlalchemy.exc import SQLAlchemyError
 
 from config import settings
 
@@ -32,15 +33,17 @@ class DatabaseConnection:
         try:
             conn = psycopg2.connect(**self.config)
             yield conn
-        except psycopg2.Error as e:
+        except psycopg2.Error:
             if conn:
                 conn.rollback()
-            raise e
+            raise
         finally:
             if conn:
                 conn.close()
 
-    def execute_query(self, query: str, params: dict = None) -> pd.DataFrame:
+    def execute_query(
+        self, query: str, params: dict | None = None
+    ) -> pd.DataFrame:
         """
         Выполняет SQL запрос и возвращает результат в виде DataFrame
 
@@ -69,14 +72,14 @@ class DatabaseConnection:
                 f'Запрос выполнен успешно за {execution_time:.3f}с, '
                 f'получено {len(df)} строк'
             )
-
-            return df
         except Exception as e:
             execution_time = time.time() - start_time
             logger.error(
                 f'Ошибка при выполнении запроса за {execution_time:.3f}с: {e}'
             )
-            raise e
+            raise
+        else:
+            return df
 
     def test_connection(self) -> bool:
         """
@@ -93,7 +96,7 @@ class DatabaseConnection:
                 cursor.fetchone()
                 logger.success('Подключение к базе данных успешно')
                 return True
-        except Exception as e:
+        except (psycopg2.Error, SQLAlchemyError) as e:
             logger.error(f'Ошибка подключения к базе данных: {e}')
             return False
 

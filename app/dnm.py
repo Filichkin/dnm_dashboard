@@ -1,44 +1,43 @@
 """
 DNM Dashboard - основное приложение Dash
 """
-import dash
-from dash import (
-    html, dcc, callback, Input, Output, State, clientside_callback
-)
-from dash.exceptions import PreventUpdate
-import pandas as pd
 from datetime import datetime
 
-from config import settings
+import dash
+import pandas as pd
+from dash import Input, Output, State, callback, clientside_callback, dcc, html
+from dash.exceptions import PreventUpdate
+
+from config import MOSCOW_TZ, settings
+
 from .components import (
-    create_year_selector,
     create_age_group_selector,
-    create_mobis_code_selector,
     create_holding_selector,
-    create_region_selector
+    create_mobis_code_selector,
+    create_region_selector,
+    create_year_selector,
 )
 from .constants import (
     get_mobis_code_options_by_holding,
-    get_mobis_code_options_by_region
+    get_mobis_code_options_by_region,
 )
 from .functions import (
-    process_dataframe,
-    create_charts,
+    build_charts_container,
     calculate_metrics,
+    create_charts,
+    create_charts_container,
+    create_dealer_display,
+    create_holding_display,
+    create_metrics_cards,
+    create_region_display,
     get_available_years,
     get_current_year,
     load_dashboard_data,
     load_region_data,
-    create_metrics_cards,
-    create_charts_container,
-    build_charts_container,
-    create_dealer_display,
-    create_holding_display,
-    create_region_display
+    process_dataframe,
 )
 from .logging_config import logger
 from .templates import get_dashboard_template
-
 
 app = dash.Dash(__name__, suppress_callback_exceptions=True)
 
@@ -162,8 +161,9 @@ def update_dashboard(selected_year, age_group, selected_mobis_code,
         df = load_dashboard_data(selected_year, age_group, selected_mobis_code,
                                  selected_holding, selected_region)
         logger.info(f'Данные дашборда загружены: {len(df)} строк')
-    except Exception as e:
-        logger.error(f'Ошибка при загрузке данных дашборда: {e}')
+    except Exception as e:  # noqa: BLE001 — граница Dash-колбэка:
+        # любая ошибка не должна ронять дашборд, отдаём пустые данные
+        logger.exception(f'Ошибка при загрузке данных дашборда: {e}')
         return [], [], [], [], [], []
 
     # Обрабатываем данные
@@ -315,7 +315,7 @@ def export_to_csv(n_clicks, data):
         df = pd.DataFrame(data)
 
         # Создаем имя файла с текущей датой
-        current_date = datetime.now().strftime('%Y%m%d_%H%M%S')
+        current_date = datetime.now(MOSCOW_TZ).strftime('%Y%m%d_%H%M%S')
         filename = f'dnm_data_export_{current_date}.csv'
 
         # Возвращаем данные для скачивания

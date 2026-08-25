@@ -1,0 +1,42 @@
+# Конфигурация Ruff для DNM Dashboard.
+# Зафиксирована явно, чтобы набор правил не менялся при обновлении ruff
+# и совпадал в IDE, локально и в CI.
+
+target-version = "py312"
+line-length = 88
+
+# app/constants.py перечислен в .gitignore, но это обычный исходник —
+# его тоже нужно проверять. Черновые каталоги исключены вручную.
+respect-gitignore = false
+extend-exclude = ["design", "draft", "logs", "data"]
+
+[lint]
+select = [
+    "E",    # pycodestyle errors
+    "W",    # pycodestyle warnings
+    "F",    # pyflakes
+    "I",    # isort — порядок импортов
+    "B",    # flake8-bugbear
+    "C4",   # flake8-comprehensions
+    "SIM",  # flake8-simplify
+    "BLE",  # flake8-blind-except
+    "UP",   # pyupgrade
+    "DTZ",  # flake8-datetimez — datetime без таймзоны
+    "TRY",  # tryceratops — работа с исключениями
+    "PIE",  # flake8-pie
+    "EXE",  # flake8-executable
+    "RUF",  # правила самого ruff
+]
+
+ignore = [
+    # Код и документация на русском: RUF001-003 принимают кириллические
+    # буквы за «похожие на латиницу» и дают сплошные ложные срабатывания.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+]
+
+[lint.per-file-ignores]
+# Plotly-шаблоны: dict(font=..., margin=...) — идиоматичный для Plotly
+# способ записи layout'ов, литералы со строковыми ключами читаются хуже.
+"app/plotly_templates.py" = ["C408"]
