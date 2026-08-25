@@ -33,10 +33,8 @@ from database.queries import (
 def process_dataframe(df):
     """
     Обрабатывает DataFrame для корректного отображения
-
     Args:
         df: Исходный DataFrame
-
     Returns:
         pd.DataFrame: Обработанный DataFrame
     """
